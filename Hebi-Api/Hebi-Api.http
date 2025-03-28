@@ -1,0 +1,6 @@
+@Hebi_Api_HostAddress = http://localhost:5096
+
+GET {{Hebi_Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

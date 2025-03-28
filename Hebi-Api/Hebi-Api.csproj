@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <RootNamespace>Hebi_Api</RootNamespace>
+    <UserSecretsId>be092b7e-6f7c-42bb-9d53-25642e69959a</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Appointments\RequestHandling\Validators\" />
+    <Folder Include="Features\Clinics\Dtos\" />
+    <Folder Include="Features\Clinics\RequestHandling\" />
+    <Folder Include="Features\Core\Common\Enums\" />
+    <Folder Include="Features\Diseases\Dtos\" />
+    <Folder Include="Features\Diseases\RequestHandling\" />
+    <Folder Include="Features\Shifts\Dtos\" />
+    <Folder Include="Features\Shifts\RequestHandling\" />
+    <Folder Include="Features\UserCards\Dtos\" />
+    <Folder Include="Features\UserCards\RequestHandling\" />
+    <Folder Include="Features\Users\Dtos\" />
+    <Folder Include="Features\Users\RequestHandling\" />
+  </ItemGroup>
+
+</Project>

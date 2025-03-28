@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hebi-Api", "Hebi-Api\Hebi-Api.csproj", "{0B087A49-4F0F-4519-9D43-A4DB036F287C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hebi-Api.Tests", "Hebi-Api.Tests\Hebi-Api.Tests.csproj", "{D1AC20DE-5B35-4557-9C8D-76E86B09C715}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B087A49-4F0F-4519-9D43-A4DB036F287C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B087A49-4F0F-4519-9D43-A4DB036F287C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B087A49-4F0F-4519-9D43-A4DB036F287C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B087A49-4F0F-4519-9D43-A4DB036F287C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1AC20DE-5B35-4557-9C8D-76E86B09C715}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1AC20DE-5B35-4557-9C8D-76E86B09C715}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1AC20DE-5B35-4557-9C8D-76E86B09C715}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1AC20DE-5B35-4557-9C8D-76E86B09C715}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42F1DBF1-1C5C-4FD6-BECF-FE837B088963}
+	EndGlobalSection
+EndGlobal
