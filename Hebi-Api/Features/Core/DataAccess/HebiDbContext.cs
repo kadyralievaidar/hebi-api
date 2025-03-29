@@ -22,7 +22,7 @@ public class HebiDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     public DbSet<Clinic> Clinics { get; set; }
     public DbSet<Disease> Diseases { get; set; }
     public DbSet<Shift> Shifts { get; set; }
-    public DbSet<PatientCard> PatientCard { get; set; }
+    public DbSet<UserCard> PatientCard { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

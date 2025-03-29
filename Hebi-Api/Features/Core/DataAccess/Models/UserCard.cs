@@ -1,6 +1,6 @@
 ﻿namespace Hebi_Api.Features.Core.DataAccess.Models;
 
-public class PatientCard : IBaseModel
+public class UserCard : IBaseModel
 {
     public Guid Id { get; set; }
     public DateTime CreatedAt { get; set; }

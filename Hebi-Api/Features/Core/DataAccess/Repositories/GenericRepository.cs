@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.Common.Interfaces;
+﻿using Hebi_Api.Features.Core.Common;
+using Hebi_Api.Features.Core.Common.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -7,10 +8,13 @@ namespace Hebi_Api.Features.Core.DataAccess.Repositories;
 
 public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class, new()
 {
-    public GenericRepository(HebiDbContext context)
+    protected readonly IHttpContextAccessor ContextAccessor;
+
+    public GenericRepository(HebiDbContext context, IHttpContextAccessor contextAccessor)
     {
         Context = context;
         DbSet = context.Set<TEntity>();
+        ContextAccessor = contextAccessor;
     }
 
     /// <summary>
@@ -18,6 +22,18 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// </summary>
     public HebiDbContext Context { get; }
 
+
+    /// <summary>
+    ///     Returns context with default filters
+    /// </summary>
+    /// <returns></returns>
+    protected IQueryable<TEntity> GetContext()
+    {
+        var context = Context.Set<TEntity>().AsQueryable();
+        context = FilterByClinicId(context);
+
+        return context;
+    }
     /// <summary>
     ///     DbSet
     /// </summary>
@@ -230,4 +246,29 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <param name="filter">Filter for selection condition</param>
     /// <returns>IQueryable data</returns>
     protected virtual IQueryable<TEntity> Filter(IQueryable<TEntity> data, Expression<Func<TEntity, bool>>? filter) => filter == null ? data : data.Where(filter);
+
+    private Guid? FilterByClinicId()
+    {
+        var claim = ContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c =>
+            c.Type == Consts.ClinicIdClaim);
+
+        if (IsUserSuperAdmin())
+        {
+            if (claim != null)
+            {
+                if (!string.IsNullOrEmpty(claim.Value))
+                    return new Guid(claim.Value);
+
+                return null;
+            }
+
+            return null;
+        }
+        else if (IsRegularUser())
+        {
+            if (claim != null) return new Guid(claim.Value);
+        }
+
+        throw new InvalidOperationException("ClientGroup is not specified for user");
+    }
 }

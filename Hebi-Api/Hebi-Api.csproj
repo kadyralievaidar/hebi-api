@@ -14,21 +14,23 @@
     <PackageReference Include="AutoMapper" Version="10.0.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Features\Appointments\RequestHandling\Validators\" />
-    <Folder Include="Features\Clinics\Dtos\" />
-    <Folder Include="Features\Clinics\RequestHandling\" />
+    <Folder Include="Features\Clinics\RequestHandling\Validators\" />
     <Folder Include="Features\Core\Common\Enums\" />
-    <Folder Include="Features\Diseases\Dtos\" />
-    <Folder Include="Features\Diseases\RequestHandling\" />
-    <Folder Include="Features\Shifts\Dtos\" />
-    <Folder Include="Features\Shifts\RequestHandling\" />
-    <Folder Include="Features\UserCards\Dtos\" />
-    <Folder Include="Features\UserCards\RequestHandling\" />
+    <Folder Include="Features\Diseases\RequestHandling\Validators\" />
+    <Folder Include="Features\Shifts\RequestHandling\Validators\" />
+    <Folder Include="Features\UserCards\RequestHandling\Validators\" />
     <Folder Include="Features\Users\Dtos\" />
     <Folder Include="Features\Users\RequestHandling\" />
   </ItemGroup>

@@ -5,7 +5,7 @@ namespace Hebi_Api.Features.Core.DataAccess.Repositories;
 
 public class AppointmentsRepository : GenericRepository<Appointment>, IAppointmentsRepository
 {
-    public AppointmentsRepository(HebiDbContext context) : base(context)
+    public AppointmentsRepository(HebiDbContext context, IHttpContextAccessor httpContextAccessor) : base(context , httpContextAccessor)
     {
     }
 }
