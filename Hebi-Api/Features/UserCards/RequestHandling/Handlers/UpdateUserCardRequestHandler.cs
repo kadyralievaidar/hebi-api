@@ -5,22 +5,22 @@ using MediatR;
 
 namespace Hebi_Api.Features.UserCards.RequestHandling.Handlers;
 
-public class GetUserCardByIdRequestHandler : IRequestHandler<GetUserCardByIdRequest, Response>
+public class UpdateUserCardRequestHandler : IRequestHandler<UpdateUserCardRequest, Response>
 {
     private readonly IUserCardsService _service;
-    private readonly ILogger<GetUserCardByIdRequestHandler> _logger;
+    private readonly ILogger<UpdateUserCardRequestHandler> _logger;
 
-    public GetUserCardByIdRequestHandler(IUserCardsService service, ILogger<GetUserCardByIdRequestHandler> logger)
+    public UpdateUserCardRequestHandler(IUserCardsService service, ILogger<UpdateUserCardRequestHandler> logger)
     {
         _service = service;
         _logger = logger;
     }
 
-    public async Task<Response> Handle(GetUserCardByIdRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateUserCardRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _service.GetUserCardAsync(request.UserCardId);
+            var result = await _service.UpdateUserCard(request.UserCardId, request.Dto);
             return Response.Ok(request.Id, result);
         }
         catch (Exception e)

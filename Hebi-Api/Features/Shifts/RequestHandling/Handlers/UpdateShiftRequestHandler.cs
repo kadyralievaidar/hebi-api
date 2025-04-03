@@ -16,8 +16,17 @@ public class UpdateShiftRequestHandler : IRequestHandler<UpdateShiftRequest, Res
         _logger = logger;
     }
 
-    public Task<Response> Handle(UpdateShiftRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateShiftRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.UpdateShift(request.ShiftId, request.CreateShiftDto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

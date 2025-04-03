@@ -8,16 +8,25 @@ namespace Hebi_Api.Features.Clinics.RequestHandling.Handlers;
 public class UpdateClinicRequestHandler : IRequestHandler<UpdateClinicRequest, Response>
 {
     private readonly IClinicsService _service;
-    private readonly ILogger<UpdateClinicRequestHandler> _looger;
+    private readonly ILogger<UpdateClinicRequestHandler> _logger;
 
-    public UpdateClinicRequestHandler(IClinicsService service, ILogger<UpdateClinicRequestHandler> looger)
+    public UpdateClinicRequestHandler(IClinicsService service, ILogger<UpdateClinicRequestHandler> logger)
     {
         _service = service;
-        _looger = looger;
+        _logger = logger;
     }
 
-    public Task<Response> Handle(UpdateClinicRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateClinicRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.UpdateClinic(request.ClinicId, request.CreateClinicDto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

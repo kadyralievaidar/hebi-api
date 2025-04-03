@@ -16,8 +16,17 @@ public class GetAppointmentByIdRequestHandler : IRequestHandler<UpdateAppointmen
         _logger = logger;
     }
 
-    public Task<Response> Handle(UpdateAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateAppointmentRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var appointment = await _appoitmentsService.GetAppointmentAsync(request.AppointmentId);
+            return Response.Ok(request.Id, appointment);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

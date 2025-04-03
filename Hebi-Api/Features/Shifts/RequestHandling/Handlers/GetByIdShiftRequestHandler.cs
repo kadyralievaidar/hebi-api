@@ -16,8 +16,18 @@ public class GetByIdShiftRequestHandler : IRequestHandler<GetShiftByIdRequest, R
         _logger = logger;
     }
 
-    public Task<Response> Handle(GetShiftByIdRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetShiftByIdRequest request, CancellationToken cancellationToken)
     {
+        try
+        {
+            var result = await _service.GetShiftAsync(request.ShiftId);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
         throw new NotImplementedException();
     }
 }

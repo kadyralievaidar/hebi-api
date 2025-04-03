@@ -21,8 +21,8 @@ public class AppointmentsService : IAppointmentsService
     public async Task<Guid> CreateAppointment(CreateAppointmentDto dto)
     {
         var appointment = _mapper.Map<Appointment>(dto);
-        var employeeId = _contextAccessor.GetUserIdentifier();
-        //if (_unitOfWork.AppointmentRepository.Any(x => x.)) ;
+        appointment.CreatedBy = _contextAccessor.GetUserIdentifier();
+        appointment.CreatedAt = DateTime.UtcNow;
         await _unitOfWork.AppointmentRepository.InsertAsync(appointment);
         await _unitOfWork.SaveAsync();
         return appointment.Id;
@@ -30,11 +30,9 @@ public class AppointmentsService : IAppointmentsService
 
     public async Task DeleteAppointment(Guid id)
     {
-        var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id)
-                            ?? throw new NullReferenceException(nameof(Appointment));
+        var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id);
 
-
-        _unitOfWork.AppointmentRepository.Delete(appointment);
+        _unitOfWork.AppointmentRepository.Delete(appointment!);
         await _unitOfWork.SaveAsync();
     }
 
@@ -44,8 +42,25 @@ public class AppointmentsService : IAppointmentsService
                             ?? throw new NullReferenceException(nameof(Appointment));
 
         _mapper.Map<Appointment>(dto);
+        appointment.LastModifiedBy = _contextAccessor.GetUserIdentifier();
+        appointment.LastModifiedAt = DateTime.UtcNow;
         _unitOfWork.AppointmentRepository.Update(appointment);
         await _unitOfWork.SaveAsync();
         return appointment;
+    }
+
+    public async Task<Appointment> GetAppointmentAsync(Guid appointmentId) 
+    {
+        var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointmentId);
+        return appointment!;
+    }
+
+    public async Task<List<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
+    {
+        var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => x.ShiftId == dto.ShiftId 
+                                                                    && (x.StartDate >= dto.StartDate && x.EndDate <= dto.EndDate)
+                                                                    && x.PatientId == dto.PatientId, dto.SortBy, dto.SortDirection,
+                                                                    (dto.PageIndex * dto.PageSize), dto.PageSize);
+        return appointments;
     }
 }

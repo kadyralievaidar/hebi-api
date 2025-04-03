@@ -16,8 +16,17 @@ public class UpdateAppointmentRequestHandler : IRequestHandler<UpdateAppointment
         _logger = logger;
     }
 
-    public Task<Response> Handle(UpdateAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateAppointmentRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.UpdateAppointment(request.AppointmentId, request.Dto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

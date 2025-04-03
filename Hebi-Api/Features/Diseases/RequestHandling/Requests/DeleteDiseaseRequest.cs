@@ -10,10 +10,10 @@ public class DeleteDiseaseRequest : Request<Response>
     /// <summary>
     ///     Disease's id
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid DiseaseId { get; set; }
 
-    public DeleteDiseaseRequest(Guid id)
+    public DeleteDiseaseRequest(Guid diseaseId)
     {
-        Id = id;
+        DiseaseId = diseaseId;
     }
 }

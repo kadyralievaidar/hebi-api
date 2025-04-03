@@ -16,8 +16,18 @@ public class GetUserCardsPagedListRequestHandler : IRequestHandler<GetUserCardsP
         _logger = logger;
     }
 
-    public Task<Response> Handle(GetUserCardsPagedListRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetUserCardsPagedListRequest request, CancellationToken cancellationToken)
     {
+        try
+        {
+            var result = await _service.GetListOfUserCardsAsync(request.Dto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
         throw new NotImplementedException();
     }
 }

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Hebi_Api.Features.Appointments.RequestHandling.Handlers;
 
-public class GetPagedListOfAppointmentRequestHandler : IRequestHandler<CreateAppointmentRequest, Response>
+public class GetPagedListOfAppointmentRequestHandler : IRequestHandler<GetPagedListOfAppointmentRequest, Response>
 {
     private readonly IAppointmentsService _appoitmentsService;
     private readonly ILogger<CreateAppointmentRequestHandler> _logger;
@@ -16,8 +16,17 @@ public class GetPagedListOfAppointmentRequestHandler : IRequestHandler<CreateApp
         _logger = logger;
     }
 
-    public Task<Response> Handle(CreateAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetPagedListOfAppointmentRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _appoitmentsService.GetListOfAppointmentsAsync(request.Dto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

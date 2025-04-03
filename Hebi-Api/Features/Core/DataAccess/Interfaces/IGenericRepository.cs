@@ -1,5 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using System.ComponentModel;
+using System.Linq.Expressions;
 using Hebi_Api.Features.Core.Common.Interfaces;
+using Hebi_Api.Features.Core.DataAccess.Models;
 
 namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
 
@@ -7,7 +9,7 @@ namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
 ///     Generic repository
 /// </summary>
 /// <typeparam name="TEntity">Entity type</typeparam>
-public interface IGenericRepository<TEntity> where TEntity : class, new()
+public interface IGenericRepository<TEntity> where TEntity : class, IBaseModel
 {
     /// <summary>
     ///     Apply pagination
@@ -167,4 +169,22 @@ public interface IGenericRepository<TEntity> where TEntity : class, new()
     /// </summary>
     /// <param name="selector">Filter for selection condition</param>
     decimal Sum(Expression<Func<TEntity, decimal>> selector);
+
+
+    /// <summary>
+    ///     Search paged entities
+    /// </summary>
+    /// <param name="skip">how much to skip</param>
+    /// <param name="take">how much to take</param>
+    /// <param name="predicate">expression</param>
+    /// <param name="sortBy">sorting</param>
+    /// <param name="sortDirection">sort direction</param>
+    /// <returns></returns>
+    Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> predicate, string? sortBy = null,
+        ListSortDirection? sortDirection = null, int? skip = null, int? take = null);
+
+
+    Task<bool> ExistAsync(Guid id);
+
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
 }

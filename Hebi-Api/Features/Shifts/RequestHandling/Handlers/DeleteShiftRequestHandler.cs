@@ -16,8 +16,17 @@ public class DeleteShiftRequestHandler : IRequestHandler<DeleteShiftRequest, Res
         _logger = logger;
     }
 
-    public Task<Response> Handle(DeleteShiftRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(DeleteShiftRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _service.DeleteShift(request.ShiftId);
+            return Response.Ok(request.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

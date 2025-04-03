@@ -16,8 +16,17 @@ public class UpdateDiseaseRequestHandler : IRequestHandler<UpdateDiseaseRequest,
         _logger = logger;
     }
 
-    public Task<Response> Handle(UpdateDiseaseRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateDiseaseRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.UpdateDisease(request.DiseaseId, request.CreateDiseaseDto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

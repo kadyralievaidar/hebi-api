@@ -1,5 +1,7 @@
-﻿namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
+﻿using Hebi_Api.Features.Core.DataAccess.Models;
 
-public interface IDiseasesRepository
+namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
+
+public interface IDiseasesRepository : IGenericRepository<Disease>
 {
 }

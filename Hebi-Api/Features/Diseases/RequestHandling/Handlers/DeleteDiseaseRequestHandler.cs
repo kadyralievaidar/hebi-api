@@ -16,8 +16,18 @@ public class DeleteDiseaseRequestHandler : IRequestHandler<DeleteDiseaseRequest,
         _logger = logger;
     }
 
-    public Task<Response> Handle(DeleteDiseaseRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(DeleteDiseaseRequest request, CancellationToken cancellationToken)
     {
+        try
+        {
+            await _service.DeleteDisease(request.DiseaseId);
+            return Response.Ok(request.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
         throw new NotImplementedException();
     }
 }

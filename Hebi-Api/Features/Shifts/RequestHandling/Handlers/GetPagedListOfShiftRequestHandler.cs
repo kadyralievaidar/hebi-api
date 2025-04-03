@@ -16,8 +16,17 @@ public class GetPagedListOfShiftRequestHandler : IRequestHandler<GetPagedListOfS
         _logger = logger;
     }
 
-    public Task<Response> Handle(GetPagedListOfShiftsRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetPagedListOfShiftsRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.GetListOfShiftsAsync(request.Dto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

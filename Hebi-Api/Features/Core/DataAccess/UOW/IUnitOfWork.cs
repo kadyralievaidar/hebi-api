@@ -16,13 +16,6 @@ public interface IUnitOfWork
     Task<List<TModel>> ExecuteAsync<TModel>(IQueryable<TModel> rows);
 
     /// <summary>
-    ///     Get generic repository
-    /// </summary>
-    /// <typeparam name="TEntity">Entity type</typeparam>
-    /// <returns>Generic repository</returns>
-    IGenericRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : class, new();
-
-    /// <summary>
     ///     User repository
     /// </summary>
     IUsersRepository UserRepository { get; }
@@ -40,7 +33,7 @@ public interface IUnitOfWork
     /// <summary>
     ///     Patient card repository
     /// </summary>
-    IUserCardsRepository PatientCardRepository { get; }
+    IUserCardsRepository UserCardsRepository { get; }
 
     /// <summary>
     ///    Clinic repository

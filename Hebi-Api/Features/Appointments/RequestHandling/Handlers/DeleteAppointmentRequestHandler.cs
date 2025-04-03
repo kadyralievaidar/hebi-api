@@ -9,8 +9,24 @@ public class DeleteAppointmentRequestHandler : IRequestHandler<DeleteAppointment
 {
     private readonly IAppointmentsService _appoitmentsService;
     private readonly ILogger<CreateAppointmentRequestHandler> _logger;
-    public Task<Response> Handle(DeleteAppointmentRequest request, CancellationToken cancellationToken)
+
+    public DeleteAppointmentRequestHandler(IAppointmentsService appoitmentsService, ILogger<CreateAppointmentRequestHandler> logger)
     {
-        throw new NotImplementedException();
+        _appoitmentsService = appoitmentsService;
+        _logger = logger;
+    }
+
+    public async Task<Response> Handle(DeleteAppointmentRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _appoitmentsService.DeleteAppointment(request.AppointmentId);
+            return Response.Ok(request.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

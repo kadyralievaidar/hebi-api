@@ -7,7 +7,6 @@ namespace Hebi_Api.Features.Appointments.Controllers;
 public class AppointmentController : ControllerBase
 {
     private readonly IMediator _mediator;
-
     public AppointmentController(IMediator mediator) => _mediator = mediator;
 
     [HttpPost("create-appoitment")]

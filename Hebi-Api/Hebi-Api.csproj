@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
@@ -25,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Appointments\RequestHandling\Validators\" />
     <Folder Include="Features\Clinics\RequestHandling\Validators\" />
     <Folder Include="Features\Core\Common\Enums\" />
     <Folder Include="Features\Diseases\RequestHandling\Validators\" />

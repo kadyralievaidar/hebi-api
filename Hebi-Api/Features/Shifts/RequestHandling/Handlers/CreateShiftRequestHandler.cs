@@ -16,8 +16,17 @@ public class CreateShiftRequestHandler : IRequestHandler<CreateShiftRequest, Res
         _logger = logger;
     }
 
-    public Task<Response> Handle(CreateShiftRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(CreateShiftRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.CreateShift(request.CreateShiftDto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

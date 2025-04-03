@@ -16,8 +16,17 @@ public class DeleteUserCardRequestHandler : IRequestHandler<DeleteUserCardReques
         _logger = logger;
     }
 
-    public Task<Response> Handle(DeleteUserCardRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(DeleteUserCardRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _service.DeleteUserCard(request.UserCardId);
+            return Response.Ok(request.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

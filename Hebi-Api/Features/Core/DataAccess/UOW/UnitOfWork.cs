@@ -12,7 +12,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private readonly Lazy<IUsersRepository> _userRepository;
     private readonly Lazy<IDiseasesRepository> _diseaseRepository;
     private readonly Lazy<IAppointmentsRepository> _appointmentRepository;
-    private readonly Lazy<IUserCardsRepository> _patientCardRepository;
+    private readonly Lazy<IUserCardsRepository> _userCardsRepository;
     private readonly Lazy<IClinicsRepository> _clinicRepository;
     private readonly Lazy<IShiftsRepository> _shiftsRepository;
 
@@ -31,7 +31,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         _userRepository = new Lazy<IUsersRepository>(serviceProvider.GetRequiredService<IUsersRepository>());
         _diseaseRepository = new Lazy<IDiseasesRepository>(serviceProvider.GetRequiredService<IDiseasesRepository>());
         _appointmentRepository = new Lazy<IAppointmentsRepository>(serviceProvider.GetRequiredService<IAppointmentsRepository>());
-        _patientCardRepository = new Lazy<IUserCardsRepository>(serviceProvider.GetRequiredService<IUserCardsRepository>());
+        _userCardsRepository = new Lazy<IUserCardsRepository>(serviceProvider.GetRequiredService<IUserCardsRepository>());
         _clinicRepository = new Lazy<IClinicsRepository>(serviceProvider.GetRequiredService<IClinicsRepository>());
         _shiftsRepository = new Lazy<IShiftsRepository>(serviceProvider.GetRequiredService<IShiftsRepository>());
     }
@@ -86,18 +86,10 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     /// <returns>The task result contains a <see cref="List{TModel}" /> that contains elements from the input sequence.</returns>
     public async Task<List<TModel>> ExecuteAsync<TModel>(IQueryable<TModel> rows) => await rows.ToListAsync();
 
-    /// <summary>
-    ///     Get generic repository
-    /// </summary>
-    /// <typeparam name="TEntity">Entity type</typeparam>
-    /// <returns>Generic repository</returns>
-    public IGenericRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : class, new()
-        => _serviceProvider.GetRequiredService<IGenericRepository<TEntity>>();
-
     public IUsersRepository UserRepository => _userRepository.Value;
     public IDiseasesRepository DiseaseRepository => _diseaseRepository.Value;
     public IAppointmentsRepository AppointmentRepository => _appointmentRepository.Value;
-    public IUserCardsRepository PatientCardRepository => _patientCardRepository.Value;
+    public IUserCardsRepository UserCardsRepository => _userCardsRepository.Value;
     public IClinicsRepository ClinicRepository => _clinicRepository.Value;
     public IShiftsRepository ShiftsRepository => _shiftsRepository.Value;
 

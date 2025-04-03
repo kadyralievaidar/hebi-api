@@ -1,26 +1,29 @@
 ﻿using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Common.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Interfaces;
+using Hebi_Api.Features.Core.DataAccess.Models;
+using Hebi_Api.Features.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.Linq.Expressions;
 
 namespace Hebi_Api.Features.Core.DataAccess.Repositories;
 
-public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class, new()
+public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class, IBaseModel
 {
     protected readonly IHttpContextAccessor ContextAccessor;
 
-    public GenericRepository(HebiDbContext context, IHttpContextAccessor contextAccessor)
+    /// <summary>
+    ///     Context
+    /// </summary>
+    protected readonly DbContext Context;
+
+    public GenericRepository(DbContext context, IHttpContextAccessor contextAccessor)
     {
         Context = context;
         DbSet = context.Set<TEntity>();
         ContextAccessor = contextAccessor;
     }
-
-    /// <summary>
-    ///     Database context
-    /// </summary>
-    public HebiDbContext Context { get; }
 
 
     /// <summary>
@@ -38,6 +41,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     ///     DbSet
     /// </summary>
     public DbSet<TEntity> DbSet { get; }
+
+    /// <summary>
+    ///     DbSet
+    /// </summary>
+    protected virtual IQueryable<TEntity> Queryable => GetContext().AsNoTracking();
 
     /// <summary>
     ///     Apply pagination
@@ -247,28 +255,54 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <returns>IQueryable data</returns>
     protected virtual IQueryable<TEntity> Filter(IQueryable<TEntity> data, Expression<Func<TEntity, bool>>? filter) => filter == null ? data : data.Where(filter);
 
-    private Guid? FilterByClinicId()
+    public virtual async Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> predicate, string? sortBy = null,
+    ListSortDirection? sortDirection = null, int? skip = null,
+    int? take = null)
+    {
+        if (string.IsNullOrEmpty(sortBy))
+            return await Queryable.Where(predicate).TrySkip(skip ?? 0)
+                .TryTake(take ?? int.MaxValue).ToListAsync();
+
+        //Checks if type has the sorting property ignoring case
+        var propertyInfo = typeof(TEntity).GetProperties().SingleOrDefault(p => p.Name.ToLower() == sortBy.ToLower());
+
+        if (propertyInfo == null)
+            throw new ArgumentException(
+                $"Entity {typeof(TEntity).FullName} doesn't have the property {sortBy} for sorting");
+
+        //Ensure correct casing for property sorting
+        sortBy = propertyInfo.Name;
+
+        return await Queryable.Where(predicate)
+            .OrderByDynamic(sortBy, (sortDirection ?? ListSortDirection.Ascending) == ListSortDirection.Descending).TrySkip(skip)
+            .TryTake(take).ToListAsync();
+    }
+
+    protected IQueryable<TEntity> FilterByClinicId(IQueryable<TEntity> query)
+    {
+        var clientGroupId = GetClinicId();
+        if (clientGroupId.HasValue)
+        {
+            query = query.Where(c => c.ClinicId.Equals(clientGroupId.Value));
+        }
+
+        return query;
+    }
+    private Guid? GetClinicId()
     {
         var claim = ContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c =>
-            c.Type == Consts.ClinicIdClaim);
+            c.Type == Consts.ClinicIdClaim).Value;
 
-        if (IsUserSuperAdmin())
-        {
-            if (claim != null)
-            {
-                if (!string.IsNullOrEmpty(claim.Value))
-                    return new Guid(claim.Value);
+        return Guid.Parse(claim);
+    }
 
-                return null;
-            }
+    public async Task<bool> ExistAsync(Guid id)
+    {
+        return await Queryable.AnyAsync(x => x.Id == id);
+    }
 
-            return null;
-        }
-        else if (IsRegularUser())
-        {
-            if (claim != null) return new Guid(claim.Value);
-        }
-
-        throw new InvalidOperationException("ClientGroup is not specified for user");
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+    {
+        return await Queryable.AnyAsync(predicate);
     }
 }

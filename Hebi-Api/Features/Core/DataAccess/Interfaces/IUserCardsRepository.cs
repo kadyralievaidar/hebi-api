@@ -1,5 +1,7 @@
-﻿namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
+﻿using Hebi_Api.Features.Core.DataAccess.Models;
 
-public interface IUserCardsRepository
+namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
+
+public interface IUserCardsRepository : IGenericRepository<UserCard>
 {
 }

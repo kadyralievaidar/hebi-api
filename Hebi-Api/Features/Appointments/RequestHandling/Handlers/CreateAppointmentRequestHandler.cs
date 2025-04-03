@@ -16,8 +16,17 @@ public class CreateAppointmentRequestHandler : IRequestHandler<CreateAppointment
         _logger = logger;
     }
 
-    public Task<Response> Handle(CreateAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(CreateAppointmentRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _appoitmentsService.CreateAppointment(request.Dto);
+            return Response.Ok(request.Id,result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

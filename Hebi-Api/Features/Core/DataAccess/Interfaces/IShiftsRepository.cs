@@ -1,5 +1,7 @@
-﻿namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
+﻿using Hebi_Api.Features.Core.DataAccess.Models;
 
-public interface IShiftsRepository
+namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
+
+public interface IShiftsRepository : IGenericRepository<Shift>
 {
 }

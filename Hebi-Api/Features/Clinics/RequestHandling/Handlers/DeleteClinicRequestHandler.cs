@@ -1,23 +1,33 @@
-﻿using Hebi_Api.Features.Appointments.RequestHandling.Requests;
+﻿using Hebi_Api.Features.Clinics.RequestHandling.Requests;
 using Hebi_Api.Features.Clinics.Services;
 using Hebi_Api.Features.Core.Common.RequestHandling;
 using MediatR;
 
 namespace Hebi_Api.Features.Clinics.RequestHandling.Handlers;
 
-public class DeleteClinicRequestHandler : IRequestHandler<DeleteAppointmentRequest, Response>
+public class DeleteClinicRequestHandler : IRequestHandler<DeleteClinicRequest, Response>
 {
     private readonly IClinicsService _service;
-    private readonly ILogger<DeleteClinicRequestHandler> _looger;
+    private readonly ILogger<DeleteClinicRequestHandler> _logger;
 
-    public DeleteClinicRequestHandler(IClinicsService service, ILogger<DeleteClinicRequestHandler> looger)
+    public DeleteClinicRequestHandler(IClinicsService service, ILogger<DeleteClinicRequestHandler> logger)
     {
         _service = service;
-        _looger = looger;
+        _logger = logger;
     }
 
-    public Task<Response> Handle(DeleteAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(DeleteClinicRequest request, CancellationToken cancellationToken)
     {
+        try
+        {
+            await _service.DeleteClinic(request.ClinicId);
+            return Response.Ok(request.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
         throw new NotImplementedException();
     }
 }

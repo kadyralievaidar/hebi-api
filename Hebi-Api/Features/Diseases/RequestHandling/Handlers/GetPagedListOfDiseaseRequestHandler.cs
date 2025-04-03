@@ -16,8 +16,17 @@ public class GetPagedListOfDiseaseRequestHandler : IRequestHandler<GetPagedListO
         _logger = logger;
     }
 
-    public Task<Response> Handle(GetPagedListOfDiseaseRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetPagedListOfDiseaseRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.GetListOfDiseasesAsync(request.Dto);
+            return Response.Ok(request.Id,result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }
