@@ -11,7 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Collection" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
@@ -19,13 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Appoitments\" />
-    <Folder Include="Clinics\" />
-    <Folder Include="Diseases\" />
-    <Folder Include="UOW\" />
-    <Folder Include="Users\" />
-    <Folder Include="UserCards\" />
-    <Folder Include="Shifts\" />
+    <ProjectReference Include="..\Hebi-Api\Hebi-Api.csproj" />
   </ItemGroup>
 
 </Project>

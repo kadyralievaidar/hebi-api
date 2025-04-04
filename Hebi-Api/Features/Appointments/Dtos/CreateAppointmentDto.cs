@@ -30,4 +30,14 @@ public class CreateAppointmentDto
     ///     If there isn't patient
     /// </summary>
     public string? ShortName { get; set; }
+
+    /// <summary>
+    ///     File path
+    /// </summary>
+    public string? FilePath { get; set; }
+
+    /// <summary>
+    ///     Shift's id
+    /// </summary>
+    public Guid? ShiftId { get; set; }
 }

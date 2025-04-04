@@ -26,11 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Clinics\RequestHandling\Validators\" />
     <Folder Include="Features\Core\Common\Enums\" />
-    <Folder Include="Features\Diseases\RequestHandling\Validators\" />
-    <Folder Include="Features\Shifts\RequestHandling\Validators\" />
-    <Folder Include="Features\UserCards\RequestHandling\Validators\" />
     <Folder Include="Features\Users\Dtos\" />
     <Folder Include="Features\Users\RequestHandling\" />
   </ItemGroup>
