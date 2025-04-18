@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hebi_Api.Features.Core.DataAccess;
 
-public class HebiDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+public class HebiDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="HebiDbContext"/> class.
@@ -23,7 +23,6 @@ public class HebiDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     public DbSet<Disease> Diseases { get; set; }
     public DbSet<Shift> Shifts { get; set; }
     public DbSet<UserCard> PatientCard { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HebiDbContext).Assembly);

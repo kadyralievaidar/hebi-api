@@ -183,6 +183,11 @@ public interface IGenericRepository<TEntity> where TEntity : class, IBaseModel
     Task<List<TEntity>> SearchAsync(Expression<Func<TEntity, bool>> predicate, string? sortBy = null,
         ListSortDirection? sortDirection = null, int? skip = null, int? take = null);
 
+    /// <summary>
+    ///     GetAllAsync
+    /// </summary>
+    /// <returns></returns>
+    Task<List<TEntity>> GetAllAsync();
 
     Task<bool> ExistAsync(Guid id);
 

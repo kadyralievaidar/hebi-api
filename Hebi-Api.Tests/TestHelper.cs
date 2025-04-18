@@ -1,13 +1,30 @@
-using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using System.Security.Claims;
 
 namespace Hebi_Api.Tests;
 public static class TestHelper
 {
-    public static IMapper CreateMapper(Type startUpProfileAssemblyType)
+    public static Guid ClinicId = Guid.NewGuid();
+    public static Guid UserId = Guid.NewGuid();
+    public static Mock<IHttpContextAccessor> CreateHttpContext()
     {
-        ServiceCollection services = new ();
-        services.AddAutoMapper(startUpProfileAssemblyType);
-        return (IMapper)services.BuildServiceProvider().GetService(typeof(IMapper));
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, UserId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var context = new DefaultHttpContext
+        {
+            User = claimsPrincipal
+        };
+
+        var mock = new Mock<IHttpContextAccessor>();
+        mock.Setup(x => x.HttpContext).Returns(context);
+
+        return mock;
     }
 }

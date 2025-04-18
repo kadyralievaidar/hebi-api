@@ -6,6 +6,7 @@ using System.Reflection;
 using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hebi_Api.Features.Core.Extensions;
 
@@ -29,6 +30,7 @@ public static class RepositoryConfiguration
     /// <param name="builder">Services сollection</param>
     private static void AddDbContext(this WebApplicationBuilder builder)
     {
+        builder.Services.AddLogging();
         builder.Services.AddDbContext<HebiDbContext>(options =>
         {
             options.EnableSensitiveDataLogging();
@@ -43,6 +45,12 @@ public static class RepositoryConfiguration
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.RegisterGenericRepository();
         builder.Services.RegisterCustomRepository();
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+            .AddSignInManager<SignInManager<ApplicationUser>>()
+            .AddUserManager<UserManager<ApplicationUser>>()
+            .AddRoleManager<RoleManager<IdentityRole<Guid>>>()
+            .AddEntityFrameworkStores<HebiDbContext>()
+            .AddDefaultTokenProviders();
     }
 
     /// <summary>

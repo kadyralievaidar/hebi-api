@@ -8,19 +8,20 @@ namespace Hebi_Api.Features.Diseases.Services;
 public class DiseasesService : IDiseaseService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public DiseasesService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
+    public DiseasesService(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _contextAccessor = contextAccessor;
     }
 
     public async Task<Guid> CreateDisease(CreateDiseaseDto dto)
     {
-        var disease = _mapper.Map<Disease>(dto);
+        var disease = new Disease() 
+        {
+
+        };
         await _unitOfWork.DiseaseRepository.InsertAsync(disease);
         await _unitOfWork.SaveAsync();
 
@@ -57,7 +58,7 @@ public class DiseasesService : IDiseaseService
         var disease = await _unitOfWork.DiseaseRepository.GetByIdAsync(id)
                         ?? throw new NullReferenceException(nameof(Disease));
 
-        disease = _mapper.Map<Disease>(dto);
+        disease.Description = dto.Description;
         _unitOfWork.DiseaseRepository.Update(disease);
         await _unitOfWork.SaveAsync();
         return disease;

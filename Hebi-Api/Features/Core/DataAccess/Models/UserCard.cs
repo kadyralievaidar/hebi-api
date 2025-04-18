@@ -13,6 +13,6 @@ public class UserCard : IBaseModel
     public Guid CreatedBy { get; set; }
     public IEnumerable<Appointment> Appointment { get; set; } = new List<Appointment>();
     public Guid PatientId { get; set; } 
-    public User Patient { get; set; } = null!;
+    public ApplicationUser Patient { get; set; } = null!;
     #endregion
 }

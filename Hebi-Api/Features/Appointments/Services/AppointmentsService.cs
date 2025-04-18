@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Hebi_Api.Features.Appointments.Dtos;
+﻿using Hebi_Api.Features.Appointments.Dtos;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
@@ -9,20 +8,31 @@ namespace Hebi_Api.Features.Appointments.Services;
 public class AppointmentsService : IAppointmentsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public AppointmentsService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
+    public AppointmentsService(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _contextAccessor = contextAccessor;
     }
     public async Task<Guid> CreateAppointment(CreateAppointmentDto dto)
     {
-        var appointment = _mapper.Map<Appointment>(dto);
-        appointment.CreatedBy = _contextAccessor.GetUserIdentifier();
-        appointment.CreatedAt = DateTime.UtcNow;
+        var appointment = new Appointment()
+        {
+            Id = Guid.NewGuid(),
+            StartDate = dto.StartDateTime,
+            EndDate = dto.EndDateTime,
+            DoctorId = dto.DoctorId ?? Guid.Empty,
+            PatientId = dto.PatientId ?? Guid.Empty,
+            PatientShortName = dto.ShortName,
+            FilePath = dto.FilePath,
+            ShiftId = dto.ShiftId ?? Guid.Empty,
+            CreatedAt = DateTime.UtcNow,
+            IsDeleted = false,
+            Name = dto.Name,
+            Description = dto.Description,
+            CreatedBy = _contextAccessor.GetUserIdentifier()
+        };
         await _unitOfWork.AppointmentRepository.InsertAsync(appointment);
         await _unitOfWork.SaveAsync();
         return appointment.Id;
@@ -41,7 +51,7 @@ public class AppointmentsService : IAppointmentsService
         var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id)
                             ?? throw new NullReferenceException(nameof(Appointment));
 
-        _mapper.Map<Appointment>(dto);
+        appointment.ShiftId = dto.ShiftId.Value;
         appointment.LastModifiedBy = _contextAccessor.GetUserIdentifier();
         appointment.LastModifiedAt = DateTime.UtcNow;
         _unitOfWork.AppointmentRepository.Update(appointment);

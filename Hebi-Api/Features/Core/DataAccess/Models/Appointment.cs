@@ -23,9 +23,9 @@ public class Appointment : IBaseModel
     public Guid ShiftId { get; set; }
     public Shift? Shift { get; set; }
     public Guid PatientId { get; set; }
-    public User? Patient { get; set; }
+    public ApplicationUser? Patient { get; set; }
     public Guid CreatedBy { get; set; }
-    public User Doctor { get; set; } = null!;
+    public ApplicationUser Doctor { get; set; } = null!;
     public Guid DoctorId { get; set; }
 
     #endregion

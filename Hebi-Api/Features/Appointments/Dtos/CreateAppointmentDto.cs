@@ -7,6 +7,15 @@
 public class CreateAppointmentDto
 {
     /// <summary>
+    ///     The name of appoitnment
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    ///     The description of appoitment
+    /// </summary>
+    public string Description { get; set; }
+    /// <summary>
     ///     Start date time of appointment
     /// </summary>
     public DateTime StartDateTime { get; set; }

@@ -1,6 +1,8 @@
 using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.DataAccess;
+using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Models;
+using Hebi_Api.Features.Core.DataAccess.Repositories;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
@@ -12,7 +14,6 @@ using System.Security.Claims;
 namespace Hebi_Api.Tests.UOW;
 internal class UnitOfWorkFactory : IDisposable
 {
-    public static Guid ClinicId = Guid.NewGuid();
     internal SqliteConnection _connection;
     internal DbContextMock _context;
 
@@ -42,7 +43,7 @@ internal class UnitOfWorkFactory : IDisposable
         _context?.Dispose();
     }
 
-    internal void AddData<T>(List<T> data) where T : BaseModel
+    internal void AddData<T>(List<T> data) where T : class, IBaseModel
     {
         var type = typeof(DbContextMock);
         var prop = type.GetProperties().FirstOrDefault(x => x.PropertyType == typeof(DbSet<T>));
@@ -97,7 +98,7 @@ internal class UnitOfWorkFactory : IDisposable
         _contextAccessor.Setup(c => c.HttpContext.User.Claims)
             .Returns(new List<Claim>
             {
-                    new(Consts.ClinicIdClaim, ClinicId.ToString())
+                    new(Consts.ClinicIdClaim, TestHelper.ClinicId.ToString())
             });
 
         if (includeClientGroupToContext)
@@ -112,8 +113,21 @@ internal class UnitOfWorkFactory : IDisposable
             .AddInMemoryCollection(inMemorySettings)
             .Build();
 
-        var mockServiceProvider = new Mock<IServiceProvider>(); 
+        var mockServiceProvider = new Mock<IServiceProvider>();
+        mockServiceProvider.Setup(x => x.GetService(typeof(IDbTransaction))).Returns(new Mock<IDbTransaction>().Object);
+        mockServiceProvider.Setup(x => x.GetService(typeof(IAppointmentsRepository))).Returns(new AppointmentsRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(IClinicsRepository))).Returns(new ClinicsRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(IDiseasesRepository))).Returns(new DiseasesRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(IShiftsRepository))).Returns(new ShiftsRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(IUserCardsRepository))).Returns(new UserCardsRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(IUsersRepository))).Returns(new UsersRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(HebiDbContext))).Returns(_context);
         return new UnitOfWork(mockServiceProvider.Object);
+    }
+
+    internal DbContextMock GetDbContext()
+    {
+        return _context;
     }
 }
 

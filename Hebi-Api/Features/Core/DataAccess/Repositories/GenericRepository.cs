@@ -288,6 +288,14 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
         return query;
     }
+
+    /// <summary>
+    ///     
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    public virtual async Task<List<TEntity>> GetAllAsync() => await DbSet.ToListAsync();
+
     private Guid? GetClinicId()
     {
         var claim = ContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c =>

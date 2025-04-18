@@ -1,10 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using OpenIddict.Abstractions;
+using Hebi_Api.Features.Users.RequestHandling.Requests;
+using Hebi_Api.Features.Users.Dtos;
 
 namespace Hebi_Api.Features.Users.Controllers;
 public class UsersController : ControllerBase
 {
-    public IActionResult Index()
+    private readonly IMediator _mediator;
+
+    public UsersController(IMediator mediator)
     {
-        return Ok();
+        _mediator = mediator;
     }
+
+    [HttpPost("~/connect/token")]
+    public async Task<IActionResult> Exchange()
+    {
+        var request = HttpContext.GetOpenIddictServerRequest();
+        var principal = await _mediator.Send(new SignInUserRequest(new RegisterUserDto()
+        {
+            UserName = request.Username,
+            Password = request.Password,
+            Scopes = request.GetScopes()
+        }));
+        return Ok(principal);
+    }
+
 }

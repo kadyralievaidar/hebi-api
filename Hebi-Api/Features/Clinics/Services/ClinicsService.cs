@@ -8,19 +8,19 @@ namespace Hebi_Api.Features.Clinics.Services;
 public class ClinicsService : IClinicsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public ClinicsService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
+    public ClinicsService(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _contextAccessor = contextAccessor;
     }
 
     public async Task<Guid> CreateClinic(CreateClinicDto dto)
     {
-        var clininc = _mapper.Map<Clinic>(dto);
+        var clininc = new Clinic()
+        {
+        };
         await _unitOfWork.ClinicRepository.InsertAsync(clininc);
         await _unitOfWork.SaveAsync();
         return clininc.Id;
