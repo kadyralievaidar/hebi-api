@@ -192,4 +192,11 @@ public interface IGenericRepository<TEntity> where TEntity : class, IBaseModel
     Task<bool> ExistAsync(Guid id);
 
     Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
+
+    /// <summary>
+    ///     Update range
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
+    Task UpdateRangeAsync(IEnumerable<TEntity> entities);
 }

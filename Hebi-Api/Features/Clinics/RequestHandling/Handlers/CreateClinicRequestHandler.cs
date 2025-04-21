@@ -20,7 +20,7 @@ public class CreateClinicRequestHandler : IRequestHandler<CreateClinicRequest, R
     {
         try
         {
-            var result = await _service.CreateClinic(request.CreateClinicDto);
+            var result = await _service.CreateClinicAsync(request.CreateClinicDto);
             return Response.Ok(request.Id, result);
         }
         catch (Exception e)

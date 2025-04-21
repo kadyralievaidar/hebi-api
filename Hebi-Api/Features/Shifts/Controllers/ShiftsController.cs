@@ -4,6 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.Shifts.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 public class ShiftsController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -4,6 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.Appointments.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 public class AppointmentController : ControllerBase
 {
     private readonly IMediator _mediator;

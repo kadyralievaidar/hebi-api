@@ -6,6 +6,9 @@ using Hebi_Api.Features.Users.RequestHandling.Requests;
 using Hebi_Api.Features.Users.Dtos;
 
 namespace Hebi_Api.Features.Users.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;

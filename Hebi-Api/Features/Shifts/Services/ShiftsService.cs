@@ -8,19 +8,20 @@ namespace Hebi_Api.Features.Shifts.Services;
 public class ShiftsService : IShiftsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public ShiftsService(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
+    public ShiftsService(IUnitOfWork unitOfWork,IHttpContextAccessor contextAccessor)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _contextAccessor = contextAccessor;
     }
 
     public async Task<Guid> CreateShift(CreateShiftDto dto)
     {
-        var shift = _mapper.Map<Shift>(dto);
+        var shift = new Shift()
+        {
+
+        };
         await _unitOfWork.ShiftsRepository.InsertAsync(shift);
         await _unitOfWork.SaveAsync();
         return shift.Id;
@@ -54,7 +55,10 @@ public class ShiftsService : IShiftsService
         var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id)
             ?? throw new NullReferenceException(nameof(Shift));
 
-        shift = _mapper.Map<Shift>(dto);
+        shift = new Shift() 
+        {
+
+        };
         _unitOfWork.ShiftsRepository.Update(shift);
         await _unitOfWork.SaveAsync();
         return shift;

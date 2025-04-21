@@ -18,7 +18,7 @@ public interface IUnitOfWork
     /// <summary>
     ///     User repository
     /// </summary>
-    IUsersRepository UserRepository { get; }
+    IUsersRepository UsersRepository { get; }
 
     /// <summary>
     ///     Disease repository

@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Hebi_Api.Features.Clinics.Dtos;
+﻿using Hebi_Api.Features.Clinics.Dtos;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
+using Hebi_Api.Features.Core.Extensions;
 
 namespace Hebi_Api.Features.Clinics.Services;
 
@@ -16,14 +16,31 @@ public class ClinicsService : IClinicsService
         _contextAccessor = contextAccessor;
     }
 
-    public async Task<Guid> CreateClinic(CreateClinicDto dto)
+    public async Task<Guid> CreateClinicAsync(CreateClinicDto dto)
     {
-        var clininc = new Clinic()
+        var clinic = new Clinic()
         {
+            Name = dto.Name,
+            Location = dto.Location,
+            PhoneNumber = dto.PhoneNumber,
+            Email = dto.Email,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = _contextAccessor.GetUserIdentifier(),
+            IsActive = true
         };
-        await _unitOfWork.ClinicRepository.InsertAsync(clininc);
+        await _unitOfWork.ClinicRepository.InsertAsync(clinic);
+
+        var doctors = await _unitOfWork.UsersRepository
+                        .WhereAsync(user => dto.DoctorIds.Contains(user.Id) && !user.IsDeleted);
+
+        foreach (var doctor in doctors)
+        {
+            doctor.ClinicId = clinic.Id;
+        }
+
+        await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
         await _unitOfWork.SaveAsync();
-        return clininc.Id;
+        return clinic.Id;
     }
 
     public async Task DeleteClinic(Guid id)
@@ -51,12 +68,28 @@ public class ClinicsService : IClinicsService
         return clinics;
     }
 
-    public async Task<Clinic> UpdateClinic(Guid id, CreateClinicDto dto)
+    public async Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto)
     {
         var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id) ?? 
             throw new NullReferenceException(nameof(Clinic));
+        clinic.Location = dto.Location;
+        clinic.Email = dto.Email;
+        clinic.PhoneNumber = dto.PhoneNumber;
+        clinic.Name = dto.Name;
+        clinic.LastModifiedAt = DateTime.UtcNow;
+        clinic.LastModifiedBy = _contextAccessor.GetUserIdentifier();
 
         _unitOfWork.ClinicRepository.Update(clinic);
+
+        var doctors = await _unitOfWork.UsersRepository
+                        .WhereAsync(user => dto.DoctorIds.Contains(user.Id) && !user.IsDeleted);
+
+        foreach (var doctor in doctors)
+        {
+            doctor.ClinicId = clinic.Id;
+        }
+
+        await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
         await _unitOfWork.SaveAsync();
 
         return clinic;

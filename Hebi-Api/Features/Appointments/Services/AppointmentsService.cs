@@ -1,7 +1,9 @@
-﻿using Hebi_Api.Features.Appointments.Dtos;
+﻿using System.ComponentModel;
+using Hebi_Api.Features.Appointments.Dtos;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hebi_Api.Features.Appointments.Services;
 
@@ -15,7 +17,7 @@ public class AppointmentsService : IAppointmentsService
         _unitOfWork = unitOfWork;
         _contextAccessor = contextAccessor;
     }
-    public async Task<Guid> CreateAppointment(CreateAppointmentDto dto)
+    public async Task<Guid> CreateAppointmentAsync(CreateAppointmentDto dto)
     {
         var appointment = new Appointment()
         {
@@ -46,12 +48,18 @@ public class AppointmentsService : IAppointmentsService
         await _unitOfWork.SaveAsync();
     }
 
-    public async Task<Appointment> UpdateAppointment(Guid id, UpdateAppointmentDto dto) 
+    public async Task<Appointment> UpdateAppointmentAsync(Guid id, UpdateAppointmentDto dto) 
     {
         var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(id)
                             ?? throw new NullReferenceException(nameof(Appointment));
 
-        appointment.ShiftId = dto.ShiftId.Value;
+        appointment.PatientId = dto.PatientId ?? Guid.Empty;
+        appointment.DoctorId = dto.DoctorId ?? Guid.Empty;
+        appointment.StartDate = dto.StartDateTime;
+        appointment.EndDate = dto.EndDateTime;
+        appointment.Description = dto.Description;
+        appointment.Name = dto.Name;
+        appointment.ShiftId = dto.ShiftId ?? Guid.Empty;
         appointment.LastModifiedBy = _contextAccessor.GetUserIdentifier();
         appointment.LastModifiedAt = DateTime.UtcNow;
         _unitOfWork.AppointmentRepository.Update(appointment);
@@ -67,10 +75,27 @@ public class AppointmentsService : IAppointmentsService
 
     public async Task<List<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
     {
-        var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => x.ShiftId == dto.ShiftId 
-                                                                    && (x.StartDate >= dto.StartDate && x.EndDate <= dto.EndDate)
-                                                                    && x.PatientId == dto.PatientId, dto.SortBy, dto.SortDirection,
-                                                                    (dto.PageIndex * dto.PageSize), dto.PageSize);
+        var query = _unitOfWork.AppointmentRepository.AsQueryable();
+
+        if (dto.ShiftId != null)
+        {
+            query = query.Where(x => x.ShiftId == dto.ShiftId);
+        }
+
+        if (dto.PatientId != null)
+        {
+            query = query.Where(x => x.PatientId == dto.PatientId);
+        }
+
+        if (dto.StartDate.HasValue && dto.EndDate.HasValue)
+        {
+            query = query.Where(x => x.StartDate >= dto.StartDate.Value && x.EndDate <= dto.EndDate.Value);
+        }
+        query = query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Ascending);
+        query = query.Skip(dto.PageIndex * dto.PageSize).Take(dto.PageSize);
+
+        // Execute
+        var appointments = await query.ToListAsync();
         return appointments;
     }
 }

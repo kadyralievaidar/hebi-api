@@ -20,7 +20,7 @@ public class UpdateAppointmentRequestHandler : IRequestHandler<UpdateAppointment
     {
         try
         {
-            var result = await _service.UpdateAppointment(request.AppointmentId, request.Dto);
+            var result = await _service.UpdateAppointmentAsync(request.AppointmentId, request.Dto);
             return Response.Ok(request.Id, result);
         }
         catch (Exception e)

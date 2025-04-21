@@ -2,7 +2,6 @@ using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.UserCards.Services;
 using Hebi_Api.Tests.UOW;
 using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Moq;
 using NUnit.Framework;
 
@@ -20,7 +19,6 @@ public class UserCardsServiceTests
         _mock = new Mock<IHttpContextAccessor>();
         _dbFactory = new UnitOfWorkFactory();
         _unitOfWorkSqlite = _dbFactory.CreateUnitOfWork(true);
-        _service = new UserCardsService(_unitOfWorkSqlite, TestHelper.CreateMapper(typeof(Program)),
-            _mock.Object);
+        _service = new UserCardsService(_unitOfWorkSqlite, _mock.Object);
     }
 }

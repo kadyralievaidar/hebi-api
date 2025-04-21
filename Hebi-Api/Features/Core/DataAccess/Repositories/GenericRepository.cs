@@ -16,9 +16,9 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <summary>
     ///     Context
     /// </summary>
-    protected readonly DbContext Context;
+    protected readonly HebiDbContext Context;
 
-    public GenericRepository(DbContext context, IHttpContextAccessor contextAccessor)
+    public GenericRepository(HebiDbContext context, IHttpContextAccessor contextAccessor)
     {
         Context = context;
         DbSet = context.Set<TEntity>();
@@ -312,5 +312,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await Queryable.AnyAsync(predicate);
+    }
+
+    public Task UpdateRangeAsync(IEnumerable<TEntity> entities)
+    {
+        DbSet.UpdateRange(entities);
+        return Task.CompletedTask;
     }
 }

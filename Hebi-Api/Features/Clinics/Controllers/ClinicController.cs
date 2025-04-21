@@ -4,6 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.Clinics.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 public class ClinicController : ControllerBase
 {
     private readonly IMediator _mediator;

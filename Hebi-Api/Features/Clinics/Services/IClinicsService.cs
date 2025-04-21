@@ -9,11 +9,11 @@ public interface IClinicsService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<Guid> CreateClinic(CreateClinicDto dto);
+    Task<Guid> CreateClinicAsync(CreateClinicDto dto);
 
     Task DeleteClinic(Guid id);
 
-    Task<Clinic> UpdateClinic(Guid id, CreateClinicDto dto);
+    Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto);
 
     Task<List<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto);
 

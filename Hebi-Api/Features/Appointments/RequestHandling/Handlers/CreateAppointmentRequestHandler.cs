@@ -20,7 +20,7 @@ public class CreateAppointmentRequestHandler : IRequestHandler<CreateAppointment
     {
         try
         {
-            var result = await _appoitmentsService.CreateAppointment(request.Dto);
+            var result = await _appoitmentsService.CreateAppointmentAsync(request.Dto);
             return Response.Ok(request.Id,result);
         }
         catch (Exception e)

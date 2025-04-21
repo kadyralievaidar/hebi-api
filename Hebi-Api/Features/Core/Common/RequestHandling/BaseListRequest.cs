@@ -7,12 +7,12 @@ public abstract class BaseListRequest
     /// <summary>
     ///     Page index
     /// </summary>
-    public int PageIndex { get; set; }
+    public int PageIndex { get; set; } = 0;
 
     /// <summary>
     ///     Page size
     /// </summary>
-    public int PageSize { get; set; }
+    public int PageSize { get; set; } = 10;
 
     /// <summary>
     ///     Sort by property

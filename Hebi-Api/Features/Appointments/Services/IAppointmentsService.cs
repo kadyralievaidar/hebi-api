@@ -10,11 +10,11 @@ public interface IAppointmentsService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<Guid> CreateAppointment(CreateAppointmentDto dto);
+    Task<Guid> CreateAppointmentAsync(CreateAppointmentDto dto);
 
     Task DeleteAppointment(Guid id);
 
-    Task<Appointment> UpdateAppointment(Guid id, UpdateAppointmentDto dto);
+    Task<Appointment> UpdateAppointmentAsync(Guid id, UpdateAppointmentDto dto);
 
     Task<List<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto);
 

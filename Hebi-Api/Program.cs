@@ -1,6 +1,4 @@
 using Hebi_Api.Features.Core.Extensions;
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +14,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage(); // add this
     app.UseSwagger();
     app.UseSwaggerUI();
 }

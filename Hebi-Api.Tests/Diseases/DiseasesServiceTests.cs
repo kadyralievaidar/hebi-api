@@ -1,9 +1,7 @@
-using Hebi_Api.Features.Clinics.Services;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Diseases.Services;
 using Hebi_Api.Tests.UOW;
 using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Moq;
 using NUnit.Framework;
 
@@ -21,7 +19,6 @@ public class DiseasesServiceTests
         _mock = new Mock<IHttpContextAccessor>();
         _dbFactory = new UnitOfWorkFactory();
         _unitOfWorkSqlite = _dbFactory.CreateUnitOfWork(true);
-        _service = new DiseasesService(_unitOfWorkSqlite, TestHelper.CreateMapper(typeof(Program)),
-            _mock.Object);
+        _service = new DiseasesService(_unitOfWorkSqlite, _mock.Object);
     }
 }

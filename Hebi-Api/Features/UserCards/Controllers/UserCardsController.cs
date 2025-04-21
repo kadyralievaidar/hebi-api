@@ -4,6 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.UserCards.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
 public class UserCardsController : ControllerBase
 {
     private readonly IMediator _mediator;

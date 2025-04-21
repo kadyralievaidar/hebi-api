@@ -9,7 +9,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDbTransaction _dbTransaction;
-    private readonly Lazy<IUsersRepository> _userRepository;
+    private readonly Lazy<IUsersRepository> _usersRepository;
     private readonly Lazy<IDiseasesRepository> _diseaseRepository;
     private readonly Lazy<IAppointmentsRepository> _appointmentRepository;
     private readonly Lazy<IUserCardsRepository> _userCardsRepository;
@@ -28,7 +28,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         _serviceProvider = serviceProvider;
         _dbTransaction = serviceProvider.GetRequiredService<IDbTransaction>();
         _context = serviceProvider.GetRequiredService<HebiDbContext>();
-        _userRepository = new Lazy<IUsersRepository>(serviceProvider.GetRequiredService<IUsersRepository>());
+        _usersRepository = new Lazy<IUsersRepository>(serviceProvider.GetRequiredService<IUsersRepository>());
         _diseaseRepository = new Lazy<IDiseasesRepository>(serviceProvider.GetRequiredService<IDiseasesRepository>());
         _appointmentRepository = new Lazy<IAppointmentsRepository>(serviceProvider.GetRequiredService<IAppointmentsRepository>());
         _userCardsRepository = new Lazy<IUserCardsRepository>(serviceProvider.GetRequiredService<IUserCardsRepository>());
@@ -86,7 +86,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     /// <returns>The task result contains a <see cref="List{TModel}" /> that contains elements from the input sequence.</returns>
     public async Task<List<TModel>> ExecuteAsync<TModel>(IQueryable<TModel> rows) => await rows.ToListAsync();
 
-    public IUsersRepository UserRepository => _userRepository.Value;
+    public IUsersRepository UsersRepository => _usersRepository.Value;
     public IDiseasesRepository DiseaseRepository => _diseaseRepository.Value;
     public IAppointmentsRepository AppointmentRepository => _appointmentRepository.Value;
     public IUserCardsRepository UserCardsRepository => _userCardsRepository.Value;
