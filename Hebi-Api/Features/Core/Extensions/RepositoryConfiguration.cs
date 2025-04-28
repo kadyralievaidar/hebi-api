@@ -31,10 +31,11 @@ public static class RepositoryConfiguration
     private static void AddDbContext(this WebApplicationBuilder builder)
     {
         builder.Services.AddLogging();
+        var test = builder.Configuration.GetConnectionString("DefaultConnection");
+
         builder.Services.AddDbContext<HebiDbContext>(options =>
         {
             options.EnableSensitiveDataLogging();
-
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), b =>
             {
                 b.MigrationsAssembly(typeof(HebiDbContext).Assembly.FullName);

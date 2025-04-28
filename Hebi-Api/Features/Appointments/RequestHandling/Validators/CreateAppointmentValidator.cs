@@ -9,16 +9,14 @@ namespace Hebi_Api.Features.Appointments.RequestHandling.Validators;
 public class CreateAppointmentValidator : AbstractValidator<CreateAppointmentRequest>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IStringLocalizer _commonLocalize;
 
     /// <inheritdoc />
-    public CreateAppointmentValidator(IUnitOfWork unitOfWork, IStringLocalizer commonLocalize)
+    public CreateAppointmentValidator(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _commonLocalize = commonLocalize;
 
         RuleFor(c => c.Dto.DoctorId).NotEmpty()
-        .WithMessage(string.Format($"{commonLocalize["NotEmpty"]}", "DoctorId"));
+        .WithMessage(string.Format("DoctorId empty"));
 
         RuleFor(c => c).MustAsync(CheckAppointmentTime);
     }

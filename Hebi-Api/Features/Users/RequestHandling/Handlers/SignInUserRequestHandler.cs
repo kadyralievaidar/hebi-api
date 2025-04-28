@@ -16,8 +16,17 @@ public class SignInUserRequestHandler : IRequestHandler<SignInUserRequest, Respo
         _logger = logger;
     }
 
-    public Task<Response> Handle(SignInUserRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(SignInUserRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _service.SignInUser(request.RegisterUserDto);
+            return Response.Ok(request.Id, result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw;
+        }
     }
 }

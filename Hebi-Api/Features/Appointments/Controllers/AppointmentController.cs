@@ -41,7 +41,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAppointments(GetPagedListOfAppointmentDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAppointments([FromQuery]GetPagedListOfAppointmentDto dto, CancellationToken cancellationToken)
     {
         var request = new GetPagedListOfAppointmentRequest(dto);
         return Ok(await _mediator.Send(request, cancellationToken));
