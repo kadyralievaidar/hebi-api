@@ -3,11 +3,11 @@ using Hebi_Api.Features.Users.Dtos;
 
 namespace Hebi_Api.Features.Users.RequestHandling.Requests;
 
-public class SignInUserRequest : Request<Response>
+public class RegisterUserRequest : Request<Response>
 {
     public RegisterUserDto RegisterUserDto { get; set; }
 
-    public SignInUserRequest(RegisterUserDto registerUserDto)
+    public RegisterUserRequest(RegisterUserDto registerUserDto)
     {
         RegisterUserDto = registerUserDto;
     }

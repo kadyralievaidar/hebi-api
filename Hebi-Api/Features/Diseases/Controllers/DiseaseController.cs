@@ -42,7 +42,7 @@ public class DiseaseController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAppointments(GetPagedListOfDiseaseDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAppointments([FromQuery]GetPagedListOfDiseaseDto dto, CancellationToken cancellationToken)
     {
         var request = new GetPagedListOfDiseaseRequest(dto);
         return Ok(await _mediator.Send(request, cancellationToken));

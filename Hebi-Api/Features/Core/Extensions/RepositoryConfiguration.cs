@@ -36,6 +36,7 @@ public static class RepositoryConfiguration
         builder.Services.AddDbContext<HebiDbContext>(options =>
         {
             options.EnableSensitiveDataLogging();
+            options.UseOpenIddict();
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), b =>
             {
                 b.MigrationsAssembly(typeof(HebiDbContext).Assembly.FullName);

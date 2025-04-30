@@ -1,10 +1,13 @@
 ﻿using Hebi_Api.Features.Appointments.Dtos;
 using Hebi_Api.Features.Appointments.RequestHandling.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Validation.AspNetCore;
 
 namespace Hebi_Api.Features.Appointments.Controllers;
 
+[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("api/[controller]")]
 public class AppointmentController : ControllerBase
@@ -40,6 +43,7 @@ public class AppointmentController : ControllerBase
         return Ok(await _mediator.Send(request, cancellationToken));
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAppointments([FromQuery]GetPagedListOfAppointmentDto dto, CancellationToken cancellationToken)
     {

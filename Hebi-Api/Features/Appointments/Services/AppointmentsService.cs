@@ -24,16 +24,16 @@ public class AppointmentsService : IAppointmentsService
             Id = Guid.NewGuid(),
             StartDate = dto.StartDateTime,
             EndDate = dto.EndDateTime,
-            DoctorId = dto.DoctorId ?? Guid.Empty,
-            PatientId = dto.PatientId ?? Guid.Empty,
+            DoctorId = dto.DoctorId ?? _contextAccessor.GetUserIdentifier(),
+            PatientId = dto.PatientId,
             PatientShortName = dto.ShortName,
             FilePath = dto.FilePath,
-            ShiftId = dto.ShiftId ?? Guid.Empty,
+            ShiftId = dto.ShiftId,
             CreatedAt = DateTime.UtcNow,
             IsDeleted = false,
             Name = dto.Name,
             Description = dto.Description,
-            CreatedBy = _contextAccessor.GetUserIdentifier()
+            CreatedBy = _contextAccessor.GetUserIdentifier(),
         };
         await _unitOfWork.AppointmentRepository.InsertAsync(appointment);
         await _unitOfWork.SaveAsync();

@@ -20,13 +20,13 @@ public class Appointment : IBaseModel
     #region Foreign Keys
     public Guid? LastModifiedBy { get; set; }
     public Guid? ClinicId { get; set; }
-    public Guid ShiftId { get; set; }
+    public Guid? ShiftId { get; set; }
     public Shift? Shift { get; set; }
-    public Guid PatientId { get; set; }
+    public Guid? PatientId { get; set; }
     public ApplicationUser? Patient { get; set; }
     public Guid CreatedBy { get; set; }
-    public ApplicationUser Doctor { get; set; } = null!;
-    public Guid DoctorId { get; set; }
+    public ApplicationUser? Doctor { get; set; } = null!;
+    public Guid? DoctorId { get; set; }
 
     #endregion
 }

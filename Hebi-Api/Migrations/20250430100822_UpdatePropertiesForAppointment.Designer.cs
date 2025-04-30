@@ -3,6 +3,7 @@ using System;
 using Hebi_Api.Features.Core.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hebi_Api.Migrations
 {
     [DbContext(typeof(HebiDbContext))]
-    partial class HebiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430100822_UpdatePropertiesForAppointment")]
+    partial class UpdatePropertiesForAppointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

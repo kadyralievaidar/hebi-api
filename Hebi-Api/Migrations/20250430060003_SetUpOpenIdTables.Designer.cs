@@ -3,6 +3,7 @@ using System;
 using Hebi_Api.Features.Core.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hebi_Api.Migrations
 {
     [DbContext(typeof(HebiDbContext))]
-    partial class HebiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430060003_SetUpOpenIdTables")]
+    partial class SetUpOpenIdTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +146,7 @@ namespace Hebi_Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("DoctorId")
+                    b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndDate")
@@ -165,13 +168,13 @@ namespace Hebi_Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PatientId")
+                    b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("PatientShortName")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ShiftId")
+                    b.Property<Guid>("ShiftId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDate")
@@ -287,7 +290,7 @@ namespace Hebi_Api.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("DoctorId")
+                    b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndTime")
@@ -697,15 +700,21 @@ namespace Hebi_Api.Migrations
                 {
                     b.HasOne("Hebi_Api.Features.Core.DataAccess.Models.ApplicationUser", "Doctor")
                         .WithMany()
-                        .HasForeignKey("DoctorId");
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Hebi_Api.Features.Core.DataAccess.Models.ApplicationUser", "Patient")
                         .WithMany()
-                        .HasForeignKey("PatientId");
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Hebi_Api.Features.Core.DataAccess.Models.Shift", "Shift")
                         .WithMany("Appointment")
-                        .HasForeignKey("ShiftId");
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Hebi_Api.Features.Core.DataAccess.Models.UserCard", null)
                         .WithMany("Appointment")
@@ -722,7 +731,9 @@ namespace Hebi_Api.Migrations
                 {
                     b.HasOne("Hebi_Api.Features.Core.DataAccess.Models.ApplicationUser", "Doctor")
                         .WithMany()
-                        .HasForeignKey("DoctorId");
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Doctor");
                 });

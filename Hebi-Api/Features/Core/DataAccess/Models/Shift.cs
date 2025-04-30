@@ -6,8 +6,8 @@ public class Shift : BaseModel, IBaseModel
     public DateTime EndTime { get; set; }
 
     #region Foreign Keys
-    public Guid DoctorId { get; set; }
-    public ApplicationUser Doctor { get; set; } = null!;
+    public Guid? DoctorId { get; set; }
+    public ApplicationUser? Doctor { get; set; } = null!;
     public IEnumerable<Appointment> Appointment { get; set;} = new List<Appointment>();
     #endregion
 }

@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Hebi_Api.Features.Appointments.RequestHandling.Requests;
 using Hebi_Api.Features.Core.DataAccess.UOW;
-using Microsoft.Extensions.Localization;
 
 namespace Hebi_Api.Features.Appointments.RequestHandling.Validators;
 
@@ -14,9 +13,6 @@ public class CreateAppointmentValidator : AbstractValidator<CreateAppointmentReq
     public CreateAppointmentValidator(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-
-        RuleFor(c => c.Dto.DoctorId).NotEmpty()
-        .WithMessage(string.Format("DoctorId empty"));
 
         RuleFor(c => c).MustAsync(CheckAppointmentTime);
     }

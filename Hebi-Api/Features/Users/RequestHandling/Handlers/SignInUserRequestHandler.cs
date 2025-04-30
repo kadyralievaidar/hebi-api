@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Hebi_Api.Features.Users.RequestHandling.Handlers;
 
-public class SignInUserRequestHandler : IRequestHandler<SignInUserRequest, Response>
+public class SignInUserRequestHandler : IRequestHandler<RegisterUserRequest, Response>
 {
     private readonly IUsersService _service;
     private readonly ILogger<SignInUserRequestHandler> _logger;
@@ -16,12 +16,12 @@ public class SignInUserRequestHandler : IRequestHandler<SignInUserRequest, Respo
         _logger = logger;
     }
 
-    public async Task<Response> Handle(SignInUserRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _service.SignInUser(request.RegisterUserDto);
-            return Response.Ok(request.Id, result);
+            await _service.Register(request.RegisterUserDto);
+            return Response.Ok(request.Id);
         }
         catch (Exception e)
         {
