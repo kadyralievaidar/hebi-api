@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hebi_Api.Migrations
 {
     [DbContext(typeof(HebiDbContext))]
-    [Migration("20250430100822_UpdatePropertiesForAppointment")]
-    partial class UpdatePropertiesForAppointment
+    [Migration("20250430112903_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

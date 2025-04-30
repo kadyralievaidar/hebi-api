@@ -1,3 +1,4 @@
+using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.OpenIdDict;
 using Microsoft.OpenApi.Models;
@@ -46,7 +47,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.AddOpenIdDict();
 
 var app = builder.Build();
-await app.SeedRoles();
 
 if (app.Environment.IsDevelopment())
 {
@@ -54,7 +54,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+await app.MigrateDatabaseAsync();
+await app.SeedRoles();
 app.UseHttpsRedirection();
 
 app.UseAuthentication(); 
