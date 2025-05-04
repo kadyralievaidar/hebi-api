@@ -1,16 +1,13 @@
-﻿using System.Security.Claims;
-using Hebi_Api.Features.Core.Common;
-using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using Hebi_Api.Features.Core.DataAccess.Models;
+using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Hebi_Api.Features.Users.Controllers;
 
@@ -44,30 +41,8 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Exchange()
     {
         var request = HttpContext.GetOpenIddictServerRequest();
-        if (request.IsPasswordGrantType())
-        {
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                throw new InvalidOperationException("The application cannot be found.");
-
-            var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
-            var user = await _userManager.FindByNameAsync(request.Username);
-            identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application));
-            identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application));
-            identity.SetClaim(ClaimTypes.NameIdentifier, user.Id.ToString());
-            identity.SetClaim(Consts.ClinicIdClaim, "9d0a942c-c95e-4b63-a079-82e3024e6308");
-
-            identity.SetDestinations(static claim => claim.Type switch
-            {
-                Claims.Name when claim.Subject.HasScope(Scopes.Profile)
-                    => [Destinations.AccessToken, Destinations.IdentityToken],
-
-                _ => [Destinations.AccessToken]
-            });
-
-            return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        }
-
-        throw new NotImplementedException("The specified grant is not implemented.");
+        var result = await _mediator.Send(new TokenRequest(request));
+        return SignIn(result.Principal, result.AuthScheme);
     }
 
     [HttpPost("~/connect/logout"), ValidateAntiForgeryToken]

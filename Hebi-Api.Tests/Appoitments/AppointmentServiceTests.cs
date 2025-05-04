@@ -12,7 +12,6 @@ using NUnit.Framework;
 namespace Hebi_Api.Tests.Appoitments;
 
 [TestFixture]
-
 public class AppointmentServiceTests
 {
     private UnitOfWorkFactory _dbFactory;

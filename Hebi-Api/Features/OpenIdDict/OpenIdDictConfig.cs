@@ -1,6 +1,7 @@
 ﻿using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -47,9 +48,29 @@ public static class OpenIdDictConfig
                 options.UseAspNetCore()
                        .EnableAuthorizationEndpointPassthrough()
                        .EnableTokenEndpointPassthrough();
+
+                options.AddEncryptionKey(new SymmetricSecurityKey(
+                                     Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
+
+                // Register the signing credentials.
+                options.AddDevelopmentSigningCertificate();
             })
             .AddValidation(options =>
             {
+                // Note: the validation handler uses OpenID Connect discovery
+                // to retrieve the issuer signing keys used to validate tokens.
+                options.SetIssuer("https://localhost:44319/");
+
+                // Register the encryption credentials. This sample uses a symmetric
+                // encryption key that is shared between the server and the API project.
+                //
+                // Note: in a real world application, this encryption key should be
+                // stored in a safe place (e.g in Azure KeyVault, stored as a secret).
+                options.AddEncryptionKey(new SymmetricSecurityKey(
+                    Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
+
+                // Register the System.Net.Http integration.
+                options.UseSystemNetHttp();
                 options.UseLocalServer();
                 options.UseAspNetCore();
             });

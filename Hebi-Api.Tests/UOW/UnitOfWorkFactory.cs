@@ -33,6 +33,7 @@ internal class UnitOfWorkFactory : IDisposable
         _context = new DbContextMock(options);
 
         ClearData();
+        AddData(new List<Clinic>() { new Clinic { Id = TestHelper.ClinicId } });
     }
 
     /// <inheritdoc />

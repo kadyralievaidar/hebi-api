@@ -7,7 +7,7 @@ public class GetPagedListOfAppointmentRequestValidator : AbstractValidator<GetPa
 {
     public GetPagedListOfAppointmentRequestValidator()
     {
-        RuleFor(c => c.Dto.StartDate).GreaterThan(c => c.Dto.EndDate)
+        RuleFor(c => c.Dto.EndDate).GreaterThan(c => c.Dto.StartDate)
             .WithMessage("Start date time can't be greater than End date time");
     }
 }
