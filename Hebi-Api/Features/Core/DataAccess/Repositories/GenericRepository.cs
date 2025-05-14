@@ -160,7 +160,13 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     ///     Insert a new entity into the context
     /// </summary>
     /// <param name="entity">Entity to insert</param>
-    public virtual async Task InsertAsync(TEntity entity) => await DbSet.AddAsync(entity);
+    public virtual async Task InsertAsync(TEntity entity)
+    {
+        entity.ClinicId = ContextAccessor.GetClinicId();
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.CreatedBy = ContextAccessor.GetUserIdentifier();
+        await DbSet.AddAsync(entity);
+    }
 
     /// <summary>
     ///     Insert an array of new entities into the context
@@ -280,12 +286,8 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     protected IQueryable<TEntity> FilterByClinicId(IQueryable<TEntity> query)
     {
-        var clientGroupId = GetClinicId();
-        if (clientGroupId.HasValue)
-        {
-            query = query.Where(c => c.ClinicId.Equals(clientGroupId.Value));
-        }
-
+        var clientGroupId = ContextAccessor.GetClinicId(); 
+        query = query.Where(c => c.ClinicId.Equals(clientGroupId));
         return query;
     }
 
@@ -295,14 +297,6 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <param name="ids"></param>
     /// <returns></returns>
     public virtual async Task<List<TEntity>> GetAllAsync() => await DbSet.ToListAsync();
-
-    private Guid? GetClinicId()
-    {
-        var claim = ContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c =>
-            c.Type == Consts.ClinicIdClaim).Value;
-
-        return Guid.Parse(claim);
-    }
 
     public async Task<bool> ExistAsync(Guid id)
     {

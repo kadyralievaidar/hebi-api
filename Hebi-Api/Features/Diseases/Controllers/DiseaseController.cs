@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Diseases.Dtos;
+﻿using Hebi_Api.Features.Core.Extensions;
+using Hebi_Api.Features.Diseases.Dtos;
 using Hebi_Api.Features.Diseases.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,35 +17,35 @@ public class DiseaseController : ControllerBase
     [HttpPost("create-disease")]
     public async Task<IActionResult> Create([FromBody] CreateDiseaseDto dto, CancellationToken cancellationToken)
     {
-        var request = new CreateDiseaseRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new CreateDiseaseRequest(dto),cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] CreateDiseaseDto dto, CancellationToken cancellationToken)
     {
-        var request = new UpdateDiseaseRequest(appointmentId, dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new UpdateDiseaseRequest(appointmentId, dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpDelete("id")]
     public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new DeleteDiseaseRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new DeleteDiseaseRequest(appointmentId), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
     public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new GetDiseaseByIdRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetDiseaseByIdRequest(appointmentId), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAppointments([FromQuery]GetPagedListOfDiseaseDto dto, CancellationToken cancellationToken)
     {
-        var request = new GetPagedListOfDiseaseRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetPagedListOfDiseaseRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 }

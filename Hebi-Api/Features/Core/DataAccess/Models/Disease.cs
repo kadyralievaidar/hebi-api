@@ -1,5 +1,4 @@
-﻿
-namespace Hebi_Api.Features.Core.DataAccess.Models;
+﻿namespace Hebi_Api.Features.Core.DataAccess.Models;
 
 public class Disease : IBaseModel
 {

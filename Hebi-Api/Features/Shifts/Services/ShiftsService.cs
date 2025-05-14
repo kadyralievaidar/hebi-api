@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
+using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Shifts.Dtos;
 
 namespace Hebi_Api.Features.Shifts.Services;
@@ -18,9 +19,13 @@ public class ShiftsService : IShiftsService
 
     public async Task<Guid> CreateShift(CreateShiftDto dto)
     {
+        var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
         var shift = new Shift()
         {
-
+            StartTime = dto.StartTime,
+            EndTime = dto.EndTime,
+            DoctorId = dto.DoctorId ?? _contextAccessor.GetUserIdentifier(),
+            Appointments = appointments
         };
         await _unitOfWork.ShiftsRepository.InsertAsync(shift);
         await _unitOfWork.SaveAsync();
@@ -55,9 +60,14 @@ public class ShiftsService : IShiftsService
         var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id)
             ?? throw new NullReferenceException(nameof(Shift));
 
+        var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
+
         shift = new Shift() 
         {
-
+            StartTime = dto.StartTime,
+            EndTime = dto.EndTime,
+            DoctorId = dto.DoctorId,
+            Appointments = appointments
         };
         _unitOfWork.ShiftsRepository.Update(shift);
         await _unitOfWork.SaveAsync();

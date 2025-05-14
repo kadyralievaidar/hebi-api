@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Shifts.Dtos;
+﻿using Hebi_Api.Features.Core.Extensions;
+using Hebi_Api.Features.Shifts.Dtos;
 using Hebi_Api.Features.Shifts.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,35 +17,35 @@ public class ShiftsController : ControllerBase
     [HttpPost("create-shift")]
     public async Task<IActionResult> Create([FromBody] CreateShiftDto dto, CancellationToken cancellationToken)
     {
-        var request = new CreateShiftRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new CreateShiftRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] CreateShiftDto dto, CancellationToken cancellationToken)
     {
-        var request = new UpdateShiftRequest(appointmentId, dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new UpdateShiftRequest(appointmentId, dto),cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpDelete("id")]
     public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new DeleteShiftRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new DeleteShiftRequest(appointmentId),cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
     public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new GetShiftByIdRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetShiftByIdRequest(appointmentId),cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAppointments(GetPagedListOfShiftsDto dto, CancellationToken cancellationToken)
     {
-        var request = new GetPagedListOfShiftsRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetPagedListOfShiftsRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 }

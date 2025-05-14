@@ -2,6 +2,8 @@
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace Hebi_Api.Features.Clinics.Services;
 
@@ -62,9 +64,10 @@ public class ClinicsService : IClinicsService
 
     public async Task<List<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto)
     {
-        var clinics = await _unitOfWork.ClinicRepository.SearchAsync(x =>
-                                        true, dto.SortBy, dto.SortDirection, 
-                                        dto.PageSize * dto.PageIndex, dto.PageSize);
+        var query = _unitOfWork.ClinicRepository.AsQueryable();
+        var clinics = await query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Descending)
+                .TrySkip(dto.PageSize * dto.PageIndex).TryTake(dto.PageSize).ToListAsync();
+
         return clinics;
     }
 

@@ -1,3 +1,4 @@
+using Hebi_Api.Features.Core.Common;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
@@ -11,7 +12,8 @@ public static class TestHelper
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, UserId.ToString())
+            new Claim(ClaimTypes.NameIdentifier, UserId.ToString()),
+            new(Consts.ClinicIdClaim, ClinicId.ToString())
         };
 
         var identity = new ClaimsIdentity(claims, "TestAuthType");

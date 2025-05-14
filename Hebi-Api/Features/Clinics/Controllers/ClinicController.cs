@@ -1,5 +1,6 @@
 ﻿using Hebi_Api.Features.Clinics.Dtos;
 using Hebi_Api.Features.Clinics.RequestHandling.Requests;
+using Hebi_Api.Features.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,35 +17,35 @@ public class ClinicController : ControllerBase
     [HttpPost("create-clinic")]
     public async Task<IActionResult> Create([FromBody] CreateClinicDto dto, CancellationToken cancellationToken)
     {
-        var request = new CreateClinicRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new CreateClinicRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] CreateClinicDto dto, CancellationToken cancellationToken)
     {
-        var request = new UpdateClinicRequest(appointmentId, dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new UpdateClinicRequest(appointmentId, dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpDelete("id")]
     public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new DeleteClinicRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new DeleteClinicRequest(appointmentId),cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
     public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new GetClinicByIdRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetClinicByIdRequest(appointmentId), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAppointments(GetPagedListOfClinicDto dto, CancellationToken cancellationToken)
     {
-        var request = new GetPagedListClinicRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetPagedListClinicRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 }

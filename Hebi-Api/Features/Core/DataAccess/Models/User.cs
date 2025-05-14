@@ -5,8 +5,8 @@ namespace Hebi_Api.Features.Core.DataAccess.Models;
 public class ApplicationUser : IdentityUser<Guid>, IBaseModel
 {
     public string? Patronymic { get; set; }
-    public string FirstName { get; set; } = null!;
-    public string LastName { get; set; } = null!;
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     public DateTime? BirthDateTime { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastModifiedAt { get; set; }

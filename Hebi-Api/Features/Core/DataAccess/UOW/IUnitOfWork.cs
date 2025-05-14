@@ -1,4 +1,5 @@
 ﻿using Hebi_Api.Features.Core.DataAccess.Interfaces;
+using Hebi_Api.Features.Core.DataAccess.Models;
 using System.Data;
 
 namespace Hebi_Api.Features.Core.DataAccess.UOW;
@@ -66,4 +67,10 @@ public interface IUnitOfWork
     /// <param name="isolationLevel">Isolation level</param>
     /// <returns>Transaction</returns>
     IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
+
+    /// <summary>
+    ///     Detach entity for reload
+    /// </summary>
+    /// <param name="entity"></param>
+    void DetachForReload(IBaseModel entity);
 }

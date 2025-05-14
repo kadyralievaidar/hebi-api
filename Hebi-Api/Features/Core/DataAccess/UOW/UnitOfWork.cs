@@ -119,7 +119,16 @@ public class UnitOfWork : IUnitOfWork, IDisposable
             persistentObject.CreatedAt = DateTime.UtcNow;
         }
     }
-
+    public void DetachForReload(IBaseModel entity)
+    {
+        try
+        {
+            _context.Entry(entity).State = EntityState.Detached;
+        }
+        catch (Exception)
+        {
+        }
+    }
     private void Dispose(bool disposing)
     {
         if (disposing)

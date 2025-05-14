@@ -8,6 +8,7 @@ using Hebi_Api.Tests.UOW;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using System.ComponentModel;
 
 namespace Hebi_Api.Tests.Clinics;
 
@@ -194,5 +195,89 @@ public class ClinicServiceTests
         {
             user.ClinicId.Should().Be(clinicId);
         }
+    }
+    [Test]
+    public async Task DeleteClinic_ShouldRemoveClinic_FromDatabase()
+    {
+        // Arrange
+        var clinic = new Clinic
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Clinic",
+            PhoneNumber = "1234567890",
+            Email = "test@clinic.com",
+            Location = "Test Location"
+        };
+        _dbFactory.AddData(new List<Clinic> { clinic });
+
+        // Act
+        await _clinicsService.DeleteClinic(clinic.Id);
+
+        // Assert
+        var deletedClinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(clinic.Id);
+        deletedClinic.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetClinicAsync_ShouldReturnCorrectClinic()
+    {
+        // Arrange
+        var clinic = new Clinic
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Clinic",
+            PhoneNumber = "1234567890",
+            Email = "test@clinic.com",
+            Location = "Test Location"
+        };
+        _dbFactory.AddData(new List<Clinic> { clinic });
+
+        // Act
+        var result = await _clinicsService.GetClinicAsync(clinic.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(clinic.Id);
+        result.Name.Should().Be(clinic.Name);
+    }
+
+    [Test]
+    public async Task GetClinicAsync_WithInvalidId_ShouldThrowException()
+    {
+        // Act
+        Func<Task> act = async () => await _clinicsService.GetClinicAsync(Guid.NewGuid());
+
+        // Assert
+        await act.Should().ThrowAsync<NullReferenceException>()
+            .WithMessage("Clinic");
+    }
+
+    [Test]
+    public async Task GetListOfClinicsAsync_ShouldReturnPagedClinics()
+    {
+        // Arrange
+        var clinics = new List<Clinic>
+        {
+            new Clinic { Id = Guid.NewGuid(), Name = "Clinic 1", PhoneNumber = "123", Email = "c1@test.com", Location = "Loc1" },
+            new Clinic { Id = Guid.NewGuid(), Name = "Clinic 2", PhoneNumber = "456", Email = "c2@test.com", Location = "Loc2" },
+            new Clinic { Id = Guid.NewGuid(), Name = "Clinic 3", PhoneNumber = "789", Email = "c3@test.com", Location = "Loc3" },
+        };
+        _dbFactory.AddData(clinics);
+
+        var dto = new GetPagedListOfClinicDto
+        {
+            PageIndex = 0,
+            PageSize = 2,
+            SortBy = "Name",
+            SortDirection = ListSortDirection.Ascending,
+        };
+
+        // Act
+        var result = await _clinicsService.GetListOfClinicsAsync(dto);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
+        result.Select(c => c.Name).Should().BeInAscendingOrder();
     }
 }

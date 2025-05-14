@@ -48,9 +48,9 @@ internal class UnitOfWorkFactory : IDisposable
     {
         var type = typeof(DbContextMock);
         var prop = type.GetProperties().FirstOrDefault(x => x.PropertyType == typeof(DbSet<T>));
-        var getter = prop.GetGetMethod();
+        var getter = prop!.GetGetMethod();
 
-        var dbSet = (DbSet<T>)getter.Invoke(_context, null);
+        var dbSet = (DbSet<T>)getter!.Invoke(_context, null)!;
         dbSet.AddRange(data);
 
         _context.SaveChanges();
@@ -96,22 +96,23 @@ internal class UnitOfWorkFactory : IDisposable
 
     internal IUnitOfWork CreateUnitOfWork(bool includeClientGroupToContext)
     {
-        _contextAccessor.Setup(c => c.HttpContext.User.Claims)
+        _contextAccessor.Setup(c => c.HttpContext!.User.Claims)
             .Returns(new List<Claim>
             {
-                    new(Consts.ClinicIdClaim, TestHelper.ClinicId.ToString())
+                    new(Consts.ClinicIdClaim, TestHelper.ClinicId.ToString()),
+                    new(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
             });
 
         if (includeClientGroupToContext)
         {
-            _contextAccessor.Setup(c => c.HttpContext.User.HasClaim(It.IsAny<Predicate<Claim>>()))
+            _contextAccessor.Setup(c => c.HttpContext!.User.HasClaim(It.IsAny<Predicate<Claim>>()))
                 .Returns(true);
         }
 
         var inMemorySettings = new Dictionary<string, string>();
 
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(inMemorySettings)
+            .AddInMemoryCollection(inMemorySettings!)
             .Build();
 
         var mockServiceProvider = new Mock<IServiceProvider>();

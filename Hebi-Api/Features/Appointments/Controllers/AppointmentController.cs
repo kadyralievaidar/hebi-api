@@ -1,5 +1,6 @@
 ﻿using Hebi_Api.Features.Appointments.Dtos;
 using Hebi_Api.Features.Appointments.RequestHandling.Requests;
+using Hebi_Api.Features.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,15 @@ public class AppointmentController : ControllerBase
     [HttpPost("create-appoitment")]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto, CancellationToken cancellationToken)
     {
-        var request = new CreateAppointmentRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new CreateAppointmentRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] UpdateAppointmentDto dto, CancellationToken cancellationToken)
     {
-        var request = new UpdateAppointmentRequest(appointmentId, dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new UpdateAppointmentRequest(appointmentId, dto));
+        return result.AsAspNetCoreResult();
     }
 
     [HttpDelete("id")]
@@ -39,15 +40,15 @@ public class AppointmentController : ControllerBase
     [HttpGet("id")]
     public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
     {
-        var request = new GetAppoitmentByIdRequest(appointmentId);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetAppoitmentByIdRequest(appointmentId), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAppointments([FromQuery]GetPagedListOfAppointmentDto dto, CancellationToken cancellationToken)
     {
-        var request = new GetPagedListOfAppointmentRequest(dto);
-        return Ok(await _mediator.Send(request, cancellationToken));
+        var result = await _mediator.Send(new GetPagedListOfAppointmentRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
     }
 }

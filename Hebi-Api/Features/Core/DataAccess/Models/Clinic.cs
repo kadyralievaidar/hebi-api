@@ -18,7 +18,7 @@
 
         #region Foreign keys
         public Guid? ClinicId { get; set; }
-        public ICollection<ApplicationUser> Doctors { get; set; } = new List<ApplicationUser>();
+        public ICollection<ApplicationUser>? Doctors { get; set; } = new List<ApplicationUser>();
         public Guid? LastModifiedBy { get; set; }
         public Guid CreatedBy { get; set; }
         #endregion
