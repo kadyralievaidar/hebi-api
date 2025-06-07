@@ -116,7 +116,8 @@ public static class OpenIdDictConfig
                         Scopes.OpenId,
                         Permissions.Scopes.Profile,
                         Permissions.Scopes.Email,
-                        Permissions.Scopes.Roles
+                        Permissions.Scopes.Roles,
+                        Scopes.OfflineAccess
                     }
                 });
             }

@@ -8,6 +8,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Security.Claims;
+using static OpenIddict.Abstractions.OpenIddictConstants.JsonWebTokenTypes;
 
 namespace Hebi_Api.Features.Users.Services;
 
@@ -62,7 +63,7 @@ public class UsersService : IUsersService
             identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application));
             identity.SetClaim(ClaimTypes.NameIdentifier, user.Id.ToString());
             identity.SetClaim(Consts.ClinicIdClaim, "9d0a942c-c95e-4b63-a079-82e3024e6308");
-
+            identity.SetScopes(request.GetScopes());
             identity.SetDestinations(static claim => claim.Type switch
             {
                 Claims.Name when claim.Subject.HasScope(Scopes.Profile)
