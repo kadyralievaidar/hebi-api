@@ -39,4 +39,9 @@ public class RegisterUserDto
     ///     User's lastname
     /// </summary>
     public required string LastName { get; set; }
+
+    /// <summary>
+    ///     User's phone number
+    /// </summary>
+    public required string PhoneNumber { get; set; }
 }

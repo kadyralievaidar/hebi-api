@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Security.Claims;
-using static OpenIddict.Abstractions.OpenIddictConstants.JsonWebTokenTypes;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Hebi_Api.Features.Users.Services;
 
@@ -38,7 +37,8 @@ public class UsersService : IUsersService
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             UserName = dto.UserName,
-            Email = dto.Email
+            Email = dto.Email,
+            PhoneNumber = dto.PhoneNumber
         };
         var result = await _userManager.CreateAsync(newUser, dto.Password);
         if (result.Succeeded)
@@ -54,31 +54,36 @@ public class UsersService : IUsersService
     {
         if (request.IsPasswordGrantType())
         {
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId!) ??
                 throw new InvalidOperationException("The application cannot be found.");
 
-            var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
-            var user = await _userManager.FindByNameAsync(request.Username);
-            identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application));
-            identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application));
-            identity.SetClaim(ClaimTypes.NameIdentifier, user.Id.ToString());
-            identity.SetClaim(Consts.ClinicIdClaim, "9d0a942c-c95e-4b63-a079-82e3024e6308");
-            identity.SetScopes(request.GetScopes());
-            identity.SetDestinations(static claim => claim.Type switch
-            {
-                Claims.Name when claim.Subject.HasScope(Scopes.Profile)
-                    => [Destinations.AccessToken, Destinations.IdentityToken],
+            var identity = await ConfigIdentity(request, application);
 
-                _ => [Destinations.AccessToken]
-            });
-            
             var result = new TokenResponse() 
             {
-                Principal = new ClaimsPrincipal(identity), 
+                Principal = new ClaimsPrincipal(identity!), 
                 AuthScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
             };
             return result;
         }
         return new TokenResponse();
+    }
+    private async Task<ClaimsIdentity?> ConfigIdentity(OpenIddictRequest request, object? application)
+    {
+        var user = await _userManager.FindByNameAsync(request.Username!);
+        var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
+        identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application!));
+        identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application));
+        identity.SetClaim(ClaimTypes.NameIdentifier, user.Id.ToString());
+        identity.SetClaim(Consts.ClinicIdClaim, "9d0a942c-c95e-4b63-a079-82e3024e6308");
+        identity.SetScopes(request.GetScopes());
+        identity.SetDestinations(static claim => claim.Type switch
+        {
+            Claims.Name when claim.Subject!.HasScope(Scopes.Profile)
+                => [Destinations.AccessToken, Destinations.IdentityToken],
+
+            _ => [Destinations.AccessToken]
+        });
+        return identity;
     }
 }
