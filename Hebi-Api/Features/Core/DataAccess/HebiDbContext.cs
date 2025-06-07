@@ -26,7 +26,6 @@ public class HebiDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Gui
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HebiDbContext).Assembly);
-        modelBuilder.Entity<IBaseModel>().HasQueryFilter(x => !x.IsDeleted);
         base.OnModelCreating(modelBuilder);
     }
 }
