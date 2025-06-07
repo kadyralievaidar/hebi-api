@@ -32,7 +32,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(Dtos.RegisterUserDto model)
+    public async Task<IActionResult> Register(RegisterUserDto model)
     {
         return Ok(await _mediator.Send(new RegisterUserRequest(model)));
     }

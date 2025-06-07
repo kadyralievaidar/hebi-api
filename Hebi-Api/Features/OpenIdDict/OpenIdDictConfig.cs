@@ -47,7 +47,8 @@ public static class OpenIdDictConfig
 
                 options.UseAspNetCore()
                        .EnableAuthorizationEndpointPassthrough()
-                       .EnableTokenEndpointPassthrough();
+                       .EnableTokenEndpointPassthrough()
+                       .DisableTransportSecurityRequirement();
 
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                                      Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
