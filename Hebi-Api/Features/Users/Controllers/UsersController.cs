@@ -34,7 +34,11 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(Dtos.RegisterUserDto model)
     {
-        return Ok(await _mediator.Send(new RegisterUserRequest(model)));
+        var result = await _mediator.Send(new RegisterUserRequest(model));
+        return new ObjectResult(result)
+        {
+            StatusCode = result.StatusCode
+        };
     }
 
     [HttpPost("~/connect/token"), Produces("application/json")]
