@@ -20,29 +20,38 @@ public class ClinicsService : IClinicsService
 
     public async Task<Guid> CreateClinicAsync(CreateClinicDto dto)
     {
-        var clinic = new Clinic()
+        try
         {
-            Name = dto.Name,
-            Location = dto.Location,
-            PhoneNumber = dto.PhoneNumber,
-            Email = dto.Email,
-            CreatedAt = DateTime.UtcNow,
-            CreatedBy = _contextAccessor.GetUserIdentifier(),
-            IsActive = true
-        };
-        await _unitOfWork.ClinicRepository.InsertAsync(clinic);
+            var clinic = new Clinic()
+            {
+                Name = dto.Name,
+                Location = dto.Location,
+                PhoneNumber = dto.PhoneNumber,
+                Email = dto.Email,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = _contextAccessor.GetUserIdentifier(),
+                IsActive = true
+            };
+            _unitOfWork.ClinicRepository.Insert(clinic);
 
-        var doctors = await _unitOfWork.UsersRepository
-                        .WhereAsync(user => dto.DoctorIds.Contains(user.Id) && !user.IsDeleted);
+            var doctors = await _unitOfWork.UsersRepository
+                            .WhereAsync(user => dto.DoctorIds.Contains(user.Id) && !user.IsDeleted);
 
-        foreach (var doctor in doctors)
-        {
-            doctor.ClinicId = clinic.Id;
+            if (doctors.Any())
+            {
+                foreach (var doctor in doctors)
+                    doctor.ClinicId = clinic.Id;
+            }
+
+            await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
+            await _unitOfWork.SaveAsync();
+            return clinic.Id;
         }
-
-        await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
-        await _unitOfWork.SaveAsync();
-        return clinic.Id;
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            throw;
+        }
     }
 
     public async Task DeleteClinic(Guid id)
@@ -56,7 +65,7 @@ public class ClinicsService : IClinicsService
 
     public async Task<Clinic> GetClinicAsync(Guid clinicId)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(clinicId)
+        var clinic = await _unitOfWork.ClinicRepository.GetClinicById(clinicId)
                 ?? throw new NullReferenceException(nameof(Clinic));
 
         return clinic;

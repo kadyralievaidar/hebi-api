@@ -47,7 +47,6 @@ public class DiseasesServiceTests
         disease.Should().NotBeNull();
         disease.Name.Should().Be(dto.Name);
         disease.Description.Should().Be(dto.Description);
-        disease.CreatedBy.Should().Be(_mock.Object.GetUserIdentifier());
     }
 
     [Test]

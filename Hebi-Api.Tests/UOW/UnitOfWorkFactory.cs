@@ -33,7 +33,9 @@ internal class UnitOfWorkFactory : IDisposable
         _context = new DbContextMock(options);
 
         ClearData();
-        AddData(new List<Clinic>() { new Clinic { Id = TestHelper.ClinicId } });
+        var clinic = new Clinic() { Id = TestHelper.ClinicId };
+        AddData(new List<Clinic>() { clinic });
+        DetachForReload(clinic);
     }
 
     /// <inheritdoc />
@@ -130,6 +132,16 @@ internal class UnitOfWorkFactory : IDisposable
     internal DbContextMock GetDbContext()
     {
         return _context;
+    }
+    public void DetachForReload(IBaseModel entity)
+    {
+        try
+        {
+            _context.Entry(entity).State = EntityState.Detached;
+        }
+        catch (Exception)
+        {
+        }
     }
 }
 

@@ -8,7 +8,7 @@ public class Appointment : IBaseModel
 
     /// <summary>
     ///     If it's new patient
-    /// </summary>
+    /// </summary>   
     public string? PatientShortName { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
@@ -24,7 +24,7 @@ public class Appointment : IBaseModel
     public Shift? Shift { get; set; }
     public Guid? PatientId { get; set; }
     public ApplicationUser? Patient { get; set; }
-    public Guid CreatedBy { get; set; }
+    public Guid? CreatedBy { get; set; }
     public ApplicationUser? Doctor { get; set; } = null!;
     public Guid? DoctorId { get; set; }
 

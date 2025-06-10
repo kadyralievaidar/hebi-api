@@ -28,7 +28,9 @@ public class ShiftsServiceTests
     public async Task CreateShift_Should_Create_And_Return_Id()
     {
         // Arrange
-        var appointment = new Appointment { Id = Guid.NewGuid(), ClinicId = TestHelper.ClinicId };
+        var shiftIddb = Guid.NewGuid();
+        _dbFactory.AddData(new List<Shift>() { new() { Id = shiftIddb, ClinicId = TestHelper.ClinicId } });
+        var appointment = new Appointment { Id = Guid.NewGuid(), ClinicId = TestHelper.ClinicId, ShiftId = shiftIddb };
         var doctor = new ApplicationUser { Id = Guid.NewGuid(), ClinicId = TestHelper.ClinicId };
 
         _dbFactory.AddData(new List<ApplicationUser>() { doctor});
@@ -39,10 +41,12 @@ public class ShiftsServiceTests
         {
             StartTime = DateTime.Now,
             EndTime = DateTime.Now.AddHours(4),
-            AppointmentIds = new List<Guid> { appointment.Id }
+            AppointmentIds = new List<Guid> { appointment.Id },
+            DoctorId = doctor.Id
         };
 
         _unitOfWorkSqlite.DetachForReload(appointment);
+        _unitOfWorkSqlite.DetachForReload(doctor);
         // Act
         var shiftId = await _service.CreateShift(dto);
         // Assert

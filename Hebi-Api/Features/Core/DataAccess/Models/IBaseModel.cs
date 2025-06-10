@@ -14,7 +14,7 @@ public interface IBaseModel
     /// <summary>
     ///     Created by
     /// </summary>
-    Guid CreatedBy { get; set; }
+    Guid? CreatedBy { get; set; }
     /// <summary>
     ///     Created at datetime
     /// </summary>

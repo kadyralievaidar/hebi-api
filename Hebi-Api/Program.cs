@@ -54,7 +54,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-await app.MigrateDatabaseAsync();
+//await app.MigrateDatabaseAsync();
 await app.SeedRoles();
 app.UseHttpsRedirection();
 

@@ -19,17 +19,39 @@ public class ShiftsService : IShiftsService
 
     public async Task<Guid> CreateShift(CreateShiftDto dto)
     {
-        var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
-        var shift = new Shift()
+        var transcation = _unitOfWork.BeginTransaction();
+        try
         {
-            StartTime = dto.StartTime,
-            EndTime = dto.EndTime,
-            DoctorId = dto.DoctorId ?? _contextAccessor.GetUserIdentifier(),
-            Appointments = appointments
-        };
-        await _unitOfWork.ShiftsRepository.InsertAsync(shift);
-        await _unitOfWork.SaveAsync();
-        return shift.Id;
+
+            var shift = new Shift()
+            {
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
+                DoctorId = dto.DoctorId ?? _contextAccessor.GetUserIdentifier()
+            };
+
+            if (dto.AppointmentIds.Any())
+            {
+                var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
+
+                foreach (var appointment in appointments)
+                    appointment.ShiftId = shift.Id;
+
+                await _unitOfWork.AppointmentRepository.UpdateRangeAsync(appointments);
+            }
+            await _unitOfWork.ShiftsRepository.InsertAsync(shift);
+            await _unitOfWork.SaveAsync();
+
+            await _unitOfWork.SaveAsync();
+            await transcation.CommitAsync();
+            return shift.Id;
+        }
+        catch (Exception e)
+        {
+            await transcation.RollbackAsync();
+            Console.WriteLine(e.Message);
+            throw;
+        }
     }
 
     public async Task DeleteShift(Guid id)
@@ -57,20 +79,35 @@ public class ShiftsService : IShiftsService
 
     public async Task<Shift> UpdateShift(Guid id, CreateShiftDto dto)
     {
-        var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id)
-            ?? throw new NullReferenceException(nameof(Shift));
-
-        var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
-
-        shift = new Shift() 
+        var transaction = _unitOfWork.BeginTransaction();
+        try
         {
-            StartTime = dto.StartTime,
-            EndTime = dto.EndTime,
-            DoctorId = dto.DoctorId,
-            Appointments = appointments
-        };
-        _unitOfWork.ShiftsRepository.Update(shift);
-        await _unitOfWork.SaveAsync();
-        return shift;
+            var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id)
+                ?? throw new NullReferenceException(nameof(Shift));
+
+            var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
+
+            shift.StartTime = dto.StartTime;
+            shift.EndTime = dto.EndTime;
+            shift.DoctorId = dto.DoctorId;
+
+            if (appointments != null && appointments.Any())
+            {
+                foreach (var appointment in appointments!)
+                    appointment.ShiftId = shift.Id;
+
+                await _unitOfWork.AppointmentRepository.UpdateRangeAsync(appointments);
+            }
+            _unitOfWork.ShiftsRepository.Update(shift);
+            await _unitOfWork.SaveAsync();
+            await transaction.CommitAsync();
+            return shift;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            Console.WriteLine(e.Message);
+            throw;
+        }
     }
 }

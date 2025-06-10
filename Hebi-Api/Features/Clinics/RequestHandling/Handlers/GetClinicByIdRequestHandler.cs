@@ -20,7 +20,7 @@ public class GetClinicByIdRequestHandler : IRequestHandler<GetClinicByIdRequest,
     {
         try
         {
-            var clinic = await _service.GetClinicAsync(request.Id);
+            var clinic = await _service.GetClinicAsync(request.ClinicId);
             return Response.Ok(request.Id, clinic);
         }
         catch (Exception e)
