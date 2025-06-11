@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   db:
-    container_name: 'postgres'
+    container_name: 'hebi-db'
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
