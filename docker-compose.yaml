@@ -2,16 +2,15 @@ version: '3.8'
 
 services:
   hebi-api:
-    image: ${DOCKER_REGISTRY-}hebi-api
-    build:
-      context: .
-      dockerfile: Hebi-Api/Dockerfile
+    image: ${CI_REGISTRY_IMAGE}:${SHORT_SHA}
     ports:
       - "8080:8080"  # Matches your exposed ports
       - "8081:8081"
+    networks:
+      - hebi-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=db;Database=hebiDb;User Id=postgres;Password=postgres;
+      - ConnectionStrings__DefaultConnection=Server=db;Database=hebiDb;User Id=postgres;Passwo¬ørd=postgres;
       - RUN_MIGRATIONS=true  # Set to false after first run if needed
     depends_on:
       db:
@@ -19,6 +18,7 @@ services:
     restart: unless-stopped
 
   db:
+    container_name: 'postgres'
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
@@ -29,6 +29,8 @@ services:
       - ./Hebi-Api/Migrations:/app/Migrations  # Only needed for development
     ports:
       - "5432:5432"
+    networks:
+      - hebi-api
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -38,3 +40,8 @@ services:
 
 volumes:
   postgres_data:
+    
+    
+networks:
+  hebi-api:
+    external: true
