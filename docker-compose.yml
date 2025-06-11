@@ -27,8 +27,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./Hebi-Api/Migrations:/app/Migrations  # Only needed for development
-    ports:
-      - "5432:5432"
     networks:
       - hebi-api
     healthcheck:
