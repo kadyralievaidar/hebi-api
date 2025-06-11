@@ -1,5 +1,6 @@
 ﻿using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Users.Dtos;
+using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore;
@@ -34,7 +35,8 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserDto model)
     {
-        return Ok(await _mediator.Send(new RegisterUserRequest(model)));
+        var result = await _mediator.Send(new RegisterUserRequest(model));
+        return result.AsAspNetCoreResult();
     }
 
     [HttpPost("~/connect/token"), Produces("application/json")]

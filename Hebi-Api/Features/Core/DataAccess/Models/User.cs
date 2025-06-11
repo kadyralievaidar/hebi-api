@@ -19,7 +19,7 @@ public class ApplicationUser : IdentityUser<Guid>, IBaseModel
 
     #region Foreign keys
     public Guid? LastModifiedBy { get; set; }
-    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public Guid? CreatedBy { get; set; } = Guid.Empty;
     public Guid? ClinicId { get; set; }
     public Clinic? Clinic { get; set; }
     #endregion

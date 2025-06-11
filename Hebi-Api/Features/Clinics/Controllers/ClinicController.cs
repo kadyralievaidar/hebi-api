@@ -22,27 +22,27 @@ public class ClinicController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] CreateClinicDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromQuery] Guid clinicId, [FromBody] CreateClinicDto dto, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new UpdateClinicRequest(appointmentId, dto), cancellationToken);
+        var result = await _mediator.Send(new UpdateClinicRequest(clinicId, dto), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpDelete("id")]
-    public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid clinicId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new DeleteClinicRequest(appointmentId),cancellationToken);
+        var result = await _mediator.Send(new DeleteClinicRequest(clinicId),cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
-    public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid clinicId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetClinicByIdRequest(appointmentId), cancellationToken);
+        var result = await _mediator.Send(new GetClinicByIdRequest(clinicId), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
-    [HttpGet]
+    [HttpPost("get")]
     public async Task<IActionResult> GetAppointments(GetPagedListOfClinicDto dto, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetPagedListClinicRequest(dto), cancellationToken);

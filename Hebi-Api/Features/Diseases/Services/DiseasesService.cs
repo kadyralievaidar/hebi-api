@@ -22,8 +22,7 @@ public class DiseasesService : IDiseaseService
         {
             Name = dto.Name,
             Description = dto.Description,
-            CreatedAt = DateTime.Now,
-            CreatedBy = _contextAccessor.GetUserIdentifier()
+            CreatedAt = DateTime.Now
         };
         await _unitOfWork.DiseaseRepository.InsertAsync(disease);
         await _unitOfWork.SaveAsync();

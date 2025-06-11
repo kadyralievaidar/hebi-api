@@ -11,7 +11,7 @@ public class Disease : IBaseModel
 
     #region Foreign keys
     public Guid? ClinicId { get; set; }
-    public Guid CreatedBy { get; set; }
+    public Guid? CreatedBy { get; set; }
     public Guid? LastModifiedBy { get; set; }
 
     #endregion

@@ -53,16 +53,7 @@ public class AppointmentServiceTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -70,8 +61,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
         var doctor = new ApplicationUser()
@@ -81,8 +71,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 
@@ -96,7 +85,7 @@ public class AppointmentServiceTests
                 Id = shiftId,
                 EndTime = DateTime.UtcNow.AddHours(4),
                 StartTime = DateTime.UtcNow.AddHours(-4),
-                ClinicId = _clinicId,
+                ClinicId = TestHelper.ClinicId,
                 DoctorId = doctorId
             } 
         });
@@ -131,16 +120,7 @@ public class AppointmentServiceTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -148,8 +128,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
         var doctor = new ApplicationUser()
@@ -159,8 +138,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 
@@ -210,16 +188,7 @@ public class AppointmentServiceTests
         var newDoctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -227,8 +196,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
 
@@ -240,8 +208,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
         var doctor = new ApplicationUser()
@@ -251,8 +218,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
         var newDoctor = new ApplicationUser()
@@ -262,8 +228,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName2",
             LastName = "DoctorLastName2",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR2"
         };
 
@@ -343,16 +308,7 @@ public class AppointmentServiceTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -360,8 +316,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
 
@@ -372,8 +327,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 
@@ -426,16 +380,7 @@ public class AppointmentServiceTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -443,8 +388,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
 
@@ -455,8 +399,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 
@@ -534,16 +477,7 @@ public class AppointmentServiceTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -551,8 +485,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
 
@@ -563,8 +496,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 
@@ -640,16 +572,7 @@ public class AppointmentServiceTests
         var patientId = Guid.NewGuid();
         var patientId2 = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
+
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -657,8 +580,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
 
@@ -669,8 +591,7 @@ public class AppointmentServiceTests
             FirstName = "Patient2",
             LastName = "PatientLastName2",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT2"
         };
 
@@ -681,8 +602,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 
@@ -752,16 +672,6 @@ public class AppointmentServiceTests
         var patientId = Guid.NewGuid();
         var patientId2 = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
-        var clinic = new Clinic()
-        {
-            Id = _clinicId,
-            Name = "TestClinic",
-            CreatedBy = Guid.NewGuid()
-        };
-        _dbFactory.AddData(new List<Clinic>()
-        {
-            clinic
-        });
         var patient = new ApplicationUser()
         {
             Id = patientId,
@@ -769,8 +679,7 @@ public class AppointmentServiceTests
             FirstName = "Patient",
             LastName = "PatientLastName",
             Email = "test@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT"
         };
 
@@ -781,8 +690,7 @@ public class AppointmentServiceTests
             FirstName = "Patient2",
             LastName = "PatientLastName2",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTPATIENT2"
         };
 
@@ -793,8 +701,7 @@ public class AppointmentServiceTests
             FirstName = "DoctorName",
             LastName = "DoctorLastName",
             Email = "test2@test.com",
-            ClinicId = _clinicId,
-            Clinic = clinic,
+            ClinicId = TestHelper.ClinicId,
             NormalizedUserName = "TESTDOCTOR"
         };
 

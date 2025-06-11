@@ -9,9 +9,9 @@ public class GetClinicByIdRequestValidator : AbstractValidator<GetClinicByIdRequ
     private readonly IUnitOfWork _unitOfWork;
     public GetClinicByIdRequestValidator(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
-        RuleFor(c => c.ClinicId).MustAsync(async(clinicId, cancellationToken) => 
-                    await _unitOfWork.ClinicRepository.ExistAsync(clinicId))
-                    .WithMessage("There is not clinic with this Id");
+        //_unitOfWork = unitOfWork;
+        //RuleFor(c => c.ClinicId).MustAsync(async(clinicId, cancellationToken) => 
+        //            await _unitOfWork.ClinicRepository.GetClinicById(clinicId) == null)
+        //            .WithMessage("There is not clinic with this Id");
     }
 }
