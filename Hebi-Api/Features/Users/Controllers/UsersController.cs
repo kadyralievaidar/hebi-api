@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hebi_Api.Features.Users.Controllers;
 
@@ -58,5 +59,13 @@ public class UsersController : ControllerBase
             {
                 RedirectUri = "/"
             });
+    }
+
+    [HttpPost("create-user")]
+    [Authorize]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
+    {
+        var result = await _mediator.Send(new CreateUserRequest(dto));
+        return result.AsAspNetCoreResult();
     }
 }

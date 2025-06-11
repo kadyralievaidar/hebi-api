@@ -22,6 +22,7 @@ public class ClinicsService : IClinicsService
     {
         try
         {
+            var test = _contextAccessor.HttpContext.User.Claims;
             var clinic = new Clinic()
             {
                 Name = dto.Name,
@@ -41,9 +42,9 @@ public class ClinicsService : IClinicsService
             {
                 foreach (var doctor in doctors)
                     doctor.ClinicId = clinic.Id;
+                await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
             }
 
-            await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
             await _unitOfWork.SaveAsync();
             return clinic.Id;
         }

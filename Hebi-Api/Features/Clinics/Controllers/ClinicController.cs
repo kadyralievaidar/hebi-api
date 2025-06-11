@@ -2,12 +2,14 @@
 using Hebi_Api.Features.Clinics.RequestHandling.Requests;
 using Hebi_Api.Features.Core.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.Clinics.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ClinicController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -42,8 +44,8 @@ public class ClinicController : ControllerBase
         return result.AsAspNetCoreResult();
     }
 
-    [HttpPost("get")]
-    public async Task<IActionResult> GetAppointments(GetPagedListOfClinicDto dto, CancellationToken cancellationToken)
+    [HttpGet("get")]
+    public async Task<IActionResult> GetAppointments([FromQuery] GetPagedListOfClinicDto dto, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetPagedListClinicRequest(dto), cancellationToken);
         return result.AsAspNetCoreResult();

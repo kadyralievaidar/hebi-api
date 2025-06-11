@@ -2,12 +2,14 @@
 using Hebi_Api.Features.Diseases.Dtos;
 using Hebi_Api.Features.Diseases.RequestHandling.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.Diseases.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DiseaseController : ControllerBase
 {
     private readonly IMediator _mediator;

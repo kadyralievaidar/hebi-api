@@ -4,7 +4,6 @@ public class Shift : BaseModel, IBaseModel
 {
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    public long StartTikc { get; set; }
 
     #region Foreign Keys
     public Guid? DoctorId { get; set; }
