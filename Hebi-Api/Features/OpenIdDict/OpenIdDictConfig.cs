@@ -20,6 +20,7 @@ public static class OpenIdDictConfig
             })
             .AddServer(options =>
             {
+
                 options.AllowAuthorizationCodeFlow()
                        .AllowPasswordFlow()
                        .RequireProofKeyForCodeExchange()
@@ -49,7 +50,9 @@ public static class OpenIdDictConfig
                        .EnableAuthorizationEndpointPassthrough()
                        .EnableTokenEndpointPassthrough()
                        .DisableTransportSecurityRequirement();
-
+                options.DisableAccessTokenEncryption(); // токен будет в виде обычного JWT
+                options.AddDevelopmentEncryptionCertificate(); // временные ключи
+                options.AddDevelopmentSigningCertificate();    // временные ключи
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                                      Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
 
@@ -60,7 +63,7 @@ public static class OpenIdDictConfig
             {
                 // Note: the validation handler uses OpenID Connect discovery
                 // to retrieve the issuer signing keys used to validate tokens.
-                options.SetIssuer("https://localhost:44319/");
+                options.SetIssuer("https://localhost:7270/");
 
                 // Register the encryption credentials. This sample uses a symmetric
                 // encryption key that is shared between the server and the API project.
@@ -81,6 +84,7 @@ public static class OpenIdDictConfig
         {
             options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
         });
+        builder.Services.AddAuthorization();
     }
     public static async Task SeedRoles(this WebApplication app)
     {

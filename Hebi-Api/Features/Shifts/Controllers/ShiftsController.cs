@@ -2,12 +2,14 @@
 using Hebi_Api.Features.Shifts.Dtos;
 using Hebi_Api.Features.Shifts.RequestHandling.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hebi_Api.Features.Shifts.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ShiftsController : ControllerBase
 {
     private readonly IMediator _mediator;

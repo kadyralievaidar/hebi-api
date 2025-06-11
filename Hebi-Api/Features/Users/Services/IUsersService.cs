@@ -19,5 +19,11 @@ public interface IUsersService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<TokenResponse> Token(OpenIddictRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Create a user with clinic Id
+    /// </summary>
+    /// <returns></returns>
+    Task CreateUser(CreateUserDto dto);
 }
 

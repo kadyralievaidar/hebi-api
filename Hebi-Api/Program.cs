@@ -1,4 +1,3 @@
-using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.OpenIdDict;
 using Microsoft.OpenApi.Models;
@@ -10,6 +9,17 @@ builder.Services.RegisterRequestHandlers();
 builder.Services.RegisterServices();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "front-end",
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173",
+                                              "http://hebi-client.gonget.net",
+                                              "https://localhost:5172",
+                                              "https://hebi-client-gonget.net");
+                      });
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "You api title", Version = "v1" });
@@ -47,7 +57,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.AddOpenIdDict();
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -56,7 +65,9 @@ if (app.Environment.IsDevelopment())
 }
 //await app.MigrateDatabaseAsync();
 await app.SeedRoles();
+app.UseCors("front-end");
 app.UseHttpsRedirection();
+app.UseStatusCodePages(); // <== this helps show 401/403/404 responses clearly
 
 app.UseAuthentication(); 
 app.UseAuthorization();

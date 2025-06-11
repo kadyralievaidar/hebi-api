@@ -186,7 +186,7 @@ namespace Hebi_Api.Migrations
 
                     b.HasIndex("UserCardId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("Hebi_Api.Features.Core.DataAccess.Models.Clinic", b =>
@@ -230,7 +230,7 @@ namespace Hebi_Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clinics");
+                    b.ToTable("Clinics", (string)null);
                 });
 
             modelBuilder.Entity("Hebi_Api.Features.Core.DataAccess.Models.Disease", b =>
@@ -265,7 +265,7 @@ namespace Hebi_Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Diseases");
+                    b.ToTable("Diseases", (string)null);
                 });
 
             modelBuilder.Entity("Hebi_Api.Features.Core.DataAccess.Models.Shift", b =>
@@ -305,7 +305,7 @@ namespace Hebi_Api.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Shifts");
+                    b.ToTable("Shifts", (string)null);
                 });
 
             modelBuilder.Entity("Hebi_Api.Features.Core.DataAccess.Models.UserCard", b =>
@@ -339,7 +339,7 @@ namespace Hebi_Api.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("PatientCard");
+                    b.ToTable("PatientCard", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
