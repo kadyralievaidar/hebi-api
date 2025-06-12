@@ -1,3 +1,4 @@
+using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.OpenIdDict;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -68,7 +69,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//await app.MigrateDatabaseAsync();
+await app.MigrateDatabaseAsync();
 await app.SeedRoles();
 app.UseCors("front-end");
 app.UseHttpsRedirection();
