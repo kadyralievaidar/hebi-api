@@ -26,8 +26,7 @@ public class DeleteDiseaseRequestHandler : IRequestHandler<DeleteDiseaseRequest,
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw;
+            return Response.InternalServerError(request.Id, e);
         }
-        throw new NotImplementedException();
     }
 }

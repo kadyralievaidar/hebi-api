@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
                           policy.WithOrigins("http://localhost:5173",
                                               "http://hebi-client.gonget.net",
                                               "https://localhost:5172",
-                                              "https://hebi-client-gonget.net");
+                                              "https://hebi-client.gonget.net");
                       });
 });
 builder.Services.AddSwaggerGen(c =>

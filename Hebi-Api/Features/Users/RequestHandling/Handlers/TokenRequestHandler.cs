@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Users.Dtos;
+﻿using Hebi_Api.Features.Core.Common.RequestHandling;
+using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.Services;
 using MediatR;
 
@@ -25,7 +26,7 @@ public class TokenRequestHandler : IRequestHandler<TokenRequest, TokenResponse>
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw;
+            return Response.InternalServerError(request.Id, e);
         }
     }
 }

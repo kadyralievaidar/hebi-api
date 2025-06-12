@@ -6,7 +6,7 @@ public class ErrorResponse : Response
         : base(id)
     {
         StatusCode = statusCode;
-        Exception = ex;
+        Exception = ex!;
         HasError = true;
     }
 

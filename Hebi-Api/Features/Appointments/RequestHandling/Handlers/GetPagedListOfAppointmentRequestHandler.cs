@@ -26,7 +26,7 @@ public class GetPagedListOfAppointmentRequestHandler : IRequestHandler<GetPagedL
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw;
+            return Response.InternalServerError(request.Id, e);
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Hebi_Api.Features.Core.Common.Enums;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
@@ -82,7 +84,22 @@ public static class OpenIdDictConfig
 
         builder.Services.AddAuthentication(options =>
         {
-            options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // <-- Add this
+            options.Authority = "https://localhost:7270"; // your issuer
+            options.Audience = "your_api_name"; // your API's name
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = "https://localhost:7270",
+                ValidateAudience = true,
+                ValidAudience = "your_api_name",
+                ValidateLifetime = true,
+                NameClaimType = "name",
+                RoleClaimType = "role"
+            };
         });
         builder.Services.AddAuthorization();
     }

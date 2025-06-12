@@ -47,7 +47,8 @@ public class UsersService : IUsersService
             UserName = dto.RegisterDto.UserName,
             Email = dto.RegisterDto.Email,
             PhoneNumber = dto.RegisterDto.PhoneNumber,
-            ClinicId = clinic.ClinicId
+            ClinicId = clinic!.ClinicId,
+            Clinic = clinic
         };
         var result = await _userManager.CreateAsync(newUser, dto.RegisterDto.Password);
         if (result.Succeeded)
@@ -120,7 +121,7 @@ public class UsersService : IUsersService
     }
     private async Task<ClaimsIdentity?> ConfigIdentity(OpenIddictRequest request, object? application)
     {
-        var user = await _userManager.FindByNameAsync(request.Username!);
+        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username!.ToUpperInvariant());
         var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
         identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application!));
         identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application!));
