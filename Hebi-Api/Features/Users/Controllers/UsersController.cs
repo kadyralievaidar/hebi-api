@@ -1,15 +1,15 @@
 ﻿using Hebi_Api.Features.Core.DataAccess.Models;
-using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Core.Extensions;
+using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
+using OpenIddict.Validation.AspNetCore;
 
 namespace Hebi_Api.Features.Users.Controllers;
 
@@ -17,20 +17,14 @@ namespace Hebi_Api.Features.Users.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IOpenIddictApplicationManager _applicationManager;
     private readonly IMediator _mediator;
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly UserManager<ApplicationUser> _userManager;
 
     public UsersController(IMediator mediator,
-        SignInManager<ApplicationUser> signInManager,
-        IOpenIddictApplicationManager applicationManager,
-        UserManager<ApplicationUser> userManager)
+        SignInManager<ApplicationUser> signInManager)
     {
         _mediator = mediator;
         _signInManager = signInManager;
-        _applicationManager = applicationManager;
-        _userManager = userManager;
     }
 
     [HttpPost("register")]
@@ -48,7 +42,7 @@ public class UsersController : ControllerBase
         return SignIn(result.Principal, result.AuthScheme);
     }
 
-    [HttpPost("~/connect/logout"), ValidateAntiForgeryToken]
+    [HttpPost("~/connect/logout")]
     public async Task<IActionResult> LogoutPost()
     {
         await _signInManager.SignOutAsync();
@@ -62,7 +56,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("create-user")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
     {
         var result = await _mediator.Send(new CreateUserRequest(dto));

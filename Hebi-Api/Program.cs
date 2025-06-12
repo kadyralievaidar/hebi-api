@@ -1,6 +1,9 @@
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.OpenIdDict;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenIddict.Validation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +58,8 @@ builder.Services.AddSwaggerGen(c =>
 }
 );
 builder.AddOpenIdDict();
+builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -67,7 +72,6 @@ if (app.Environment.IsDevelopment())
 await app.SeedRoles();
 app.UseCors("front-end");
 app.UseHttpsRedirection();
-app.UseStatusCodePages(); // <== this helps show 401/403/404 responses clearly
 
 app.UseAuthentication(); 
 app.UseAuthorization();

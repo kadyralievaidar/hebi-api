@@ -1,11 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Hebi_Api.Features.Core.Common.Enums;
+﻿using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
-using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Hebi_Api.Features.OpenIdDict;
@@ -47,61 +44,23 @@ public static class OpenIdDictConfig
                       Scopes.Roles,
                       Scopes.OfflineAccess,
                       "api");
-
                 options.UseAspNetCore()
                        .EnableAuthorizationEndpointPassthrough()
                        .EnableTokenEndpointPassthrough()
                        .DisableTransportSecurityRequirement();
+
                 options.DisableAccessTokenEncryption(); // токен будет в виде обычного JWT
-                options.AddDevelopmentEncryptionCertificate(); // временные ключи
-                options.AddDevelopmentSigningCertificate();    // временные ключи
+
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                                      Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
-
-                // Register the signing credentials.
-                options.AddDevelopmentSigningCertificate();
-            })
-            .AddValidation(options =>
+            }).AddValidation(options =>
             {
-                // Note: the validation handler uses OpenID Connect discovery
-                // to retrieve the issuer signing keys used to validate tokens.
                 options.SetIssuer("https://localhost:7270/");
-
-                // Register the encryption credentials. This sample uses a symmetric
-                // encryption key that is shared between the server and the API project.
-                //
-                // Note: in a real world application, this encryption key should be
-                // stored in a safe place (e.g in Azure KeyVault, stored as a secret).
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                     Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
-
-                // Register the System.Net.Http integration.
-                options.UseSystemNetHttp();
-                options.UseLocalServer();
                 options.UseAspNetCore();
+                options.UseSystemNetHttp();
             });
-        builder.Logging.AddFilter("OpenIddict", LogLevel.Debug);
-
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // <-- Add this
-            options.Authority = "https://localhost:7270"; // your issuer
-            options.Audience = "your_api_name"; // your API's name
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = "https://localhost:7270",
-                ValidateAudience = true,
-                ValidAudience = "your_api_name",
-                ValidateLifetime = true,
-                NameClaimType = "name",
-                RoleClaimType = "role"
-            };
-        });
-        builder.Services.AddAuthorization();
     }
     public static async Task SeedRoles(this WebApplication app)
     {

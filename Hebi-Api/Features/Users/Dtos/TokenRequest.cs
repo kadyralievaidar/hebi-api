@@ -1,5 +1,4 @@
-﻿using Hebi_Api.Features.Core.Common.RequestHandling;
-using MediatR;
+﻿using MediatR;
 using OpenIddict.Abstractions;
 
 namespace Hebi_Api.Features.Users.Dtos;

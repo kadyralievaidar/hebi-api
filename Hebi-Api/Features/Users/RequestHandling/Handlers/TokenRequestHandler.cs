@@ -26,7 +26,7 @@ public class TokenRequestHandler : IRequestHandler<TokenRequest, TokenResponse>
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            return Response.InternalServerError(request.Id, e);
+            throw;
         }
     }
 }

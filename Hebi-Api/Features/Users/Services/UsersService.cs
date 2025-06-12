@@ -113,7 +113,7 @@ public class UsersService : IUsersService
             var response = new TokenResponse()
             {
                 Principal = principal!,
-                AuthScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                AuthScheme = "Bearer"
             };
             return response;
         }
@@ -131,7 +131,7 @@ public class UsersService : IUsersService
         identity.SetDestinations(static claim => claim.Type switch
         {
             Claims.Name when claim.Subject!.HasScope(Scopes.Profile)
-                => [Destinations.AccessToken, Destinations.IdentityToken],
+                => [Destinations.AccessToken],
             ClaimTypes.NameIdentifier => new[] { Destinations.AccessToken},
 
             Consts.ClinicIdClaim => new[] { Destinations.AccessToken },
