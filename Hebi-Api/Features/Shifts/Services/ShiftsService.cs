@@ -30,6 +30,9 @@ public class ShiftsService : IShiftsService
                 DoctorId = dto.DoctorId ?? _contextAccessor.GetUserIdentifier()
             };
 
+            await _unitOfWork.ShiftsRepository.InsertAsync(shift);
+            await _unitOfWork.SaveAsync();
+
             if (dto.AppointmentIds.Any())
             {
                 var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
@@ -38,11 +41,9 @@ public class ShiftsService : IShiftsService
                     appointment.ShiftId = shift.Id;
 
                 await _unitOfWork.AppointmentRepository.UpdateRangeAsync(appointments);
+                await _unitOfWork.SaveAsync();
             }
-            await _unitOfWork.ShiftsRepository.InsertAsync(shift);
-            await _unitOfWork.SaveAsync();
 
-            await _unitOfWork.SaveAsync();
             await transcation.CommitAsync();
             return shift.Id;
         }
