@@ -4,7 +4,7 @@ using Hebi_Api.Features.Users.Dtos;
 using NUnit.Framework;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
 
-namespace Hebi_Api.Tests.Appoitments.Validators;
+namespace Hebi_Api.Tests.Users.Validators;
 
 [TestFixture]
 public class RegisterUserRequestValidatorTests
