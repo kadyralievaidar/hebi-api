@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Users\RequestHandling\Validators\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
