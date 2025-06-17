@@ -75,7 +75,7 @@ public class AppointmentsService : IAppointmentsService
 
     public async Task<List<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
     {
-        var query = _unitOfWork.AppointmentRepository.AsQueryable();
+        var query = _unitOfWork.AppointmentRepository.AsQueryable().AsNoTracking();
 
         if (dto.ShiftId != null)
         {

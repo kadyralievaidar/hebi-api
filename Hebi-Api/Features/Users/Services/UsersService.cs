@@ -55,7 +55,7 @@ public class UsersService : IUsersService
         {
             await _signInManager.CreateUserPrincipalAsync(newUser);
             await _signInManager.SignInAsync(newUser, true);
-            await _userManager.AddToRoleAsync(newUser, UserRoles.Admin.ToString());
+            await _userManager.AddToRoleAsync(newUser, UserRoles.Doctor.ToString());
         }
     }
 
@@ -78,7 +78,7 @@ public class UsersService : IUsersService
         {
             await _signInManager.CreateUserPrincipalAsync(newUser);
             await _signInManager.SignInAsync(newUser, true);
-            await _userManager.AddToRoleAsync(newUser, UserRoles.SuperAdmin.ToString());
+            await _userManager.AddToRoleAsync(newUser, UserRoles.Admin.ToString());
         }
     }
 
@@ -122,11 +122,15 @@ public class UsersService : IUsersService
     private async Task<ClaimsIdentity?> ConfigIdentity(OpenIddictRequest request, object? application)
     {
         var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username!.ToUpperInvariant());
+        var roles = await _userManager.GetRolesAsync(user);
         var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
+
         identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application!));
         identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application!));
         identity.SetClaim(ClaimTypes.NameIdentifier, user!.Id.ToString());
         identity.SetClaim(Consts.ClinicIdClaim, user.ClinicId.ToString());
+        identity.SetClaim(Consts.Role, roles.First());
+
         identity.SetScopes(request.GetScopes());
         identity.SetDestinations(static claim => claim.Type switch
         {

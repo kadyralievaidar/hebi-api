@@ -5,6 +5,8 @@ using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Validators;
 using Hebi_Api.Tests.UOW;
+using Microsoft.AspNetCore.Identity;
+using Moq;
 using NUnit.Framework;
 using OpenIddict.Abstractions;
 
@@ -16,14 +18,16 @@ public class TokenRequestValidatorTests
     private UnitOfWorkFactory _dbFactory;
     private IUnitOfWork _unitOfWorkSqlite;
     private TokenRequestValidator _validator;
+    private Mock<UserManager<ApplicationUser>> _userManager;
 
     [SetUp]
     public void Setup()
     {
         _dbFactory = new UnitOfWorkFactory();
         _unitOfWorkSqlite = _dbFactory.CreateUnitOfWork(true);
+        _userManager = new Mock<UserManager<ApplicationUser>>();
 
-        _validator = new TokenRequestValidator(_unitOfWorkSqlite);
+        _validator = new TokenRequestValidator(_unitOfWorkSqlite, _userManager.Object);
     }
     [Test]
     public async Task Should_Have_Error_When_Username_Is_Null()

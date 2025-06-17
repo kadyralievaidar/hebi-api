@@ -1,8 +1,6 @@
 using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.OpenIdDict;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 
