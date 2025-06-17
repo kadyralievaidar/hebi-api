@@ -3,7 +3,6 @@ using Hebi_Api.Features.Core.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
-using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Hebi_Api.Features.OpenIdDict;
@@ -45,46 +44,23 @@ public static class OpenIdDictConfig
                       Scopes.Roles,
                       Scopes.OfflineAccess,
                       "api");
-
                 options.UseAspNetCore()
                        .EnableAuthorizationEndpointPassthrough()
                        .EnableTokenEndpointPassthrough()
                        .DisableTransportSecurityRequirement();
+
                 options.DisableAccessTokenEncryption(); // токен будет в виде обычного JWT
-                options.AddDevelopmentEncryptionCertificate(); // временные ключи
-                options.AddDevelopmentSigningCertificate();    // временные ключи
+
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                                      Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
-
-                // Register the signing credentials.
-                options.AddDevelopmentSigningCertificate();
-            })
-            .AddValidation(options =>
+            }).AddValidation(options =>
             {
-                // Note: the validation handler uses OpenID Connect discovery
-                // to retrieve the issuer signing keys used to validate tokens.
                 options.SetIssuer("https://localhost:7270/");
-
-                // Register the encryption credentials. This sample uses a symmetric
-                // encryption key that is shared between the server and the API project.
-                //
-                // Note: in a real world application, this encryption key should be
-                // stored in a safe place (e.g in Azure KeyVault, stored as a secret).
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                     Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
-
-                // Register the System.Net.Http integration.
-                options.UseSystemNetHttp();
-                options.UseLocalServer();
                 options.UseAspNetCore();
+                options.UseSystemNetHttp();
             });
-        builder.Logging.AddFilter("OpenIddict", LogLevel.Debug);
-
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-        });
-        builder.Services.AddAuthorization();
     }
     public static async Task SeedRoles(this WebApplication app)
     {

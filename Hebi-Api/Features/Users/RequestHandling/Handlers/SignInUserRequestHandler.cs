@@ -26,7 +26,7 @@ public class SignInUserRequestHandler : IRequestHandler<RegisterUserRequest, Res
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw;
+            return Response.InternalServerError(request.Id, e);
         }
     }
 }

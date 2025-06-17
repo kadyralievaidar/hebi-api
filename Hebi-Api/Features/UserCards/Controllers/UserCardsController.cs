@@ -4,12 +4,13 @@ using Hebi_Api.Features.Shifts.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Validation.AspNetCore;
 
 namespace Hebi_Api.Features.UserCards.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
 public class UserCardsController : ControllerBase
 {
     private readonly IMediator _mediator;

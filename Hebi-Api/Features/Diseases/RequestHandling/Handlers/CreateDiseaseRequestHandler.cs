@@ -26,7 +26,7 @@ public class CreateDiseaseRequestHandler : IRequestHandler<CreateDiseaseRequest,
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw;
+            return Response.InternalServerError(request.Id, e);
         }
     }
 }

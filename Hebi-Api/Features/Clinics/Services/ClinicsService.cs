@@ -22,7 +22,6 @@ public class ClinicsService : IClinicsService
     {
         try
         {
-            var test = _contextAccessor.HttpContext.User.Claims;
             var clinic = new Clinic()
             {
                 Name = dto.Name,

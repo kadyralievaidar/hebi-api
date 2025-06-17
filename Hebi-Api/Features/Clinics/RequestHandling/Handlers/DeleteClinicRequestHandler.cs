@@ -26,8 +26,7 @@ public class DeleteClinicRequestHandler : IRequestHandler<DeleteClinicRequest, R
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            throw;
+            return Response.InternalServerError(request.Id, e);
         }
-        throw new NotImplementedException();
     }
 }
