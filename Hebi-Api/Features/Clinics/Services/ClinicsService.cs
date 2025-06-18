@@ -34,6 +34,7 @@ public class ClinicsService : IClinicsService
             };
             _unitOfWork.ClinicRepository.Insert(clinic);
 
+            dto.DoctorIds.ToList().Add(_contextAccessor.GetUserIdentifier());
             var doctors = await _unitOfWork.UsersRepository
                             .WhereAsync(user => dto.DoctorIds.Contains(user.Id) && !user.IsDeleted);
 

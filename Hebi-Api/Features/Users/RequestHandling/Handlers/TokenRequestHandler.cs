@@ -1,5 +1,4 @@
-﻿using Hebi_Api.Features.Core.Common.RequestHandling;
-using Hebi_Api.Features.Users.Dtos;
+﻿using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.Services;
 using MediatR;
 

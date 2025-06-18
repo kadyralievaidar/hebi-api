@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using FluentValidation;
+using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
@@ -35,10 +36,20 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("~/connect/token"), Produces("application/json")]
-    public async Task<IActionResult> Exchange()
+    public async Task<IActionResult> Exchange([FromServices] IValidator<TokenRequest> validator)
     {
-        var request = HttpContext.GetOpenIddictServerRequest();
-        var result = await _mediator.Send(new TokenRequest(request));
+        var openIdRequest = HttpContext.GetOpenIddictServerRequest();
+        var request = new TokenRequest(openIdRequest);
+
+        var validationResult = await validator.ValidateAsync(request);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new { Errors = errors });
+        }
+
+        var result = await _mediator.Send(request);
         return SignIn(result.Principal, result.AuthScheme);
     }
 

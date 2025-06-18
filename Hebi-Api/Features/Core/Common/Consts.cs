@@ -3,4 +3,5 @@
 public static class Consts
 {
     public const string ClinicIdClaim = "ClinicId";
+    public const string Role = "Role";
 }

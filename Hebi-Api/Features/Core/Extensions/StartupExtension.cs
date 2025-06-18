@@ -5,6 +5,8 @@ using Hebi_Api.Features.Core.Common.Validators;
 using Hebi_Api.Features.Diseases.Services;
 using Hebi_Api.Features.Shifts.Services;
 using Hebi_Api.Features.UserCards.Services;
+using Hebi_Api.Features.Users.Dtos;
+using Hebi_Api.Features.Users.RequestHandling.Validators;
 using Hebi_Api.Features.Users.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,5 +40,6 @@ public static class StartupExtensions
         services.AddScoped<IShiftsService, ShiftsService>();
         services.AddScoped<IUserCardsService, UserCardsService>();
         services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
     }
 }
