@@ -27,7 +27,7 @@ public static class OpenIdDictConfig
 
                 options.SetAuthorizationEndpointUris("/connect/authorize")
                        .SetTokenEndpointUris("/connect/token")
-                       .SetConfigurationEndpointUris("/.well-known/openid-configuration"); ;
+                       .SetConfigurationEndpointUris("/.well-known/openid-configuration");
 
                 options.AddDevelopmentEncryptionCertificate()
                        .AddDevelopmentSigningCertificate();
