@@ -26,7 +26,8 @@ public static class OpenIdDictConfig
                        .AllowRefreshTokenFlow();
 
                 options.SetAuthorizationEndpointUris("/connect/authorize")
-                       .SetTokenEndpointUris("/connect/token");
+                       .SetTokenEndpointUris("/connect/token")
+                       .SetConfigurationEndpointUris("/.well-known/openid-configuration"); ;
 
                 options.AddDevelopmentEncryptionCertificate()
                        .AddDevelopmentSigningCertificate();
@@ -55,7 +56,7 @@ public static class OpenIdDictConfig
                                      Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
             }).AddValidation(options =>
             {
-                options.SetIssuer("https://localhost:7270/");
+                options.SetIssuer(builder.Configuration.GetSection("OpenIdDict").GetValue<string>("Issuer"));
                 options.AddEncryptionKey(new SymmetricSecurityKey(
                     Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
                 options.UseAspNetCore();

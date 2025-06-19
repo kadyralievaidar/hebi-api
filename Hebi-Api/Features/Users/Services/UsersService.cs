@@ -127,8 +127,8 @@ public class UsersService : IUsersService
 
         identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application!));
         identity.SetClaim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application!));
-        identity.SetClaim(ClaimTypes.NameIdentifier, user!.Id.ToString());
-        identity.SetClaim(Consts.ClinicIdClaim, user.ClinicId.ToString());
+        identity.SetClaim(Consts.UserId, user!.Id.ToString());
+        identity.SetClaim(Consts.ClinicIdClaim, user.ClinicId?.ToString());
         identity.SetClaim(Consts.Role, roles.First());
 
         identity.SetScopes(request.GetScopes());

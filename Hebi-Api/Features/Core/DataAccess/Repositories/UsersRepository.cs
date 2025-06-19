@@ -23,4 +23,14 @@ public class UsersRepository : GenericRepository<ApplicationUser>, IUsersReposit
         var test = await _context.Users.ToListAsync();
         return await _context.Users.Include(x => x.Clinic).FirstOrDefaultAsync(filter!);
     }
+
+    /// <summary>
+    ///     Return an entity. Similar to LINQ FirstOrDefault
+    /// </summary>
+    /// <param name="filter">Filter for selection condition</param>
+    /// <returns>Entity</returns>
+    public override async Task<bool> AnyAsync(Expression<Func<ApplicationUser, bool>> predicate)
+    {
+        return await _context.Users.AnyAsync(predicate);
+    }
 }
