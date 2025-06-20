@@ -1,0 +1,66 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - test
+      
+env:
+  REGISTRY: ghcr.io
+  SERVER_HOST: ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
+  DIRECTORY: /opt/test/hebi-api
+  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build, Push and Deploy
+    permissions: write-all
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Prepare image name and tag
+        run: |
+          echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
+          CI_REGISTRY_IMAGE=${{ env.REGISTRY }}/${{ github.repository }}/test
+          echo "CI_REGISTRY_IMAGE=$CI_REGISTRY_IMAGE" >> $GITHUB_ENV
+
+      - name: Prepare environment variables
+        run: |
+          rm -f .env
+          echo SHORT_SHA=$SHORT_SHA >> .env
+          echo CI_REGISTRY_IMAGE=$CI_REGISTRY_IMAGE >> .env
+          echo $SECRETS_CONTEXT | jq -r 'to_entries[] | "\(.key)=\(.value)"' | grep TEST_ | awk -F "TEST_" '{print $2}' >> .env
+        env:
+          SECRETS_CONTEXT: ${{ toJSON(secrets) }}
+
+
+      - name: Build & push image to ghcr
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+          docker pull $CI_REGISTRY_IMAGE:cache || true
+          docker build --file ./Hebi-Api/Dockerfile --cache-from $CI_REGISTRY_IMAGE:cache \
+            -t $CI_REGISTRY_IMAGE:$SHORT_SHA \
+            -t $CI_REGISTRY_IMAGE:cache .
+          docker push $CI_REGISTRY_IMAGE:$SHORT_SHA
+          docker push $CI_REGISTRY_IMAGE:cache
+
+
+      - name: Copy environment variables to remote server
+        run: |
+          which ssh-agent || ( apk update && apk add openssh-client )
+          mkdir -p ~/.ssh && echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          rsync -zavP docker-compose.yml .env ${{ env.SERVER_HOST }}:${{ env.DIRECTORY }}
+
+      - name: Deploy on remote server
+        run: |
+          ssh -T ${{ env.SERVER_HOST }} "echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin"
+          ssh -T ${{ env.SERVER_HOST }} "docker pull $CI_REGISTRY_IMAGE:$SHORT_SHA"
+          ssh -T ${{ env.SERVER_HOST }} "cd ${{ env.DIRECTORY }} && docker compose -p hebi-api up -d"
+          ssh -T ${{ env.SERVER_HOST }} "docker image prune --filter="label=maintainer=Hebi-Api" -a -f"

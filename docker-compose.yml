@@ -2,23 +2,24 @@ version: '3.8'
 
 services:
   hebi-api:
-    image: ${DOCKER_REGISTRY-}hebi-api
-    build:
-      context: .
-      dockerfile: Hebi-Api/Dockerfile
+    container_name: "hebi-api"
+    image: ${CI_REGISTRY_IMAGE}:${SHORT_SHA}
     ports:
       - "8080:8080"  # Matches your exposed ports
       - "8081:8081"
+    networks:
+      - hebi-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=db;Database=hebiDb;User Id=postgres;Password=postgres;
-      - OpenIdDict__Issuer=http://localhost:8080
+      - ConnectionStrings__DefaultConnection=Server=db;Database=hebiDb;User ID=postgres;Host=hebi-db;Password=postgres;
+      - OpenIdDict__Issuer=http://hebi-api:8080
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
 
   db:
+    container_name: 'hebi-db'
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
@@ -26,8 +27,8 @@ services:
       POSTGRES_DB: hebiDb
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    networks:
+      - hebi-api
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -37,3 +38,8 @@ services:
 
 volumes:
   postgres_data:
+    
+    
+networks:
+  hebi-api:
+    external: true
