@@ -102,7 +102,7 @@ internal class UnitOfWorkFactory : IDisposable
             .Returns(new List<Claim>
             {
                     new(Consts.ClinicIdClaim, TestHelper.ClinicId.ToString()),
-                    new(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
+                    new(Consts.UserId, Guid.NewGuid().ToString())
             });
 
         if (includeClientGroupToContext)

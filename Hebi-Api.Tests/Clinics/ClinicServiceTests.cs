@@ -1,12 +1,14 @@
 using FluentAssertions;
 using Hebi_Api.Features.Clinics.Dtos;
 using Hebi_Api.Features.Clinics.Services;
+using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Tests.UOW;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
 using System.ComponentModel;
 
@@ -21,7 +23,6 @@ public class ClinicServiceTests
     private HebiDbContext _dbContext;
 
     private UserManager<ApplicationUser> _userManager;
-
 
     [SetUp]
     public void Setup()
@@ -42,8 +43,18 @@ public class ClinicServiceTests
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        _dbFactory.AddData(new List<ApplicationUser>() {  new ()
+        {
+            Id = TestHelper.UserId,
+            UserName = "TestPatient",
+            FirstName = "Patient",
+            LastName = "PatientLastName",
+            Email = "test@test.com",
+            ClinicId = TestHelper.ClinicId,
+            NormalizedUserName = "TESTPATIENT"
+        } });
 
-        _clinicsService = new ClinicsService(_unitOfWorkSqlite, TestHelper.CreateHttpContext().Object);
+        _clinicsService = new ClinicsService(_unitOfWorkSqlite, TestHelper.CreateHttpContext().Object, _userManager);
     }
 
     [Test]
@@ -128,6 +139,53 @@ public class ClinicServiceTests
     }
 
     [Test]
+    public async Task CreateClinic_Should_Add_Creator_If_Not_SuperAdmin()
+    {
+        // Arrange
+        var admin = new ApplicationUser
+        {
+            Id = Guid.NewGuid(),
+            UserName = "Admin",
+            NormalizedUserName = "ADMIN",
+            Email = "admin@hebi.com"
+        };
+
+        await _userManager.CreateAsync(admin);
+
+        // Подменяем IHttpContextAccessor, чтобы вернул ID админа
+        var mockContextAccessor = TestHelper.CreateHttpContext(admin.Id);
+
+        // Подменяем UserManager: IsInRoleAsync ? false (не супер-админ)
+        var mockUserManager = new Mock<UserManager<ApplicationUser>>(
+            Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null
+        );
+        mockUserManager.Setup(m => m.IsInRoleAsync(It.IsAny<ApplicationUser>(), UserRoles.SuperAdmin.ToString()))
+                       .ReturnsAsync(false);
+
+        // Создаём новый инстанс ClinicsService с моками
+        var service = new ClinicsService(_unitOfWorkSqlite, mockContextAccessor.Object, mockUserManager.Object);
+
+        var dto = new CreateClinicDto
+        {
+            Name = "Creator Clinic",
+            Email = "creator@clinic.com",
+            PhoneNumber = "000111222",
+            DoctorIds = new List<Guid>() // пусто, админ сам себя должен добавить
+        };
+
+        // Act
+        var createdClinicId = await service.CreateClinicAsync(dto);
+
+        // Assert
+        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(createdClinicId);
+        clinic.Should().NotBeNull();
+        clinic.Name.Should().Be(dto.Name);
+
+        var creator = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == admin.Id);
+        creator.ClinicId.Should().Be(createdClinicId);
+    }
+
+    [Test]
     public async Task UpdateClinic_WithDoctors_ShouldWorkProper()
     {
         //Assert
@@ -158,9 +216,19 @@ public class ClinicServiceTests
             Email = "test@test.com",
             NormalizedUserName = "Test",
         };
+        var admin = new ApplicationUser()
+        {
+            UserName = "Test",
+            Id = Guid.NewGuid(),
+            FirstName = "Test",
+            LastName = "Test",
+            Email = "test@test.com",
+            NormalizedUserName = "Test"
+        };
         await _userManager.CreateAsync(doctor);
         await _userManager.CreateAsync(doctor2);
         await _userManager.CreateAsync(doctor3);
+        await _userManager.CreateAsync(admin);
 
         var clinicId = Guid.NewGuid();
         _dbFactory.AddData(new List<Clinic>()

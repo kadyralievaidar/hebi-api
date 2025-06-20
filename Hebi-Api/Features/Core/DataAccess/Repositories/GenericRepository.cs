@@ -1,5 +1,4 @@
-﻿using Hebi_Api.Features.Core.Common;
-using Hebi_Api.Features.Core.Common.Interfaces;
+﻿using Hebi_Api.Features.Core.Common.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
@@ -78,7 +77,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <returns>Entities</returns>
     public virtual IEnumerable<TEntity> Where(Expression<Func<TEntity, bool>>? filter = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = Queryable;
         query = Filter(query, filter);
         return query.ToList();
     }
@@ -90,7 +89,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <returns>Entities</returns>
     public virtual async Task<IEnumerable<TEntity>> WhereAsync(Expression<Func<TEntity, bool>>? filter = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = Queryable;
         query = Filter(query, filter);
         return await query.ToListAsync();
     }
@@ -102,7 +101,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <returns>Entities</returns>
     public virtual IQueryable<TEntity> WhereLazy(Expression<Func<TEntity, bool>>? filter = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = Queryable;
         query = Filter(query, filter);
         return query;
     }
@@ -119,7 +118,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <returns>Entity</returns>
     public virtual TEntity? FirstOrDefault(Expression<Func<TEntity, bool>>? filter = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = Queryable;
         query = Filter(query, filter);
         return query.FirstOrDefault();
     }
@@ -131,7 +130,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <returns>Entity</returns>
     public virtual async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>>? filter = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = Queryable;
         query = Filter(query, filter);
         return await query.FirstOrDefaultAsync();
     }

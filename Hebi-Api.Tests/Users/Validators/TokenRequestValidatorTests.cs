@@ -1,11 +1,13 @@
 using FluentValidation.TestHelper;
 using Hebi_Api.Features.Appointments.RequestHandling.Validators;
+using Hebi_Api.Features.Core.DataAccess;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Validators;
 using Hebi_Api.Tests.UOW;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 using OpenIddict.Abstractions;
@@ -18,16 +20,29 @@ public class TokenRequestValidatorTests
     private UnitOfWorkFactory _dbFactory;
     private IUnitOfWork _unitOfWorkSqlite;
     private TokenRequestValidator _validator;
-    private Mock<UserManager<ApplicationUser>> _userManager;
+    private UserManager<ApplicationUser> _userManager;
+    private HebiDbContext _dbContext;
 
     [SetUp]
     public void Setup()
     {
         _dbFactory = new UnitOfWorkFactory();
+        _dbContext = _dbFactory.GetDbContext();
         _unitOfWorkSqlite = _dbFactory.CreateUnitOfWork(true);
-        _userManager = new Mock<UserManager<ApplicationUser>>();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        serviceCollection.AddScoped(typeof(RoleManager<>));
+        serviceCollection.AddScoped(_ => _dbContext);
+        serviceCollection.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+                        .AddUserManager<UserManager<ApplicationUser>>()
+                        .AddRoleManager<RoleManager<IdentityRole<Guid>>>()
+                         .AddEntityFrameworkStores<HebiDbContext>()
+                        .AddDefaultTokenProviders();
 
-        _validator = new TokenRequestValidator(_unitOfWorkSqlite, _userManager.Object);
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        _validator = new TokenRequestValidator(_unitOfWorkSqlite, _userManager);
     }
     [Test]
     public async Task Should_Have_Error_When_Username_Is_Null()
@@ -46,13 +61,10 @@ public class TokenRequestValidatorTests
     [Test]
     public async Task Should_Have_Error_When_Username_Is_Empty()
     {
-        // Arrange
-        var request = new TokenRequest(new OpenIddictRequest() { Username = ""});
+        var request = new TokenRequest(new OpenIddictRequest { Username = "", Password = "whatever" });
 
-        // Act
         var result = await _validator.TestValidateAsync(request);
 
-        // Assert
         result.ShouldHaveValidationErrorFor(x => x.Request.Username)
               .WithErrorMessage("User name can't be null");
     }
@@ -94,6 +106,6 @@ public class TokenRequestValidatorTests
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.Request.Username)
-              .WithErrorMessage("Incorrect user data");
+              .WithErrorMessage("User not found");
     }
 }
