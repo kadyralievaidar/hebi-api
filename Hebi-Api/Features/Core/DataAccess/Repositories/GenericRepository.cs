@@ -303,7 +303,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         return await Queryable.AnyAsync(x => x.Id == id);
     }
 
-    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await Queryable.AnyAsync(predicate);
     }
