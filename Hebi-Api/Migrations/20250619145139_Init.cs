@@ -41,7 +41,7 @@ namespace Hebi_Api.Migrations
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     ClinicId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false)
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -59,7 +59,7 @@ namespace Hebi_Api.Migrations
                     LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     ClinicId = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -139,15 +139,15 @@ namespace Hebi_Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Patronymic = table.Column<string>(type: "text", nullable: true),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
                     BirthDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     ClinicId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -293,7 +293,7 @@ namespace Hebi_Api.Migrations
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     ClinicId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     PatientId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -316,7 +316,7 @@ namespace Hebi_Api.Migrations
                     EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DoctorId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -370,8 +370,8 @@ namespace Hebi_Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     FilePath = table.Column<string>(type: "text", nullable: true),
                     PatientShortName = table.Column<string>(type: "text", nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -383,7 +383,7 @@ namespace Hebi_Api.Migrations
                     ClinicId = table.Column<Guid>(type: "uuid", nullable: true),
                     ShiftId = table.Column<Guid>(type: "uuid", nullable: true),
                     PatientId = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     DoctorId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserCardId = table.Column<Guid>(type: "uuid", nullable: true)
                 },

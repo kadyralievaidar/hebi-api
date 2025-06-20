@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Hebi_Api.Features.Core.DataAccess.UOW;
-using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
 
 namespace Hebi_Api.Features.Users.RequestHandling.Validators
