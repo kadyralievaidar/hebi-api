@@ -8,11 +8,11 @@ public static class TestHelper
 {
     public static Guid ClinicId = Guid.NewGuid();
     public static Guid UserId = Guid.NewGuid();
-    public static Mock<IHttpContextAccessor> CreateHttpContext()
+    public static Mock<IHttpContextAccessor> CreateHttpContext(Guid? adminId = null)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, UserId.ToString()),
+            new Claim(Consts.UserId, adminId == null ? UserId.ToString() : adminId.ToString()),
             new(Consts.ClinicIdClaim, ClinicId.ToString())
         };
 

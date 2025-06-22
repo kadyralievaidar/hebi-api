@@ -32,7 +32,25 @@ public class UsersService : IUsersService
         _contextAccessor = contextAccessor;
         _unitOfWork = unitOfWork;
     }
+    public async Task CreatePatient(RegisterUserDto dto)
+    {
+        var patient = new ApplicationUser
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            UserName = dto.UserName,
+            Email = dto.Email,
+            PhoneNumber = dto.PhoneNumber,
+            LockoutEnabled = true,
+            LockoutEnd = DateTimeOffset.MaxValue
+        };
 
+        var result = await _userManager.CreateAsync(patient);
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(patient, UserRoles.Patient.ToString());
+        }
+    }
     public async Task CreateUser(CreateUserDto dto)
     {
         var user = await _userManager.FindByNameAsync(dto.RegisterDto.UserName);

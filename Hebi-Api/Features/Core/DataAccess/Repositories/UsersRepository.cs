@@ -33,4 +33,14 @@ public class UsersRepository : GenericRepository<ApplicationUser>, IUsersReposit
     {
         return await _context.Users.AnyAsync(predicate);
     }
+
+    /// <summary>
+    ///     Return filtered users
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <returns></returns>
+    public override async Task<IEnumerable<ApplicationUser>> WhereAsync(Expression<Func<ApplicationUser, bool>>? filter = null)
+    {
+        return await _context.Users.Where(filter).ToListAsync();
+    }
 }

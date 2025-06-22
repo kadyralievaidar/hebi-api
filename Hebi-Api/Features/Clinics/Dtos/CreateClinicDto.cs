@@ -28,5 +28,5 @@ public class CreateClinicDto
     /// <summary>
     ///     Doctor ids
     /// </summary>
-    public IEnumerable<Guid> DoctorIds { get; set; } = Enumerable.Empty<Guid>();
+    public List<Guid> DoctorIds { get; set; } = new();
 }
