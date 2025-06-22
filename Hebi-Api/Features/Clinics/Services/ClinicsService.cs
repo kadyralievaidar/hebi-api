@@ -1,7 +1,9 @@
 ﻿using Hebi_Api.Features.Clinics.Dtos;
+using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 
@@ -11,37 +13,50 @@ public class ClinicsService : IClinicsService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IHttpContextAccessor _contextAccessor;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ClinicsService(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
+    public ClinicsService(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor, UserManager<ApplicationUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _contextAccessor = contextAccessor;
+        _userManager = userManager;
     }
 
     public async Task<Guid> CreateClinicAsync(CreateClinicDto dto)
     {
         try
         {
-            var clinic = new Clinic()
+            var userId = _contextAccessor.GetUserIdentifier();
+            var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.Id == userId);
+
+            var clinic = new Clinic
             {
                 Name = dto.Name,
                 Location = dto.Location,
                 PhoneNumber = dto.PhoneNumber,
                 Email = dto.Email,
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = _contextAccessor.GetUserIdentifier(),
+                CreatedBy = user.Id,
                 IsActive = true
             };
-            _unitOfWork.ClinicRepository.Insert(clinic);
+            await _unitOfWork.ClinicRepository.InsertAsync(clinic);
 
-            dto.DoctorIds.ToList().Add(_contextAccessor.GetUserIdentifier());
+            var isSuperAdmin = await _userManager.IsInRoleAsync(user, UserRoles.SuperAdmin.ToString());
+
+            if (!isSuperAdmin && !dto.DoctorIds.Contains(userId))
+            {
+                dto.DoctorIds.Add(userId);
+            }
+
             var doctors = await _unitOfWork.UsersRepository
-                            .WhereAsync(user => dto.DoctorIds.Contains(user.Id) && !user.IsDeleted);
+                .WhereAsync(x => dto.DoctorIds.Contains(x.Id) && !x.IsDeleted);
 
             if (doctors.Any())
             {
                 foreach (var doctor in doctors)
+                {
                     doctor.ClinicId = clinic.Id;
+                }
                 await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
             }
 
@@ -83,7 +98,7 @@ public class ClinicsService : IClinicsService
 
     public async Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id) ?? 
+        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id) ??
             throw new NullReferenceException(nameof(Clinic));
         clinic.Location = dto.Location;
         clinic.Email = dto.Email;
