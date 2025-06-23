@@ -1,5 +1,6 @@
 ﻿using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Models;
+using Hebi_Api.Features.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -15,7 +16,6 @@ public class ClinicsRepository : GenericRepository<Clinic>, IClinicsRepository
 
     public async Task<Clinic?> GetClinicByDoctor(Expression<Func<Clinic, bool>>? filter = null)
     {
-        var test = await _dbContext.Clinics.ToListAsync();
         return await _dbContext.Clinics.Include(x => x.Doctors).FirstOrDefaultAsync(filter);
     }
 
@@ -23,5 +23,11 @@ public class ClinicsRepository : GenericRepository<Clinic>, IClinicsRepository
     public async Task<Clinic?> GetClinicById(Guid id)
     {
         return await _dbContext.Clinics.FirstOrDefaultAsync(x => x.Id == id);
+    }
+    public override async Task InsertAsync(Clinic entity)
+    {
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.CreatedBy = ContextAccessor.GetUserIdentifier();
+        await DbSet.AddAsync(entity);
     }
 }

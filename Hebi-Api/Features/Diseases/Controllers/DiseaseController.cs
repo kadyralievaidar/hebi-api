@@ -32,14 +32,14 @@ public class DiseaseController : ControllerBase
     }
 
     [HttpDelete("id")]
-    public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete([FromRoute] Guid appointmentId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new DeleteDiseaseRequest(appointmentId), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
-    public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById([FromRoute] Guid appointmentId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetDiseaseByIdRequest(appointmentId), cancellationToken);
         return result.AsAspNetCoreResult();
