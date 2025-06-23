@@ -32,21 +32,21 @@ public class ShiftsController : ControllerBase
     }
 
     [HttpDelete("id")]
-    public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete([FromRoute] Guid appointmentId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new DeleteShiftRequest(appointmentId),cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
-    public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById([FromRoute]Guid appointmentId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetShiftByIdRequest(appointmentId),cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAppointments(GetPagedListOfShiftsDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAppointments([FromQuery] GetPagedListOfShiftsDto dto, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetPagedListOfShiftsRequest(dto), cancellationToken);
         return result.AsAspNetCoreResult();
