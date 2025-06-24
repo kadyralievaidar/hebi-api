@@ -1,6 +1,6 @@
 ﻿using Hebi_Api.Features.Core.Extensions;
-using Hebi_Api.Features.Shifts.Dtos;
-using Hebi_Api.Features.Shifts.RequestHandling.Requests;
+using Hebi_Api.Features.UserCards.Dtos;
+using Hebi_Api.Features.UserCards.RequestHandling.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,23 +18,23 @@ public class UserCardsController : ControllerBase
     public UserCardsController(IMediator mediator) => _mediator = mediator;
 
     [HttpDelete("id")]
-    public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid userCardId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new DeleteShiftRequest(appointmentId), cancellationToken);
+        var result = await _mediator.Send(new DeleteUserCardRequest(userCardId), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
-    public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid userCardId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetShiftByIdRequest(appointmentId), cancellationToken);
+        var result = await _mediator.Send(new GetUserCardByIdRequest(userCardId), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAppointments(GetPagedListOfShiftsDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserCards(GetPagedListOfUserCardDto dto, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send( new GetPagedListOfShiftsRequest(dto), cancellationToken);
+        var result = await _mediator.Send( new GetUserCardsPagedListRequest(dto), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 }

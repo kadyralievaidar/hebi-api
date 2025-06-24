@@ -25,23 +25,23 @@ public class ShiftsController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] CreateShiftDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid shiftId, [FromBody] CreateShiftDto dto, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new UpdateShiftRequest(appointmentId, dto),cancellationToken);
+        var result = await _mediator.Send(new UpdateShiftRequest(shiftId, dto),cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpDelete("id")]
-    public async Task<IActionResult> Delete([FromRoute] Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid shiftId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new DeleteShiftRequest(appointmentId),cancellationToken);
+        var result = await _mediator.Send(new DeleteShiftRequest(shiftId),cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
-    public async Task<IActionResult> GetById([FromRoute]Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid shiftId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetShiftByIdRequest(appointmentId),cancellationToken);
+        var result = await _mediator.Send(new GetShiftByIdRequest(shiftId),cancellationToken);
         return result.AsAspNetCoreResult();
     }
 

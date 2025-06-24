@@ -41,7 +41,7 @@ public static class StartupExtensions
         services.AddScoped<IShiftsService, ShiftsService>();
         services.AddScoped<IUserCardsService, UserCardsService>();
         services.AddScoped<IUsersService, UsersService>();
-        services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
+        //services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
     }
 
     public static void AddSwagger(this IServiceCollection services)

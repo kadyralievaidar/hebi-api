@@ -4,4 +4,5 @@ namespace Hebi_Api.Features.Core.DataAccess.Interfaces;
 
 public interface IUsersRepository : IGenericRepository<ApplicationUser>
 {
+    Task<ApplicationUser> GetUserWithClinic(Guid userId);
 }

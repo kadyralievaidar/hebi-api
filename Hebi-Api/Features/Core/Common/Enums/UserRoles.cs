@@ -5,6 +5,7 @@
         SuperAdmin,
         Admin,
         Doctor,
-        Patient
+        Patient,
+        Individual
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Users.Dtos;
@@ -14,6 +15,9 @@ using OpenIddict.Validation.AspNetCore;
 
 namespace Hebi_Api.Features.Users.Controllers;
 
+/// <summary>
+///     Users controller
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class UsersController : ControllerBase
@@ -28,6 +32,11 @@ public class UsersController : ControllerBase
         _signInManager = signInManager;
     }
 
+    /// <summary>
+    ///     Register of user. User will be in admin role
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserDto model)
     {
@@ -35,6 +44,11 @@ public class UsersController : ControllerBase
         return result.AsAspNetCoreResult();
     }
 
+    /// <summary>
+    ///     Receive a token 
+    /// </summary>
+    /// <param name="validator"></param>
+    /// <returns></returns>
     [HttpPost("~/connect/token"), Produces("application/json")]
     public async Task<IActionResult> Exchange([FromServices] IValidator<TokenRequest> validator)
     {
@@ -53,6 +67,10 @@ public class UsersController : ControllerBase
         return SignIn(result.Principal, result.AuthScheme);
     }
 
+    /// <summary>
+    ///     Sign out 
+    /// </summary>
+    /// <returns></returns>
     [HttpPost("~/connect/logout")]
     public async Task<IActionResult> LogoutPost()
     {
@@ -66,11 +84,43 @@ public class UsersController : ControllerBase
             });
     }
 
-    [HttpPost("create-user")]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
+    /// <summary>
+    ///     Create doctor
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    [HttpPost("create-doctor")]
+    [Authorize(
+    AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> CreateDoctor([FromBody] CreateUserDto dto)
     {
         var result = await _mediator.Send(new CreateUserRequest(dto));
+        return result.AsAspNetCoreResult();
+    }
+
+    /// <summary>
+    ///     Create a patient
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    [HttpPost("create-patient")]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> CreatePatient([FromBody] CreatePatientDto dto)
+    {
+        var result = await _mediator.Send(new CreatePatientRequest(dto));
+        return result.AsAspNetCoreResult();
+    }
+
+    /// <summary>
+    ///     Get user's info by id provided in route
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet("my-profile")]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> GetUserById(Guid userId)
+    {
+        var result = await _mediator.Send(new GetUserByIdRequest(userId));
         return result.AsAspNetCoreResult();
     }
 }

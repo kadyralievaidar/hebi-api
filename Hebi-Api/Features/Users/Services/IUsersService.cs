@@ -25,5 +25,17 @@ public interface IUsersService
     /// </summary>
     /// <returns></returns>
     Task CreateUser(CreateUserDto dto);
+
+    /// <summary>
+    ///     Create a patient
+    /// </summary>
+    /// <returns></returns>
+    Task CreatePatient(CreatePatientDto dto);
+
+    /// <summary>
+    ///     Get user info
+    /// </summary>
+    /// <returns></returns>
+    Task<BasicUserInfoDto> GetUserById(Guid userId);
 }
 

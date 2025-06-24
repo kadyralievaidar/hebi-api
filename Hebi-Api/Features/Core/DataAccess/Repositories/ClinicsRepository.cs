@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.DataAccess.Interfaces;
+﻿using Hebi_Api.Features.Clinics.Dtos;
+using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,20 @@ public class ClinicsRepository : GenericRepository<Clinic>, IClinicsRepository
     public ClinicsRepository(HebiDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
     {
         _dbContext = context;
+    }
+
+    public async Task<Guid> CreateDefaultClinic()
+    {
+        var clinic = new Clinic()
+        {
+            Name = "Default",
+            PhoneNumber = "Default",
+            Location = "Default",
+            CreatedBy = Guid.Empty
+        };
+        await _dbContext.Clinics.AddAsync(clinic);
+        await _dbContext.SaveChangesAsync();
+        return clinic.Id;
     }
 
     public async Task<Clinic?> GetClinicByDoctor(Expression<Func<Clinic, bool>>? filter = null)

@@ -8,6 +8,11 @@ namespace Hebi_Api.Features.Users.Dtos;
 public class RegisterUserDto
 {
     /// <summary>
+    ///     Is individual
+    /// </summary>
+    public bool IsIndividual { get; set; } = false;
+
+    /// <summary>
     ///     User's username
     /// </summary>
     public required string UserName { get; set; }

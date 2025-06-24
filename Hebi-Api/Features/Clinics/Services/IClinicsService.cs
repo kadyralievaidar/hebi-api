@@ -18,4 +18,5 @@ public interface IClinicsService
     Task<List<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto);
 
     Task<Clinic> GetClinicAsync(Guid clinicId);
+    Task<Guid> CreateDefaultClinic();
 }
