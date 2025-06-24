@@ -5,6 +5,7 @@ using Hebi_Api.Features.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace Hebi_Api.Features.Core.DataAccess.Repositories;
 
@@ -24,6 +25,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         ContextAccessor = contextAccessor;
     }
 
+    protected virtual IQueryable<TEntity> SetWithRelatedEntities => GetContext();
 
     /// <summary>
     ///     Returns context with default filters
@@ -128,11 +130,13 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// </summary>
     /// <param name="filter">Filter for selection condition</param>
     /// <returns>Entity</returns>
-    public virtual async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>>? filter = null)
+    public virtual async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>>? filter = null, List<string>? relations = null)
     {
-        IQueryable<TEntity> query = Queryable;
-        query = Filter(query, filter);
-        return await query.FirstOrDefaultAsync();
+        var context = relations != null && RelationsAreValid(relations)
+                    ? GetTrackingContextWithRelations(relations)
+                    : SetWithRelatedEntities;
+        context = Filter(context, filter);
+        return await context.FirstOrDefaultAsync();
     }
 
     /// <summary>
@@ -311,5 +315,52 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     {
         DbSet.UpdateRange(entities);
         return Task.CompletedTask;
+    }
+
+    private IQueryable<TEntity> GetTrackingContextWithRelations(IEnumerable<string> relations)
+    {
+        var context = SetWithRelatedEntities;
+        context = relations.Aggregate(context, (current, relation) => current.Include(relation));
+        return context;
+    }
+
+    /// <inheritdoc />
+    public List<TEntity> GetByIdsWithTracking(IEnumerable<Guid> ids, List<string>? relations = null)
+    {
+        var context = relations != null && RelationsAreValid(relations)
+            ? GetTrackingContextWithRelations(relations)
+            : SetWithRelatedEntities;
+        return context.Where(e => ids.Contains(e.Id)).ToList();
+    }
+
+    private static bool RelationsAreValid(List<string> relations)
+    {
+        foreach (var relation in relations) TypeHasRelationProperty(typeof(TEntity), relation);
+        return true;
+    }
+
+    private static bool TypeHasRelationProperty(Type? type, string relation)
+    {
+        if (relation.Contains('.'))
+        {
+            var propertyInfo = type?.GetProperty(relation.Split('.')[0]);
+            if (propertyInfo == null)
+                throw new MissingFieldException($"This entity does not have such field: {relation}");
+
+            var regexInsideSquareBrackets = new Regex(@"\[(.*?)\]");
+            var propertyTypeFullPath = propertyInfo.ToString()!.Contains('[')
+                ? regexInsideSquareBrackets.Match(propertyInfo.ToString()!).Groups[1].ToString()
+                : propertyInfo.ToString()!.Split(' ')[0].Trim('{');
+
+            var entryAssembly = type?.Assembly?.GetName()?.Name;
+            if (entryAssembly == null) throw new Exception("Entry assembly is null");
+
+            var newType = Type.GetType($"{propertyTypeFullPath}, {entryAssembly}");
+            return TypeHasRelationProperty(newType, relation[(relation.IndexOf('.') + 1)..]);
+        }
+
+        if (type?.GetProperty(relation) == null)
+            throw new MissingFieldException($"This entity does not have such field: {relation}");
+        return true;
     }
 }

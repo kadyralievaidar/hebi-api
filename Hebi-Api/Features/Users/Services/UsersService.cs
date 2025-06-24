@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.Common;
+﻿using Hebi_Api.Features.Clinics.Services;
+using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
@@ -20,29 +21,34 @@ public class UsersService : IUsersService
     private readonly IOpenIddictApplicationManager _applicationManager;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IClinicsService _clinicService;
 
     public UsersService(
         UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
         IOpenIddictApplicationManager openIddictApplicationManager, IHttpContextAccessor contextAccessor,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork, IClinicsService clinicService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _applicationManager = openIddictApplicationManager;
         _contextAccessor = contextAccessor;
         _unitOfWork = unitOfWork;
+        _clinicService = clinicService;
     }
-    public async Task CreatePatient(RegisterUserDto dto)
+    public async Task CreatePatient(CreatePatientDto dto)
     {
+        var username = $"{dto.FirstName}_{dto.BirthDate:yyyyMMdd}";
+
+        if (await _userManager.FindByNameAsync(username) != null)
+            username = $"{username}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
+
         var patient = new ApplicationUser
         {
+            UserName = username,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            UserName = dto.UserName,
-            Email = dto.Email,
             PhoneNumber = dto.PhoneNumber,
-            LockoutEnabled = true,
-            LockoutEnd = DateTimeOffset.MaxValue
+            BirthDateTime = dto.BirthDate
         };
 
         var result = await _userManager.CreateAsync(patient);
@@ -51,13 +57,14 @@ public class UsersService : IUsersService
             await _userManager.AddToRoleAsync(patient, UserRoles.Patient.ToString());
         }
     }
+
     public async Task CreateUser(CreateUserDto dto)
     {
         var user = await _userManager.FindByNameAsync(dto.RegisterDto.UserName);
         if (user != null)
             await _signInManager.SignInAsync(user, true);
 
-        var clinic = await _unitOfWork.ClinicRepository.FirstOrDefaultAsync(x => x.Id == dto.ClinicId);
+        var clinic = await _unitOfWork.ClinicRepository.GetClinicById(dto.ClinicId);
         var newUser = new ApplicationUser()
         {
             FirstName = dto.RegisterDto.FirstName,
@@ -72,11 +79,22 @@ public class UsersService : IUsersService
         if (result.Succeeded)
         {
             await _signInManager.CreateUserPrincipalAsync(newUser);
-            await _signInManager.SignInAsync(newUser, true);
             await _userManager.AddToRoleAsync(newUser, UserRoles.Doctor.ToString());
         }
     }
-
+    public async Task<BasicUserInfoDto> GetUserById(Guid userId)
+    {
+        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.Id == userId, new List<string>() { "Clinic"});
+        var basicUserInfoDto = new BasicUserInfoDto() 
+        {
+            UserName = user.UserName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+            ClinicName = user.Clinic?.Name
+        };
+        return basicUserInfoDto;
+    }
     public async Task Register(RegisterUserDto dto)
     {
         var user = await _userManager.FindByNameAsync(dto.UserName);
@@ -89,18 +107,25 @@ public class UsersService : IUsersService
             LastName = dto.LastName,
             UserName = dto.UserName,
             Email = dto.Email,
-            PhoneNumber = dto.PhoneNumber
+            PhoneNumber = dto.PhoneNumber,
         };
         var result = await _userManager.CreateAsync(newUser, dto.Password);
         if (result.Succeeded)
         {
-            await _signInManager.CreateUserPrincipalAsync(newUser);
             await _signInManager.SignInAsync(newUser, true);
-            await _userManager.AddToRoleAsync(newUser, UserRoles.Admin.ToString());
+            if (dto.IsIndividual)
+            {
+                newUser.ClinicId = await _clinicService.CreateDefaultClinic();
+                await _userManager.UpdateAsync(newUser);
+                await _userManager.AddToRoleAsync(newUser, UserRoles.Individual.ToString());
+            }
+            else
+                await _userManager.AddToRoleAsync(newUser, UserRoles.Admin.ToString());
+
+            await _signInManager.CreateUserPrincipalAsync(newUser);
         }
     }
 
-    ///
     public async Task<TokenResponse> Token(OpenIddictRequest request, CancellationToken cancellationToken)
     {
         if (request.IsPasswordGrantType())
@@ -139,8 +164,8 @@ public class UsersService : IUsersService
     }
     private async Task<ClaimsIdentity?> ConfigIdentity(OpenIddictRequest request, object? application)
     {
-        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username!.ToUpperInvariant());
-        var roles = await _userManager.GetRolesAsync(user);
+        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username.ToUpperInvariant());
+        var roles = await _userManager.GetRolesAsync(user!);
         var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
 
         identity.SetClaim(Claims.Subject, await _applicationManager.GetClientIdAsync(application!));

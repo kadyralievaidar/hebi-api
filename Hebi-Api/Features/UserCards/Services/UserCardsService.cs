@@ -18,8 +18,7 @@ public class UserCardsService : IUserCardsService
 
     public async Task DeleteUserCard(Guid id)
     {
-        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(id)
-            ?? throw new NullReferenceException(nameof(UserCard));
+        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(id);
         _unitOfWork.UserCardsRepository.Delete(userCard);
         await _unitOfWork.SaveAsync();
     }
@@ -34,22 +33,9 @@ public class UserCardsService : IUserCardsService
 
     public async Task<UserCard> GetUserCardAsync(Guid id)
     {
-        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(id)
-                        ?? throw new NullReferenceException(nameof(UserCard));
+        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(id);
         return userCard;
     }
-
-    public async Task<UserCard> UpdateUserCard(Guid id, CreateUserCardDto dto)
-    {
-        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(id)
-                ?? throw new NullReferenceException(nameof(UserCard));
-
-        userCard = new UserCard() { };
-        _unitOfWork.UserCardsRepository.Update(userCard);
-        await _unitOfWork.SaveAsync();
-        return userCard;
-    }
-
     public async Task<Guid> CreateUserCard(CreateUserCardDto dto)
     {
         var userCard = new UserCard() { };

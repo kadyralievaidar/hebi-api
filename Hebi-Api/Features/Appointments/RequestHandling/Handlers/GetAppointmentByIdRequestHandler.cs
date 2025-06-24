@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Hebi_Api.Features.Appointments.RequestHandling.Handlers;
 
-public class GetAppointmentByIdRequestHandler : IRequestHandler<UpdateAppointmentRequest, Response>
+public class GetAppointmentByIdRequestHandler : IRequestHandler<GetAppoitmentByIdRequest, Response>
 {
     private readonly IAppointmentsService _appoitmentsService;
     private readonly ILogger<CreateAppointmentRequestHandler> _logger;
@@ -16,11 +16,11 @@ public class GetAppointmentByIdRequestHandler : IRequestHandler<UpdateAppointmen
         _logger = logger;
     }
 
-    public async Task<Response> Handle(UpdateAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetAppoitmentByIdRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var appointment = await _appoitmentsService.GetAppointmentAsync(request.AppointmentId);
+            var appointment = await _appoitmentsService.GetAppointmentAsync(request.AppointmnetId);
             return Response.Ok(request.Id, appointment);
         }
         catch (Exception e)

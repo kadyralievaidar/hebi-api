@@ -18,10 +18,13 @@ public class UsersRepository : GenericRepository<ApplicationUser>, IUsersReposit
     /// </summary>
     /// <param name="filter">Filter for selection condition</param>
     /// <returns>Entity</returns>
-    public override async Task<ApplicationUser?> FirstOrDefaultAsync(Expression<Func<ApplicationUser, bool>>? filter = null)
+    public override async Task<ApplicationUser?> FirstOrDefaultAsync(Expression<Func<ApplicationUser, bool>>? filter = null, List<string>? relations = null)
     {
-        var test = await _context.Users.ToListAsync();
-        return await _context.Users.Include(x => x.Clinic).FirstOrDefaultAsync(filter!);
+        var context = Context.Set<ApplicationUser>().AsQueryable();
+        if (relations != null)
+            context = relations.Aggregate(context, (current, relation) => current.Include(relation));
+
+        return await context.FirstOrDefaultAsync(filter!);
     }
 
     /// <summary>
@@ -42,5 +45,12 @@ public class UsersRepository : GenericRepository<ApplicationUser>, IUsersReposit
     public override async Task<IEnumerable<ApplicationUser>> WhereAsync(Expression<Func<ApplicationUser, bool>>? filter = null)
     {
         return await _context.Users.Where(filter).ToListAsync();
+    }
+
+    public async Task<ApplicationUser> GetUserWithClinic(Guid userId)
+    {
+        var users = await _context.Users.ToListAsync();
+        return await _context.Users.Include(x => x.Clinic).FirstOrDefaultAsync(x => x.Id == userId);
+
     }
 }

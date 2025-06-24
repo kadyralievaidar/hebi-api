@@ -18,4 +18,10 @@ public interface IClinicsRepository : IGenericRepository<Clinic>
     /// <param name="pred"></param>
     /// <returns></returns>
     Task<Clinic> GetClinicByDoctor(Expression<Func<Clinic, bool>>? filter = null);
+
+    /// <summary>
+    ///     Create a default clinic for individual
+    /// </summary>
+    /// <returns></returns>
+    Task<Guid> CreateDefaultClinic();
 }

@@ -68,7 +68,7 @@ public interface IGenericRepository<TEntity> where TEntity : class, IBaseModel
     /// </summary>
     /// <param name="filter">Filter for selection condition</param>
     /// <returns>Entity</returns>
-    Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>>? filter = null);
+    Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>>? filter = null, List<string>? relations = null);
 
     /// <summary>
     ///     Get an entity by primary keys

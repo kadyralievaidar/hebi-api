@@ -69,7 +69,8 @@ public static class OpenIdDictConfig
         {
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
-            var roles = new[] { UserRoles.SuperAdmin.ToString(), UserRoles.Admin.ToString(), UserRoles.Doctor.ToString(), 
+            var roles = new[] { UserRoles.SuperAdmin.ToString(), UserRoles.Individual.ToString(),
+                                UserRoles.Admin.ToString(), UserRoles.Doctor.ToString(), 
                                 UserRoles.Patient.ToString() };
 
             foreach (var role in roles)

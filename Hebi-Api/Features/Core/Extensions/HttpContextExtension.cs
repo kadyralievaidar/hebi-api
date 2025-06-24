@@ -9,10 +9,10 @@ public static class HttpContextExtension
     /// </summary>
     /// <param name="contextAccessor">Http context accessor</param>
     /// <returns>User Id</returns>
-    public static Guid GetUserIdentifier(this IHttpContextAccessor contextAccessor)
+    public static Guid? GetUserIdentifier(this IHttpContextAccessor contextAccessor)
     {
-        var sub = contextAccessor!.HttpContext!.User.Claims.FirstOrDefault(x => x.Type == Consts.UserId)?.Value!;
-        return Guid.Parse(sub);
+        var sub = contextAccessor!.HttpContext!.User.Claims.FirstOrDefault(x => x.Type == Consts.UserId)?.Value;
+        return sub == null ? null : Guid.Parse(sub);
     }
 
     /// <summary>

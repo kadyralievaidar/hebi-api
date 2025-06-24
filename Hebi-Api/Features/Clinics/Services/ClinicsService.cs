@@ -43,10 +43,8 @@ public class ClinicsService : IClinicsService
 
             var isSuperAdmin = await _userManager.IsInRoleAsync(user, UserRoles.SuperAdmin.ToString());
 
-            if (!isSuperAdmin && !dto.DoctorIds.Contains(userId))
-            {
-                dto.DoctorIds.Add(userId);
-            }
+            if (!isSuperAdmin && !dto.DoctorIds.Contains(userId.Value))
+                dto.DoctorIds.Add(userId.Value);
 
             var doctors = await _unitOfWork.UsersRepository
                 .WhereAsync(x => dto.DoctorIds.Contains(x.Id) && !x.IsDeleted);
@@ -54,9 +52,8 @@ public class ClinicsService : IClinicsService
             if (doctors.Any())
             {
                 foreach (var doctor in doctors)
-                {
                     doctor.ClinicId = clinic.Id;
-                }
+
                 await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
             }
 
@@ -70,6 +67,12 @@ public class ClinicsService : IClinicsService
         }
     }
 
+    public async Task<Guid> CreateDefaultClinic()
+    {
+        var test = await _unitOfWork.ClinicRepository.CreateDefaultClinic();
+        return await _unitOfWork.ClinicRepository.CreateDefaultClinic();
+    }
+
     public async Task DeleteClinic(Guid id)
     {
         var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id)
@@ -81,8 +84,7 @@ public class ClinicsService : IClinicsService
 
     public async Task<Clinic> GetClinicAsync(Guid clinicId)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetClinicById(clinicId)
-                ?? throw new NullReferenceException(nameof(Clinic));
+        var clinic = await _unitOfWork.ClinicRepository.GetClinicById(clinicId);
 
         return clinic;
     }
@@ -98,8 +100,7 @@ public class ClinicsService : IClinicsService
 
     public async Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id) ??
-            throw new NullReferenceException(nameof(Clinic));
+        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id);
         clinic.Location = dto.Location;
         clinic.Email = dto.Email;
         clinic.PhoneNumber = dto.PhoneNumber;
