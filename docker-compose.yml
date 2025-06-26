@@ -12,7 +12,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=db;Database=hebiDb;User ID=postgres;Host=hebi-db;Password=postgres;
-      - OpenIdDict__Issuer=http://hebi-api:8080
+      - OpenIdDict__Issuer=http://hebi-api.gonget.net/
     depends_on:
       db:
         condition: service_healthy
