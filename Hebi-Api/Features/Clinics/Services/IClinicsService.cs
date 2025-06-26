@@ -1,4 +1,5 @@
 ﻿using Hebi_Api.Features.Clinics.Dtos;
+using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 
 namespace Hebi_Api.Features.Clinics.Services;
@@ -15,7 +16,7 @@ public interface IClinicsService
 
     Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto);
 
-    Task<List<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto);
+    Task<PagedResult<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto);
 
     Task<Clinic> GetClinicAsync(Guid clinicId);
     Task<Guid> CreateDefaultClinic();

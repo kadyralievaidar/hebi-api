@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
 
@@ -24,12 +25,15 @@ public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IOpenIddictTokenManager _tokenManager;
 
     public UsersController(IMediator mediator,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        IOpenIddictTokenManager tokenManager)
     {
         _mediator = mediator;
         _signInManager = signInManager;
+        _tokenManager = tokenManager;
     }
 
     /// <summary>
@@ -71,17 +75,15 @@ public class UsersController : ControllerBase
     ///     Sign out 
     /// </summary>
     /// <returns></returns>
-    [HttpPost("~/connect/logout")]
+    [HttpGet("~/connect/logout")]
+    [Authorize(
+    AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public async Task<IActionResult> LogoutPost()
     {
-        await _signInManager.SignOutAsync();
-
-        return SignOut(
-            authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-            properties: new AuthenticationProperties
-            {
-                RedirectUri = "/"
-            });
+        return SignOut(new AuthenticationProperties
+        {
+            RedirectUri = "/"
+        }, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
     /// <summary>

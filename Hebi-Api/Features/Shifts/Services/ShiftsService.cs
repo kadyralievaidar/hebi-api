@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Shifts.Dtos;

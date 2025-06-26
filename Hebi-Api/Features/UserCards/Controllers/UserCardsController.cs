@@ -34,7 +34,7 @@ public class UserCardsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUserCards(GetPagedListOfUserCardDto dto, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send( new GetUserCardsPagedListRequest(dto), cancellationToken);
+        var result = await _mediator.Send(new GetUserCardsPagedListRequest(dto), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 }

@@ -1,5 +1,4 @@
-﻿using Hebi_Api.Features.Clinics.Dtos;
-using Hebi_Api.Features.Core.DataAccess.Interfaces;
+﻿using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -44,5 +43,9 @@ public class ClinicsRepository : GenericRepository<Clinic>, IClinicsRepository
         entity.CreatedAt = DateTime.UtcNow;
         entity.CreatedBy = ContextAccessor.GetUserIdentifier();
         await DbSet.AddAsync(entity);
+    }
+    public override async Task<bool> AnyAsync(Expression<Func<Clinic, bool>> predicate)
+    {
+        return await _dbContext.Clinics.AnyAsync(predicate);
     }
 }

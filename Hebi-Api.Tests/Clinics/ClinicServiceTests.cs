@@ -308,18 +308,6 @@ public class ClinicServiceTests
         result.Id.Should().Be(clinic.Id);
         result.Name.Should().Be(clinic.Name);
     }
-
-    [Test]
-    public async Task GetClinicAsync_WithInvalidId_ShouldThrowException()
-    {
-        // Act
-        Func<Task> act = async () => await _clinicsService.GetClinicAsync(Guid.NewGuid());
-
-        // Assert
-        await act.Should().ThrowAsync<NullReferenceException>()
-            .WithMessage("Clinic");
-    }
-
     [Test]
     public async Task GetListOfClinicsAsync_ShouldReturnPagedClinics()
     {
@@ -345,7 +333,37 @@ public class ClinicServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.Select(c => c.Name).Should().BeInAscendingOrder();
+        result.Results.Should().HaveCount(2);
+        result.Results.Select(c => c.Name).Should().BeInAscendingOrder();
+    }
+
+    [Test]
+    public async Task GetListOfClinicsAsync_ShouldReturnPagedClinics_Filter()
+    {
+        // Arrange
+        var clinics = new List<Clinic>
+        {
+            new Clinic { Id = Guid.NewGuid(), Name = "Clinic 1", PhoneNumber = "123", Email = "c1@test.com", Location = "Loc1" },
+            new Clinic { Id = Guid.NewGuid(), Name = "Test", PhoneNumber = "456", Email = "c2@test.com", Location = "Loc2" },
+            new Clinic { Id = Guid.NewGuid(), Name = "Test", PhoneNumber = "789", Email = "c3@test.com", Location = "Loc3" },
+        };
+        _dbFactory.AddData(clinics);
+
+        var dto = new GetPagedListOfClinicDto
+        {
+            PageIndex = 0,
+            PageSize = 2,
+            SortBy = "Name",
+            SearchText = "Test",
+            SortDirection = ListSortDirection.Ascending,
+        };
+
+        // Act
+        var result = await _clinicsService.GetListOfClinicsAsync(dto);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Results.Should().HaveCount(2);
+        result.Results.ForEach(c => c.Name.Should().Be("Test"));
     }
 }

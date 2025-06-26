@@ -452,8 +452,8 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Count.Should().Be(2);
-        var firstAppointment = result.FirstOrDefault(x => x.Id == appointmentId);
+        result.Results.Count.Should().Be(2);
+        var firstAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId);
         firstAppointment.Should().NotBeNull();
         firstAppointment.ShiftId.Should().Be(appointment.ShiftId);
         firstAppointment.StartDate.Should().Be(appointment.StartDate);
@@ -461,7 +461,7 @@ public class AppointmentServiceTests
         firstAppointment.DoctorId.Should().Be(appointment.DoctorId);
         firstAppointment.PatientId.Should().Be(appointment.PatientId);
 
-        var secondAppointment = result.FirstOrDefault(x => x.Id == appointmentId2);
+        var secondAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId2);
         secondAppointment.Should().NotBeNull();
         secondAppointment.ShiftId.Should().Be(appointment2.ShiftId);
         secondAppointment.StartDate.Should().Be(appointment2.StartDate);
@@ -553,9 +553,9 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Count.Should().Be(1);
+        result.Results.Count.Should().Be(1);
 
-        var resultAppointment = result.FirstOrDefault(x => x.Id == appointmentId2);
+        var resultAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId2);
         resultAppointment.Should().NotBeNull();
         resultAppointment.ShiftId.Should().Be(appointment2.ShiftId);
         resultAppointment.StartDate.Should().Be(appointment2.StartDate);
@@ -661,7 +661,7 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Count.Should().Be(0);
+        result.Results.Count.Should().Be(0);
     }
 
     [Test]
@@ -758,9 +758,9 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Count.Should().Be(1);
+        result.Results.Count.Should().Be(1);
 
-        var resultAppointment = result.FirstOrDefault(x => x.Id == appointmentId);
+        var resultAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId);
         resultAppointment.Should().NotBeNull();
         resultAppointment.EndDate.Should().Be(appointment.EndDate);
         resultAppointment.StartDate.Should().Be(appointment.StartDate);

@@ -3,22 +3,28 @@ using FluentValidation.TestHelper;
 using Hebi_Api.Features.Users.Dtos;
 using NUnit.Framework;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
+using Hebi_Api.Features.Core.DataAccess.UOW;
+using Hebi_Api.Tests.UOW;
 
 namespace Hebi_Api.Tests.Users.Validators;
 
 [TestFixture]
 public class RegisterUserRequestValidatorTests
 {
+    private UnitOfWorkFactory _dbFactory;
+    private IUnitOfWork _unitOfWorkSqlite;
     private RegisterUserRequestValidator _validator;
 
     [SetUp]
     public void SetUp()
     {
-        _validator = new RegisterUserRequestValidator();
+        _dbFactory = new UnitOfWorkFactory();
+        _unitOfWorkSqlite = _dbFactory.CreateUnitOfWork(true);
+        _validator = new RegisterUserRequestValidator(_unitOfWorkSqlite);
     }
 
     [Test]
-    public void Should_Have_Error_When_UserName_Is_Empty()
+    public async Task Should_Have_Error_When_UserName_Is_Empty()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -33,7 +39,7 @@ public class RegisterUserRequestValidatorTests
         };
 
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.UserName)
@@ -41,7 +47,7 @@ public class RegisterUserRequestValidatorTests
     }
 
     [Test]
-    public void Should_Have_Error_When_UserName_Is_Short()
+    public async Task Should_Have_Error_When_UserName_Is_Short()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -55,14 +61,14 @@ public class RegisterUserRequestValidatorTests
             PhoneNumber = "955587878895"
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.UserName)
             .WithErrorMessage("UserName must be at least 4 characters");
     }
 
     [Test]
-    public void Should_Have_Error_When_Password_Is_Empty()
+    public async Task Should_Have_Error_When_Password_Is_Empty()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -76,14 +82,14 @@ public class RegisterUserRequestValidatorTests
             PhoneNumber = "955587878895"
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Password)
             .WithErrorMessage("Password is required");
     }
 
     [Test]
-    public void Should_Have_Error_When_Password_Is_Too_Short()
+    public async Task Should_Have_Error_When_Password_Is_Too_Short()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -98,14 +104,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Password)
             .WithErrorMessage("Password must be at least 6 characters");
     }
 
     [Test]
-    public void Should_Have_Error_When_Password_Has_No_Uppercase()
+    public async Task Should_Have_Error_When_Password_Has_No_Uppercase()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -120,14 +126,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Password)
             .WithErrorMessage("Password must contain at least one uppercase letter");
     }
 
     [Test]
-    public void Should_Have_Error_When_Password_Has_No_Lowercase()
+    public async Task Should_Have_Error_When_Password_Has_No_Lowercase()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -142,14 +148,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Password)
             .WithErrorMessage("Password must contain at least one lowercase letter");
     }
 
     [Test]
-    public void Should_Have_Error_When_Password_Has_No_Number()
+    public async Task Should_Have_Error_When_Password_Has_No_Number()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -164,14 +170,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Password)
             .WithErrorMessage("Password must contain at least one number");
     }
 
     [Test]
-    public void Should_Have_Error_When_Password_Has_No_Special_Character()
+    public async Task Should_Have_Error_When_Password_Has_No_Special_Character()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -186,14 +192,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Password)
             .WithErrorMessage("Password must contain at least one special character");
     }
 
     [Test]
-    public void Should_Have_Error_When_ConfirmPassword_Is_Empty()
+    public async Task Should_Have_Error_When_ConfirmPassword_Is_Empty()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -208,14 +214,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.ConfirmPassword)
             .WithErrorMessage("ConfirmPassword is required");
     }
 
     [Test]
-    public void Should_Have_Error_When_ConfirmPassword_Is_Not_Valid()
+    public async Task Should_Have_Error_When_ConfirmPassword_Is_Not_Valid()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -230,14 +236,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.ConfirmPassword)
             .WithErrorMessage("Passwords do not match");
     }
 
     [Test]
-    public void Should_Have_Error_When_Email_Is_Empty()
+    public async Task Should_Have_Error_When_Email_Is_EmptyAsync()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -252,14 +258,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Email)
             .WithErrorMessage("Email is required");
     }
 
     [Test]
-    public void Should_Have_Error_When_Email_Is_Not_Valid()
+    public async Task Should_Have_Error_When_Email_Is_Not_Valid()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -274,14 +280,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.Email)
             .WithErrorMessage("Invalid email address");
     }
 
     [Test]
-    public void Should_Have_Error_When_FirstName_Is_Empty()
+    public async Task Should_Have_Error_When_FirstName_Is_Empty()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -295,14 +301,14 @@ public class RegisterUserRequestValidatorTests
             PhoneNumber = "955587878895"
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.FirstName)
             .WithErrorMessage("First name is required");
     }
 
     [Test]
-    public void Should_Have_Error_When_LastName_Is_Empty()
+    public async Task Should_Have_Error_When_LastName_Is_Empty()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -317,14 +323,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.LastName)
             .WithErrorMessage("Last name is required");
     }
 
     [Test]
-    public void Should_Have_Error_When_PhoneNumber_Is_Empty()
+    public async Task Should_Have_Error_When_PhoneNumber_Is_Empty()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -339,7 +345,7 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.PhoneNumber)
             .WithErrorMessage("Phone number is required");
@@ -347,7 +353,7 @@ public class RegisterUserRequestValidatorTests
 
 
     [Test]
-    public void Should_Have_Error_When_PhoneNumber_Is_Not_Valid()
+    public async Task Should_Have_Error_When_PhoneNumber_Is_Not_Valid()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -362,14 +368,14 @@ public class RegisterUserRequestValidatorTests
 
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RegisterUserDto.PhoneNumber)
             .WithErrorMessage("Phone number must be valid and contain 7–12 digits");
     }
 
     [Test]
-    public void Should_Not_Have_Error_When_User_Is_Valid()
+    public async Task Should_Not_Have_Error_When_User_Is_Valid()
     {
         // Arrange
         var dto = new RegisterUserDto
@@ -383,7 +389,7 @@ public class RegisterUserRequestValidatorTests
             PhoneNumber = "955587878898"
         };
         // Act
-        var result = _validator.TestValidate(new RegisterUserRequest(dto));
+        var result = await _validator.TestValidateAsync(new RegisterUserRequest(dto));
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
