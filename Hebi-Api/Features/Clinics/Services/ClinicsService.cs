@@ -1,5 +1,6 @@
 ﻿using Hebi_Api.Features.Clinics.Dtos;
 using Hebi_Api.Features.Core.Common.Enums;
+using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
@@ -89,13 +90,21 @@ public class ClinicsService : IClinicsService
         return clinic;
     }
 
-    public async Task<List<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto)
+    public async Task<PagedResult<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto)
     {
         var query = _unitOfWork.ClinicRepository.AsQueryable();
+        if (!string.IsNullOrEmpty(dto.SearchText))
+            query = query.Where(x => x.Name.Contains(dto.SearchText) || x.Location.Contains(dto.SearchText));
+
+        var totalCount = await query.CountAsync();
         var clinics = await query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Descending)
                 .TrySkip(dto.PageSize * dto.PageIndex).TryTake(dto.PageSize).ToListAsync();
 
-        return clinics;
+        return new PagedResult<Clinic>() 
+        {
+            Results = clinics,
+            TotalCount = totalCount 
+        };
     }
 
     public async Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto)

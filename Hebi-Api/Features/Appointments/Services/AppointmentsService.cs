@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Hebi_Api.Features.Appointments.Dtos;
+using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
@@ -73,7 +74,7 @@ public class AppointmentsService : IAppointmentsService
         return appointment!;
     }
 
-    public async Task<List<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
+    public async Task<PagedResult<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
     {
         var query = _unitOfWork.AppointmentRepository.AsQueryable().AsNoTracking();
 
@@ -92,10 +93,16 @@ public class AppointmentsService : IAppointmentsService
             query = query.Where(x => x.StartDate >= dto.StartDate.Value && x.EndDate <= dto.EndDate.Value);
         }
         query = query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Ascending);
+        var totalCount = await query.CountAsync();
         query = query.Skip(dto.PageIndex * dto.PageSize).Take(dto.PageSize);
 
         // Execute
         var appointments = await query.ToListAsync();
-        return appointments;
+
+        return new PagedResult<Appointment>()
+        {
+            Results = appointments,
+            TotalCount = totalCount
+        };
     }
 }

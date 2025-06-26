@@ -1,4 +1,5 @@
 ﻿using Hebi_Api.Features.Appointments.Dtos;
+using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 
 namespace Hebi_Api.Features.Appointments.Services;
@@ -16,7 +17,7 @@ public interface IAppointmentsService
 
     Task<Appointment> UpdateAppointmentAsync(Guid id, UpdateAppointmentDto dto);
 
-    Task<List<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto);
+    Task<PagedResult<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto);
 
     Task<Appointment> GetAppointmentAsync(Guid appointmentId);
 }

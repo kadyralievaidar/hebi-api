@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using FluentValidation;
+﻿using FluentValidation;
 using Hebi_Api.Features.Appointments.Services;
 using Hebi_Api.Features.Clinics.Services;
 using Hebi_Api.Features.Core.Common.Validators;
@@ -41,7 +40,7 @@ public static class StartupExtensions
         services.AddScoped<IShiftsService, ShiftsService>();
         services.AddScoped<IUserCardsService, UserCardsService>();
         services.AddScoped<IUsersService, UsersService>();
-        //services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
+        services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
     }
 
     public static void AddSwagger(this IServiceCollection services)
