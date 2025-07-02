@@ -75,10 +75,10 @@ public class UsersController : ControllerBase
     ///     Sign out 
     /// </summary>
     /// <returns></returns>
-    [HttpGet("~/connect/logout")]
+    [HttpPost("~/connect/logout")]
     [Authorize(
     AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> LogoutPost()
+    public IActionResult LogoutPost()
     {
         return SignOut(new AuthenticationProperties
         {
