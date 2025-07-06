@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Hebi_Api.Features.Clinics.Dtos;
 using Hebi_Api.Features.Clinics.Services;
-using Hebi_Api.Features.Core.Common.Enums;
+using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.DataAccess;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
@@ -24,6 +24,7 @@ public class ClinicServiceTests
 
     private UserManager<ApplicationUser> _userManager;
     private RoleManager<IdentityRole<Guid>> _roleManager;
+    private static readonly string[] expected = new[] { "drone@example.com", "drtwo@example.com" };
 
     [SetUp]
     public void Setup()
@@ -161,7 +162,7 @@ public class ClinicServiceTests
         var mockUserManager = new Mock<UserManager<ApplicationUser>>(
             Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null
         );
-        mockUserManager.Setup(m => m.IsInRoleAsync(It.IsAny<ApplicationUser>(), UserRoles.SuperAdmin.ToString()))
+        mockUserManager.Setup(m => m.IsInRoleAsync(It.IsAny<ApplicationUser>(), Consts.SuperAdmin.ToString()))
                        .ReturnsAsync(false);
 
         // Создаём новый инстанс ClinicsService с моками
@@ -252,7 +253,7 @@ public class ClinicServiceTests
             DoctorIds = [doctor.Id, doctor2.Id, doctor3.Id],
         };
         //Act
-        var result = await _clinicsService.UpdateClinicAsync(clinicId, dto);
+        await _clinicsService.UpdateClinicAsync(clinicId, dto);
 
         //Assert
         var clinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(clinicId);
@@ -382,7 +383,7 @@ public class ClinicServiceTests
         });
         await _unitOfWorkSqlite.SaveAsync();
 
-        var roleName = UserRoles.Doctor.ToString();
+        var roleName = Consts.Doctor;
 
         if (!await _roleManager.RoleExistsAsync(roleName))
         {
@@ -428,15 +429,19 @@ public class ClinicServiceTests
         var addRoleResult2 = await _userManager.AddToRoleAsync(doctor2, roleName);
         addRoleResult2.Succeeded.Should().BeTrue();
 
+        var dto = new GetClinicsDoctorsDto()
+        {
+            ClinicId = clinicId
+        };
+
         // Act
-        var result = await _clinicsService.GetClinicWithDoctorsAsync(clinicId);
+        var result = await _clinicsService.GetClinicWithDoctorsAsync(dto);
 
         // Assert
         result.Should().NotBeNull();
         result.ClinicId.Should().Be(clinicId);
         result.ClinicName.Should().Be("My Clinic");
-        result.Doctors.Should().HaveCount(2);
-        result.Doctors.Select(d => d.UserName).Should().Contain(new[] { "DrOne", "DrTwo" });
+        result.Doctors.Results.Should().HaveCount(2);
+        result.Doctors.Results.Select(d => d.Email).Should().Contain(expected);
     }
-
 }

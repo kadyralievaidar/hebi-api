@@ -1,6 +1,5 @@
 ﻿using Hebi_Api.Features.Clinics.Services;
 using Hebi_Api.Features.Core.Common;
-using Hebi_Api.Features.Core.Common.Enums;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Users.Dtos;
@@ -54,7 +53,7 @@ public class UsersService : IUsersService
         var result = await _userManager.CreateAsync(patient);
         if (result.Succeeded)
         {
-            await _userManager.AddToRoleAsync(patient, UserRoles.Patient.ToString());
+            await _userManager.AddToRoleAsync(patient, Consts.Patient);
         }
     }
 
@@ -79,7 +78,7 @@ public class UsersService : IUsersService
         if (result.Succeeded)
         {
             await _signInManager.CreateUserPrincipalAsync(newUser);
-            await _userManager.AddToRoleAsync(newUser, UserRoles.Doctor.ToString());
+            await _userManager.AddToRoleAsync(newUser, Consts.Doctor);
         }
     }
     public async Task<BasicUserInfoDto> GetUserById(Guid userId)
@@ -87,7 +86,8 @@ public class UsersService : IUsersService
         var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.Id == userId, new List<string>() { "Clinic"});
         var basicUserInfoDto = new BasicUserInfoDto() 
         {
-            UserName = user.UserName,
+            UserId = userId,
+            Email = user.Email, 
             FirstName = user.FirstName,
             LastName = user.LastName,
             PhoneNumber = user.PhoneNumber,
@@ -117,10 +117,10 @@ public class UsersService : IUsersService
             {
                 newUser.ClinicId = await _clinicService.CreateDefaultClinic();
                 await _userManager.UpdateAsync(newUser);
-                await _userManager.AddToRoleAsync(newUser, UserRoles.Individual.ToString());
+                await _userManager.AddToRoleAsync(newUser, Consts.Individual);
             }
             else
-                await _userManager.AddToRoleAsync(newUser, UserRoles.Admin.ToString());
+                await _userManager.AddToRoleAsync(newUser, Consts.Admin);
 
             await _signInManager.CreateUserPrincipalAsync(newUser);
         }
@@ -156,7 +156,7 @@ public class UsersService : IUsersService
             var response = new TokenResponse()
             {
                 Principal = principal!,
-                AuthScheme = "Bearer"
+                AuthScheme = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
             };
             return response;
         }
@@ -186,5 +186,16 @@ public class UsersService : IUsersService
             _ => [Destinations.AccessToken]
         });
         return identity;
+    }
+
+    public async Task ChangeBasicInfo(BasicInfoDto dto)
+    {
+        var user = await _unitOfWork.UsersRepository.GetByIdAsync(dto.UserId);
+        user.FirstName = dto.FirstName;
+        user.LastName = dto.LastName;
+        user.Email = dto.Email;
+        user.PhoneNumber = dto.PhoneNumber;
+        _unitOfWork.UsersRepository.Update(user);
+        await _unitOfWork.SaveAsync();
     }
 }

@@ -1,14 +1,14 @@
-﻿using Hebi_Api.Features.Core.Common.RequestHandling;
+﻿using Hebi_Api.Features.Clinics.Dtos;
+using Hebi_Api.Features.Core.Common.RequestHandling;
 
-namespace Hebi_Api.Features.Clinics.RequestHandling.Requests
+namespace Hebi_Api.Features.Clinics.RequestHandling.Requests;
+
+public class GetClinicWithDoctorsRequest: Request<Response>
 {
-    public class GetClinicWithDoctorsRequest: Request<Response>
-    {
-        public Guid ClinicId { get; }
+    public GetClinicsDoctorsDto Dto { get; }
 
-        public GetClinicWithDoctorsRequest(Guid clinicId)
-        {
-            ClinicId = clinicId;
-        }
+    public GetClinicWithDoctorsRequest(GetClinicsDoctorsDto dto)
+    {
+        Dto = dto;
     }
 }

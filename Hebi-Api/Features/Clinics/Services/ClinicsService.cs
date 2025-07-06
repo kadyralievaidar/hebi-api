@@ -1,5 +1,5 @@
 ﻿using Hebi_Api.Features.Clinics.Dtos;
-using Hebi_Api.Features.Core.Common.Enums;
+using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
@@ -43,7 +43,7 @@ public class ClinicsService : IClinicsService
             };
             await _unitOfWork.ClinicRepository.InsertAsync(clinic);
 
-            var isSuperAdmin = await _userManager.IsInRoleAsync(user, UserRoles.SuperAdmin.ToString());
+            var isSuperAdmin = await _userManager.IsInRoleAsync(user, Consts.SuperAdmin);
 
             if (!isSuperAdmin && !dto.DoctorIds.Contains(userId.Value))
                 dto.DoctorIds.Add(userId.Value);
@@ -84,14 +84,21 @@ public class ClinicsService : IClinicsService
         await _unitOfWork.SaveAsync();
     }
 
-    public async Task<Clinic> GetClinicAsync(Guid clinicId)
+    public async Task<ShortClinicInfo> GetClinicAsync(Guid clinicId)
     {
         var clinic = await _unitOfWork.ClinicRepository.GetClinicById(clinicId);
-
-        return clinic;
+        var dto = new ShortClinicInfo()
+        {
+            Name = clinic.Name,
+            Location = clinic.Location,
+            Email = clinic.Email,
+            PhoneNumber = clinic.PhoneNumber,
+            Id = clinic.Id,
+        };
+        return dto;
     }
 
-    public async Task<PagedResult<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto)
+    public async Task<PagedResult<ShortClinicInfo>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto)
     {
         var query = _unitOfWork.ClinicRepository.AsQueryable();
         if (!string.IsNullOrEmpty(dto.SearchText))
@@ -99,16 +106,24 @@ public class ClinicsService : IClinicsService
 
         var totalCount = await query.CountAsync();
         var clinics = await query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Descending)
-                .TrySkip(dto.PageSize * dto.PageIndex).TryTake(dto.PageSize).ToListAsync();
+                .TrySkip(dto.PageSize * dto.PageIndex).TryTake(dto.PageSize)
+                .Select(x => new ShortClinicInfo()
+                {
+                    Name = x.Name,
+                    Location = x.Location,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
+                    Id = x.Id,
+                }).ToListAsync();
 
-        return new PagedResult<Clinic>() 
+        return new PagedResult<ShortClinicInfo>() 
         {
             Results = clinics,
             TotalCount = totalCount 
         };
     }
 
-    public async Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto)
+    public async Task UpdateClinicAsync(Guid id, CreateClinicDto dto)
     {
         var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id);
         clinic.Location = dto.Location;
@@ -130,42 +145,40 @@ public class ClinicsService : IClinicsService
 
         await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
         await _unitOfWork.SaveAsync();
-
-        return clinic;
     }
 
-    public async Task<ClinicWithDoctorsDto?> GetClinicWithDoctorsAsync(Guid clinicId)
+    public async Task<ClinicWithDoctorsDto?> GetClinicWithDoctorsAsync(GetClinicsDoctorsDto dto)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(clinicId);
-        if (clinic == null) return null;
+        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(dto.ClinicId);
 
-        var allUsers = await _userManager.Users
-            .Where(u => u.ClinicId == clinicId && !u.IsDeleted)
-            .AsNoTracking()
-            .ToListAsync();
+        var query = _unitOfWork.UsersRepository.AsQueryable().Where(x => x.ClinicId == dto.ClinicId && !x.IsDeleted);
 
+        var count = await query.CountAsync();
+
+        var allUsers = await query.TrySkip(dto.PageIndex * dto.PageSize).TryTake(dto.PageSize).ToListAsync();
 
         var doctors = new List<ApplicationUser>();
 
         foreach (var user in allUsers)
-        {
-            if (await _userManager.IsInRoleAsync(user, UserRoles.Doctor.ToString()))
-            {
+            if (await _userManager.IsInRoleAsync(user, Consts.Doctor))
                 doctors.Add(user);
-            }
-        }
 
         return new ClinicWithDoctorsDto
         {
-            ClinicId = clinic.Id,
-            ClinicName = clinic.Name,
-            Doctors = doctors.Select(d => new BasicInfoDto
+            ClinicId = clinic!.Id,
+            ClinicName = clinic.Name!,
+            Doctors = new PagedResult<BasicInfoDto>()
             {
-                UserName = d.UserName,
-                FirstName = d.FirstName,
-                LastName = d.LastName,
-                PhoneNumber = d.PhoneNumber,
-            }).ToList()
+                Results = doctors.Select(d => new BasicInfoDto
+                {
+                    UserId = d.Id,
+                    Email = d.Email,
+                    FirstName = d.FirstName,
+                    LastName = d.LastName,
+                    PhoneNumber = d.PhoneNumber,
+                }).ToList(),
+                TotalCount = count
+            }
         };
     }
 }

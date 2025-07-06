@@ -6,9 +6,13 @@
 public class BasicInfoDto
 {
     /// <summary>
+    ///     User's Id
+    /// </summary>
+    public Guid UserId { get; set; }
+    /// <summary>
     ///     User name
     /// </summary>
-    public string? UserName { get; set; }
+    public string? Email { get; set; }
 
     /// <summary>
     ///     User's first name

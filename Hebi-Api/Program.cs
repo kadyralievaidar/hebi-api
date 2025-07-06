@@ -1,4 +1,3 @@
-using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.OpenIdDict;
 using OpenIddict.Validation.AspNetCore;
@@ -36,7 +35,6 @@ if (app.Environment.IsDevelopment())
 await app.SeedRoles();
 app.UseCors("front-end");
 app.UseHttpsRedirection();
-
 app.UseAuthentication(); 
 app.UseAuthorization();
 app.MapControllers();
