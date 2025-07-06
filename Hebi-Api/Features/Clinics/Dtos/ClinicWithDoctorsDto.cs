@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Users.Dtos;
+﻿using Hebi_Api.Features.Core.Common.RequestHandling;
+using Hebi_Api.Features.Users.Dtos;
 
 namespace Hebi_Api.Features.Clinics.Dtos
 {
@@ -6,6 +7,6 @@ namespace Hebi_Api.Features.Clinics.Dtos
     {
         public Guid ClinicId { get; set; }
         public string ClinicName { get; set; }
-        public List<BasicInfoDto> Doctors { get; set; } = new();
+        public PagedResult<BasicInfoDto> Doctors { get; set; } = new();
     }
 }

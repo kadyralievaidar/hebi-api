@@ -7,10 +7,10 @@ public class TokenResponse
     /// <summary>
     ///     ClaimsPrincipal
     /// </summary>
-    public ClaimsPrincipal Principal { get; set; }
+    public ClaimsPrincipal? Principal { get; set; }
 
     /// <summary>
     ///     Auth's scheme
     /// </summary>
-    public string AuthScheme { get; set; }
+    public string? AuthScheme { get; set; }
 }

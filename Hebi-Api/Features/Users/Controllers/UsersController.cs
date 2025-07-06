@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Hebi_Api.Features.Core.Common.Enums;
+using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Users.Dtos;
@@ -59,12 +59,15 @@ public class UsersController : ControllerBase
         var openIdRequest = HttpContext.GetOpenIddictServerRequest();
         var request = new TokenRequest(openIdRequest);
 
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
+        if (request.Request.IsPasswordGrantType())
         {
-            var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-            return BadRequest(new { Errors = errors });
+            var validationResult = await validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                return BadRequest(new { Errors = errors });
+            }
         }
 
         var result = await _mediator.Send(request);
@@ -119,10 +122,18 @@ public class UsersController : ControllerBase
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet("my-profile")]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme,
+        Roles = Consts.Doctor)]
     public async Task<IActionResult> GetUserById(Guid userId)
     {
         var result = await _mediator.Send(new GetUserByIdRequest(userId));
+        return result.AsAspNetCoreResult();
+    }
+    [HttpPut("update")]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> ChangeBasicInfo(BasicInfoDto dto)
+    {
+        var result = await _mediator.Send(new ChangeUserInfoRequest(dto));
         return result.AsAspNetCoreResult();
     }
 }

@@ -37,5 +37,12 @@ public interface IUsersService
     /// </summary>
     /// <returns></returns>
     Task<BasicUserInfoDto> GetUserById(Guid userId);
+
+    /// <summary>
+    ///     Change user's info
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task ChangeBasicInfo(BasicInfoDto dto);
 }
 

@@ -12,13 +12,45 @@ public interface IClinicsService
     /// <returns></returns>
     Task<Guid> CreateClinicAsync(CreateClinicDto dto);
 
+    /// <summary>
+    ///     Delete clinic by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     Task DeleteClinic(Guid id);
 
-    Task<Clinic> UpdateClinicAsync(Guid id, CreateClinicDto dto);
+    /// <summary>
+    ///     Update clinic 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task UpdateClinicAsync(Guid id, CreateClinicDto dto);
 
-    Task<PagedResult<Clinic>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto);
+    /// <summary>
+    ///     Get list of clinics
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task<PagedResult<ShortClinicInfo>> GetListOfClinicsAsync(GetPagedListOfClinicDto dto);
 
-    Task<Clinic> GetClinicAsync(Guid clinicId);
+    /// <summary>
+    ///     Get clinic by id
+    /// </summary>
+    /// <param name="clinicId"></param>
+    /// <returns></returns>
+    Task<ShortClinicInfo> GetClinicAsync(Guid clinicId);
+
+    /// <summary>
+    ///     Create deafult clinic in case of individual
+    /// </summary>
+    /// <returns></returns>
     Task<Guid> CreateDefaultClinic();
-    Task<ClinicWithDoctorsDto?> GetClinicWithDoctorsAsync(Guid clinicId);
+
+    /// <summary>
+    ///     Get clinic with doctors
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task<ClinicWithDoctorsDto?> GetClinicWithDoctorsAsync(GetClinicsDoctorsDto dto);
 }

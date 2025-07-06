@@ -5,5 +5,8 @@
 /// </summary>
 public class BasicUserInfoDto : BasicInfoDto
 {
+    /// <summary>
+    ///     Clinic's name
+    /// </summary>
     public string? ClinicName { get; set; }
 }

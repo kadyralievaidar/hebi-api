@@ -21,7 +21,7 @@ namespace Hebi_Api.Features.Clinics.RequestHandling.Handlers
         {
             try
             {
-                var result = await _service.GetClinicWithDoctorsAsync(request.ClinicId);
+                var result = await _service.GetClinicWithDoctorsAsync(request.Dto);
                 return Response.Ok(request.Id, result);
             }
             catch (Exception e)
