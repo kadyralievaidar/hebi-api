@@ -47,10 +47,9 @@ public class UsersRepository : GenericRepository<ApplicationUser>, IUsersReposit
         return await _context.Users.Where(filter).ToListAsync();
     }
 
-    public async Task<ApplicationUser> GetUserWithClinic(Guid userId)
+    public async Task<ApplicationUser> GetUsersWithClinic(Guid userId)
     {
         var users = await _context.Users.ToListAsync();
         return await _context.Users.Include(x => x.Clinic).FirstOrDefaultAsync(x => x.Id == userId);
-
     }
 }

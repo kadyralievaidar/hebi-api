@@ -53,4 +53,11 @@ public interface IClinicsService
     /// <param name="dto"></param>
     /// <returns></returns>
     Task<ClinicWithDoctorsDto?> GetClinicWithDoctorsAsync(GetClinicsDoctorsDto dto);
+
+    /// <summary>
+    ///     Remove doctors from clinic
+    /// </summary>
+    /// <param name="doctorIds"></param>
+    /// <returns></returns>
+    Task RemoveDoctorsFromClinic(List<Guid> doctorIds);
 }
