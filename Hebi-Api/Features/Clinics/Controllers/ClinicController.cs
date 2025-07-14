@@ -107,4 +107,15 @@ public class ClinicController : ControllerBase
         var result = await _mediator.Send(new GetClinicWithDoctorsRequest(dto), cancellationToken);
         return result.AsAspNetCoreResult();
     }
+
+    /// <summary>
+    ///     Remove doctors from clinic
+    /// </summary>
+    /// <returns></returns>
+    [HttpPut("remove-doctors")]
+    public async Task<IActionResult> RemoveDoctorFromClinic([FromQuery]List<Guid> doctorIds)
+    {
+        var result = await _mediator.Send(new RemoveDoctorsRequest(doctorIds));
+        return result.AsAspNetCoreResult();
+    }
 }

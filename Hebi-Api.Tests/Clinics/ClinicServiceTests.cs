@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace Hebi_Api.Tests.Clinics;
 
@@ -443,5 +444,31 @@ public class ClinicServiceTests
         result.ClinicName.Should().Be("My Clinic");
         result.Doctors.Results.Should().HaveCount(2);
         result.Doctors.Results.Select(d => d.Email).Should().Contain(expected);
+    }
+
+    [Test]
+    public async Task RemoveUsersFromClinic_RemovesClinicAndResetsIsDeleted()
+    {
+        // Arrange
+        var doctorId1 = Guid.NewGuid();
+        var doctorId2 = Guid.NewGuid(); 
+
+        var doctors = new List<ApplicationUser>
+        {
+            new () { Id = doctorId1, ClinicId = TestHelper.ClinicId, IsDeleted = false },
+            new () { Id = doctorId2, ClinicId = TestHelper.ClinicId, IsDeleted = false }
+        };
+
+        _dbFactory.AddData(doctors);
+    
+        // Act
+        await _clinicsService.RemoveDoctorsFromClinic(new List<Guid> { doctorId1, doctorId2 });
+
+        // Assert
+        foreach (var doctor in doctors)
+        {
+            doctor.ClinicId.Should().BeNull();
+            doctor.IsDeleted.Should().BeTrue();
+        }
     }
 }

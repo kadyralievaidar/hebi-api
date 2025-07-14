@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Hebi_Api.Features.Core.DataAccess;
 
@@ -26,6 +27,18 @@ public class HebiDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Gui
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HebiDbContext).Assembly);
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(IBaseModel).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var isDeletedProperty = Expression.Property(parameter, nameof(IBaseModel.IsDeleted));
+                var isNotDeleted = Expression.Equal(isDeletedProperty, Expression.Constant(false));
+                var lambda = Expression.Lambda(isNotDeleted, parameter);
+
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+            }
+        }
         base.OnModelCreating(modelBuilder);
     }
 }

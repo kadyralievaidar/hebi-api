@@ -181,4 +181,16 @@ public class ClinicsService : IClinicsService
             }
         };
     }
+
+    public async Task RemoveDoctorsFromClinic(List<Guid> doctorIds)
+    {
+        var doctors = await _unitOfWork.UsersRepository.WhereAsync(x => doctorIds.Contains(x.Id));
+        foreach (var doctor in doctors) 
+        { 
+            doctor.ClinicId = null;
+            doctor.IsDeleted = true;
+        }
+        await _unitOfWork.UsersRepository.UpdateRangeAsync(doctors);
+        await _unitOfWork.SaveAsync();
+    }
 }
