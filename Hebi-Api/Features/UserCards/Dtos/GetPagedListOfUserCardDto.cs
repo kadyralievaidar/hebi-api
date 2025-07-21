@@ -6,5 +6,4 @@ public class GetPagedListOfUserCardDto : BaseListRequest
 {
     public DateTime StartTimeRange {  get; set; }
     public DateTime EndTimeRange { get; set; }
-    public Guid? DoctorId { get; set; }  
 }
