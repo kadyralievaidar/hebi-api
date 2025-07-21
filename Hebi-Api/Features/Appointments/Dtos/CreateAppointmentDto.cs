@@ -49,4 +49,9 @@ public class CreateAppointmentDto
     ///     Shift's id
     /// </summary>
     public Guid? ShiftId { get; set; }
+
+    /// <summary>
+    ///     User card's Id
+    /// </summary>
+    public Guid? UserCardId { get; set; }
 }

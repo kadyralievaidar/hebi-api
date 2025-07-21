@@ -8,12 +8,10 @@ namespace Hebi_Api.Features.UserCards.Services;
 public class UserCardsService : IUserCardsService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IHttpContextAccessor _contextAccessor;
 
-    public UserCardsService(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
+    public UserCardsService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _contextAccessor = contextAccessor;
     }
 
     public async Task DeleteUserCard(Guid id)
@@ -33,12 +31,15 @@ public class UserCardsService : IUserCardsService
 
     public async Task<UserCard> GetUserCardAsync(Guid id)
     {
-        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(id);
+        var userCard = await _unitOfWork.UserCardsRepository.FirstOrDefaultAsync(x => x.Id == id, relations: ["Appointments"]);
         return userCard;
     }
     public async Task<Guid> CreateUserCard(CreateUserCardDto dto)
     {
-        var userCard = new UserCard() { };
+        var userCard = new UserCard() 
+        {
+            PatientId = dto.UserId,
+        };
         await _unitOfWork.UserCardsRepository.InsertAsync(userCard);
         await _unitOfWork.SaveAsync();
         return userCard.Id;

@@ -3,6 +3,7 @@ using Hebi_Api.Features.Clinics.Services;
 using Hebi_Api.Features.Core.DataAccess;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
+using Hebi_Api.Features.UserCards.Services;
 using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.Services;
 using Hebi_Api.Tests.UOW;
@@ -26,6 +27,7 @@ public class UsersServiceTests
     private UserManager<ApplicationUser> _userManager;
     private SignInManager<ApplicationUser> _signInManager;
     private RoleManager<IdentityRole<Guid>> _roleManager;
+    private Mock<IUserCardsService> _userCardService;
     [SetUp]
     public void Setup()
     {
@@ -70,6 +72,7 @@ public class UsersServiceTests
                 NormalizedUserName = "TESTPATIENT"
             }
         });
+        _userCardService = new Mock<IUserCardsService>();
 
         // Now initialize UsersService with all required dependencies (use mocks or actual objects as needed)
         _usersService = new UsersService(
@@ -78,7 +81,8 @@ public class UsersServiceTests
             Mock.Of<IOpenIddictApplicationManager>(),
             TestHelper.CreateHttpContext().Object,
             _unitOfWorkSqlite,
-            Mock.Of<IClinicsService>()
+            Mock.Of<IClinicsService>(),
+            _userCardService.Object
         );
     }
 

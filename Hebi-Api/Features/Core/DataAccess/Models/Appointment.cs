@@ -28,5 +28,8 @@ public class Appointment : IBaseModel
     public ApplicationUser? Doctor { get; set; } = null!;
     public Guid? DoctorId { get; set; }
 
+    public Guid? UserCardId { get; set; }
+    public UserCard? UserCard { get; set; }
+
     #endregion
 }

@@ -2,6 +2,8 @@
 using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
+using Hebi_Api.Features.UserCards.Dtos;
+using Hebi_Api.Features.UserCards.Services;
 using Hebi_Api.Features.Users.Dtos;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -21,11 +23,12 @@ public class UsersService : IUsersService
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClinicsService _clinicService;
+    private readonly IUserCardsService _userCardService;
 
     public UsersService(
         UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
         IOpenIddictApplicationManager openIddictApplicationManager, IHttpContextAccessor contextAccessor,
-        IUnitOfWork unitOfWork, IClinicsService clinicService)
+        IUnitOfWork unitOfWork, IClinicsService clinicService, IUserCardsService userCardService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -33,6 +36,7 @@ public class UsersService : IUsersService
         _contextAccessor = contextAccessor;
         _unitOfWork = unitOfWork;
         _clinicService = clinicService;
+        _userCardService = userCardService;
     }
     public async Task CreatePatient(CreatePatientDto dto)
     {
@@ -51,6 +55,10 @@ public class UsersService : IUsersService
         };
 
         var result = await _userManager.CreateAsync(patient);
+        await _userCardService.CreateUserCard(new CreateUserCardDto()
+        {
+            UserId = patient.Id,
+        });
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(patient, Consts.Patient);

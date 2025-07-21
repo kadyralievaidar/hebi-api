@@ -35,6 +35,7 @@ public class AppointmentsService : IAppointmentsService
             Name = dto.Name,
             Description = dto.Description,
             CreatedBy = _contextAccessor.GetUserIdentifier(),
+            UserCardId = dto.UserCardId
         };
         await _unitOfWork.AppointmentRepository.InsertAsync(appointment);
         await _unitOfWork.SaveAsync();
