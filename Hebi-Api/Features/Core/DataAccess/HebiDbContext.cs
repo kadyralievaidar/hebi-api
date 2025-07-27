@@ -39,6 +39,19 @@ public class HebiDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Gui
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
             }
         }
+
+        modelBuilder.Entity<ApplicationUser>()
+            .HasIndex(x => x.ClinicId);
+        modelBuilder.Entity<UserCard>()
+            .HasIndex(x => x.ClinicId);
+        modelBuilder.Entity<Appointment>()
+            .HasIndex(x => x.ClinicId);
+        modelBuilder.Entity<Shift>()
+            .HasIndex(x => x.ClinicId);
+
+        modelBuilder.Entity<Disease>()
+            .HasIndex(x => x.ClinicId);
+
         base.OnModelCreating(modelBuilder);
     }
 }

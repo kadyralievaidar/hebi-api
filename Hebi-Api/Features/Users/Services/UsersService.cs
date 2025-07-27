@@ -2,6 +2,7 @@
 using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
+using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.UserCards.Dtos;
 using Hebi_Api.Features.UserCards.Services;
 using Hebi_Api.Features.Users.Dtos;
@@ -25,18 +26,15 @@ public class UsersService : IUsersService
     private readonly IClinicsService _clinicService;
     private readonly IUserCardsService _userCardService;
 
-    public UsersService(
-        UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, 
-        IOpenIddictApplicationManager openIddictApplicationManager, IHttpContextAccessor contextAccessor,
-        IUnitOfWork unitOfWork, IClinicsService clinicService, IUserCardsService userCardService)
+    public UsersService(IServiceProvider serviceProvider)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _applicationManager = openIddictApplicationManager;
-        _contextAccessor = contextAccessor;
-        _unitOfWork = unitOfWork;
-        _clinicService = clinicService;
-        _userCardService = userCardService;
+        _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        _signInManager = serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+        _applicationManager = serviceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+        _contextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        _unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+        _clinicService = serviceProvider.GetRequiredService<IClinicsService>();
+        _userCardService = serviceProvider.GetRequiredService<IUserCardsService>();
     }
     public async Task CreatePatient(CreatePatientDto dto)
     {
@@ -198,12 +196,39 @@ public class UsersService : IUsersService
 
     public async Task ChangeBasicInfo(BasicInfoDto dto)
     {
-        var user = await _unitOfWork.UsersRepository.GetByIdAsync(dto.UserId);
-        user.FirstName = dto.FirstName;
+        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(user => user.Id == dto.UserId);
+        user!.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
         user.Email = dto.Email;
         user.PhoneNumber = dto.PhoneNumber;
         _unitOfWork.UsersRepository.Update(user);
         await _unitOfWork.SaveAsync();
+    }
+
+    public async Task ChangeUserRole(Guid? userId, string newRole)
+    {
+        if (userId == null)
+            userId = _contextAccessor.GetUserIdentifier();
+
+        var user = await _userManager.FindByIdAsync(userId.ToString()!)!;
+
+        var currentRoles = await _userManager.GetRolesAsync(user!);
+
+        var removeResult = await _userManager.RemoveFromRolesAsync(user!, currentRoles);
+
+        if (!removeResult.Succeeded)
+            throw new Exception("Failed to remove old roles");
+
+        var addResult = await _userManager.AddToRoleAsync(user!, newRole);
+
+        if (!addResult.Succeeded)
+            throw new Exception("Failed to add new role");
+
+        if (newRole == Consts.Individual)
+        {
+            var clinicId = await _clinicService.CreateDefaultClinic();
+            user.ClinicId = clinicId;
+            await _userManager.UpdateAsync(user);
+        }
     }
 }

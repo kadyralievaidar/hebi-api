@@ -44,5 +44,13 @@ public interface IUsersService
     /// <param name="dto"></param>
     /// <returns></returns>
     Task ChangeBasicInfo(BasicInfoDto dto);
+
+    /// <summary>
+    ///     Change user's role
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="roleName"></param>
+    /// <returns></returns>
+    Task ChangeUserRole(Guid? userId, string roleName);
 }
 
