@@ -38,6 +38,7 @@ app.UseCors("front-end");
 app.UseHttpsRedirection();
 app.UseAuthentication(); 
 app.UseAuthorization();
+app.UseMiddleware<ClaimsCheckMiddleware>();
 app.MapControllers();
 
 app.Run();

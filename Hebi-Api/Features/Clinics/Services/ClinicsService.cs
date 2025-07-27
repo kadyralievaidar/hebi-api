@@ -71,7 +71,6 @@ public class ClinicsService : IClinicsService
 
     public async Task<Guid> CreateDefaultClinic()
     {
-        var test = await _unitOfWork.ClinicRepository.CreateDefaultClinic();
         return await _unitOfWork.ClinicRepository.CreateDefaultClinic();
     }
 

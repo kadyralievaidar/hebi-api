@@ -26,7 +26,7 @@ public class CreatePatientRequestHandler : IRequestHandler<CreatePatientRequest,
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            return Response.InternalServerError(request.Id, e);
+            return Response.BadRequest(request.Id, e);
         }
     }
 }

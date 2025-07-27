@@ -10,4 +10,6 @@ public static class Consts
     public const string Doctor = "Doctor";
     public const string Individual = "Individual";
     public const string Patient = "Patient";
+
+    public const int ClinicNotFound = 498;
 }
