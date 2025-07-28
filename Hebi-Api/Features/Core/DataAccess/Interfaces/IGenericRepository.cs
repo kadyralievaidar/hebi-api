@@ -73,16 +73,17 @@ public interface IGenericRepository<TEntity> where TEntity : class, IBaseModel
     /// <summary>
     ///     Get an entity by primary keys
     /// </summary>
-    /// <param name="ids">Primary keys</param>
+    /// <param name="id">Primary keys</param>
     /// <returns>Entity</returns>
-    TEntity? GetById(params object[]? ids);
+    TEntity? GetById(Guid id);
 
     /// <summary>
     ///     Get an entity by primary keys
     /// </summary>
-    /// <param name="ids">Primary keys</param>
+    /// <param name="id">Primary keys</param>
+    /// <param name="relations">Primary keys</param>
     /// <returns>Entity</returns>
-    Task<TEntity?> GetByIdAsync(params object[]? ids);
+    Task<TEntity?> GetByIdAsync(Guid id, List<string>? relations = null);
 
     /// <summary>
     ///     Insert a new entity into the context

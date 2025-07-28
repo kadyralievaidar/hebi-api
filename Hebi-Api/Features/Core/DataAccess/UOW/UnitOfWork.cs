@@ -46,7 +46,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     /// </summary>
     public void Save()
     {
-        PrepareContextForSaving();
         _context.SaveChanges();
     }
 
@@ -55,7 +54,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     /// </summary>
     public async Task SaveAsync()
     {
-        PrepareContextForSaving();
         await _context.SaveChangesAsync();
     }
 
@@ -93,41 +91,9 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IClinicsRepository ClinicRepository => _clinicRepository.Value;
     public IShiftsRepository ShiftsRepository => _shiftsRepository.Value;
 
-    /// <summary>
-    ///     Prepare context for saving
-    /// </summary>
-    private void PrepareContextForSaving()
-    {
-        var modifiedPersistentsEntities = _context.ChangeTracker.Entries()
-            .Where(x => x.State == EntityState.Modified)
-            .Select(s => s.Entity)
-            .OfType<IBaseModel>()
-            .ToList();
-
-        var addedPersistentsEntities = _context.ChangeTracker.Entries()
-            .Where(x => x.State == EntityState.Added)
-            .Select(s => s.Entity)
-            .OfType<IBaseModel>()
-            .ToList();
-
-        foreach (var persistentObject in modifiedPersistentsEntities)
-            persistentObject.LastModifiedAt = DateTime.UtcNow;
-
-        foreach (var persistentObject in addedPersistentsEntities)
-        {
-            persistentObject.LastModifiedAt = DateTime.UtcNow;
-            persistentObject.CreatedAt = DateTime.UtcNow;
-        }
-    }
     public void DetachForReload(IBaseModel entity)
     {
-        try
-        {
-            _context.Entry(entity).State = EntityState.Detached;
-        }
-        catch (Exception)
-        {
-        }
+        _context.Entry(entity).State = EntityState.Detached;
     }
     private void Dispose(bool disposing)
     {

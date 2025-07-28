@@ -32,9 +32,8 @@ public class DiseasesService : IDiseaseService
 
     public async Task DeleteDisease(Guid id)
     {
-        var disease = await _unitOfWork.DiseaseRepository.GetByIdAsync(id)
-                    ?? throw new NullReferenceException(nameof(Disease));
-        _unitOfWork.DiseaseRepository.Delete(disease);
+        var disease = await _unitOfWork.DiseaseRepository.GetByIdAsync(id);
+        _unitOfWork.DiseaseRepository.Delete(disease!);
         await _unitOfWork.SaveAsync();
     }
 

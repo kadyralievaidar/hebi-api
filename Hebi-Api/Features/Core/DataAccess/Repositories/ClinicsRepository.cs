@@ -42,10 +42,20 @@ public class ClinicsRepository : GenericRepository<Clinic>, IClinicsRepository
     {
         entity.CreatedAt = DateTime.UtcNow;
         entity.CreatedBy = ContextAccessor.GetUserIdentifier();
-        await DbSet.AddAsync(entity);
+        await Context.AddAsync(entity);
     }
     public override async Task<bool> AnyAsync(Expression<Func<Clinic, bool>> predicate)
     {
         return await _dbContext.Clinics.AnyAsync(predicate);
+    }
+
+    public override void Delete(Clinic entityToDelete)
+    {
+        _dbContext.Clinics.Remove(entityToDelete);
+    }
+
+    public override IQueryable<Clinic> AsQueryable()
+    {
+        return _dbContext.Clinics.AsQueryable();
     }
 }

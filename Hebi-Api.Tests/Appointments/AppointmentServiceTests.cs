@@ -167,10 +167,12 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
 
         _dbFactory.AddData(new List<Appointment>(){ appointment });
+        _dbFactory.DetachForReload(appointment);
         //Act
         await _appointmentService.DeleteAppointment(appointmentId);
 
@@ -269,10 +271,12 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
 
         _dbFactory.AddData([appointment]);
+        _dbFactory.DetachForReload(appointment);
 
         var dto = new UpdateAppointmentDto()
         {
@@ -357,7 +361,8 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
 
         _dbFactory.AddData([appointment]);
@@ -430,7 +435,8 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
 
         var appointment2 = new Appointment()
@@ -442,7 +448,8 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
         _dbFactory.AddData([appointment, appointment2]);
 
@@ -527,7 +534,8 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
 
         var appointment2 = new Appointment()
@@ -539,7 +547,8 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
         _dbFactory.AddData([appointment, appointment2]);
 
@@ -733,7 +742,8 @@ public class AppointmentServiceTests
             PatientId = patientId,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
 
         var appointment2 = new Appointment()
@@ -745,7 +755,8 @@ public class AppointmentServiceTests
             PatientId = patientId2,
             ShiftId = shiftId,
             Name = "TestName",
-            Description = "TestDescription"
+            Description = "TestDescription",
+            ClinicId = _clinicId
         };
         _dbFactory.AddData([appointment, appointment2]);
 

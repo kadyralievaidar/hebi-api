@@ -57,9 +57,11 @@ public class DiseasesServiceTests
         {
             Id = Guid.NewGuid(),
             Name = "ToDelete",
-            Description = "To be deleted"
+            Description = "To be deleted",
+            ClinicId = TestHelper.ClinicId
         };
         _dbFactory.AddData(new List<Disease> { disease });
+        _dbFactory.DetachForReload(disease);
 
         // Act
         await _service.DeleteDisease(disease.Id);
@@ -88,7 +90,8 @@ public class DiseasesServiceTests
         {
             Id = Guid.NewGuid(),
             Name = "ToGet",
-            Description = "Details"
+            Description = "Details",
+            ClinicId = TestHelper.ClinicId
         };
         _dbFactory.AddData(new List<Disease> { disease });
 
@@ -119,9 +122,11 @@ public class DiseasesServiceTests
         {
             Id = Guid.NewGuid(),
             Name = "Original",
-            Description = "Original Desc"
+            Description = "Original Desc",
+            ClinicId= TestHelper.ClinicId
         };
         _dbFactory.AddData(new List<Disease> { disease });
+        _dbFactory.DetachForReload(disease);
 
         var dto = new CreateDiseaseDto
         {

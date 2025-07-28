@@ -81,20 +81,21 @@ public class UsersServiceTests
         _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
         // Seed a test user
+        var testUser = new ApplicationUser()
+        {
+            Id = TestHelper.UserId,
+            UserName = "TestPatient",
+            FirstName = "Patient",
+            LastName = "PatientLastName",
+            Email = "test@test.com",
+            ClinicId = TestHelper.ClinicId,
+            NormalizedUserName = "TESTPATIENT"
+        };
         _dbFactory.AddData(new List<ApplicationUser>
         {
-            new()
-            {
-                Id = TestHelper.UserId,
-                UserName = "TestPatient",
-                FirstName = "Patient",
-                LastName = "PatientLastName",
-                Email = "test@test.com",
-                ClinicId = TestHelper.ClinicId,
-                NormalizedUserName = "TESTPATIENT",
-                SecurityStamp = Guid.NewGuid().ToString()
-            }
+            testUser
         });
+        _dbFactory.DetachForReload(testUser);
         // Now initialize UsersService with all required dependencies (use mocks or actual objects as needed)
 
         _usersService = new UsersService(serviceProvider);

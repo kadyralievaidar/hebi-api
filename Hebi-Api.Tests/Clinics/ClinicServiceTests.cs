@@ -181,7 +181,7 @@ public class ClinicServiceTests
         var createdClinicId = await service.CreateClinicAsync(dto);
 
         // Assert
-        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(createdClinicId);
+        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetClinicById(createdClinicId);
         clinic.Should().NotBeNull();
         clinic.Name.Should().Be(dto.Name);
 
@@ -286,7 +286,7 @@ public class ClinicServiceTests
         await _clinicsService.DeleteClinic(clinic.Id);
 
         // Assert
-        var deletedClinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(clinic.Id);
+        var deletedClinic = await _unitOfWorkSqlite.ClinicRepository.GetClinicById(clinic.Id);
         deletedClinic.Should().BeNull();
     }
 

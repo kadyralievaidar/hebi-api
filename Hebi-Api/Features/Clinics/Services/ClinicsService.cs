@@ -76,11 +76,23 @@ public class ClinicsService : IClinicsService
 
     public async Task DeleteClinic(Guid id)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id)
-            ?? throw new NullReferenceException(nameof(Clinic));
-        _unitOfWork.ClinicRepository.Delete(clinic);
+        try
+        {
+            var clinic = await _unitOfWork.ClinicRepository.GetClinicByDoctor(x => x.Id == id);
+            foreach (var doctor in clinic.Doctors)
+                doctor.ClinicId = null;
 
-        await _unitOfWork.SaveAsync();
+            await _unitOfWork.UsersRepository.UpdateRangeAsync(clinic.Doctors);
+
+            _unitOfWork.ClinicRepository.Delete(clinic);
+
+            await _unitOfWork.SaveAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            throw;
+        }
     }
 
     public async Task<ShortClinicInfo> GetClinicAsync(Guid clinicId)
@@ -115,10 +127,10 @@ public class ClinicsService : IClinicsService
                     Id = x.Id,
                 }).ToListAsync();
 
-        return new PagedResult<ShortClinicInfo>() 
+        return new PagedResult<ShortClinicInfo>()
         {
             Results = clinics,
-            TotalCount = totalCount 
+            TotalCount = totalCount
         };
     }
 
@@ -148,7 +160,7 @@ public class ClinicsService : IClinicsService
 
     public async Task<ClinicWithDoctorsDto?> GetClinicWithDoctorsAsync(GetClinicsDoctorsDto dto)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(dto.ClinicId);
+        var clinic = await _unitOfWork.ClinicRepository.GetClinicById(dto.ClinicId);
 
         var query = _unitOfWork.UsersRepository.AsQueryable().Where(x => x.ClinicId == dto.ClinicId && !x.IsDeleted);
 
@@ -184,8 +196,8 @@ public class ClinicsService : IClinicsService
     public async Task RemoveDoctorsFromClinic(List<Guid> doctorIds)
     {
         var doctors = await _unitOfWork.UsersRepository.WhereAsync(x => doctorIds.Contains(x.Id));
-        foreach (var doctor in doctors) 
-        { 
+        foreach (var doctor in doctors)
+        {
             doctor.ClinicId = null;
             doctor.IsDeleted = true;
         }

@@ -21,11 +21,12 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     public GenericRepository(HebiDbContext context, IHttpContextAccessor contextAccessor)
     {
         Context = context;
-        DbSet = context.Set<TEntity>();
         ContextAccessor = contextAccessor;
     }
 
     protected virtual IQueryable<TEntity> SetWithRelatedEntities => GetContext();
+
+    protected virtual IQueryable<TEntity> SetWithRelatedEntitiesAsNoTracking => GetContext().AsNoTracking();
 
     /// <summary>
     ///     Returns context with default filters
@@ -38,10 +39,6 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
         return context;
     }
-    /// <summary>
-    ///     DbSet
-    /// </summary>
-    public DbSet<TEntity> DbSet { get; }
 
     /// <summary>
     ///     DbSet
@@ -111,7 +108,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// <summary>
     ///     As queryable
     /// </summary>
-    public virtual IQueryable<TEntity> AsQueryable() => DbSet;
+    public virtual IQueryable<TEntity> AsQueryable() => Queryable;
 
     /// <summary>
     ///     Return an entity. Similar to LINQ FirstOrDefault
@@ -144,20 +141,29 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// </summary>
     /// <param name="ids">Primary keys</param>
     /// <returns>Entity</returns>
-    public virtual TEntity? GetById(params object[]? ids) => ids == null ? null : DbSet.Find(ids);
+    public virtual TEntity? GetById(Guid id)
+    {
+        return Queryable.SingleOrDefault(x => x.Id == id);
+    }
 
     /// <summary>
     ///     Get an entity by primary keys
     /// </summary>
     /// <param name="ids">Primary keys</param>
     /// <returns>Entity</returns>
-    public virtual async Task<TEntity?> GetByIdAsync(params object[]? ids) => ids == null ? null : await DbSet.FindAsync(ids);
+    public virtual async Task<TEntity?> GetByIdAsync(Guid id, List<string>? relations = null)
+    {
+        var context = relations != null && RelationsAreValid(relations) ?
+                GetNoTrackingContextWithRelations(relations)
+                : SetWithRelatedEntitiesAsNoTracking;
 
+        return await context.SingleOrDefaultAsync(x => x.Id == id);
+    }
     /// <summary>
     ///     Insert a new entity into the context
     /// </summary>
     /// <param name="entity">Entity to insert</param>
-    public virtual void Insert(TEntity entity) => DbSet.Add(entity);
+    public virtual void Insert(TEntity entity) => Context.Add(entity);
 
     /// <summary>
     ///     Insert a new entity into the context
@@ -168,20 +174,20 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         entity.ClinicId = ContextAccessor.GetClinicId();
         entity.CreatedAt = DateTime.UtcNow;
         entity.CreatedBy = ContextAccessor.GetUserIdentifier();
-        await DbSet.AddAsync(entity);
+        await Context.AddAsync(entity);
     }
 
     /// <summary>
     ///     Insert an array of new entities into the context
     /// </summary>
     /// <param name="entities">Entities to insert</param>
-    public virtual void InsertRange(IEnumerable<TEntity> entities) => DbSet.AddRange(entities);
+    public virtual void InsertRange(IEnumerable<TEntity> entities) => Context.AddRange(entities);
 
     /// <summary>
     ///     Insert an array of new entities into the context
     /// </summary>
     /// <param name="entities">Entities to insert</param>
-    public virtual async Task InsertRangeAsync(IEnumerable<TEntity> entities) => await DbSet.AddRangeAsync(entities);
+    public virtual async Task InsertRangeAsync(IEnumerable<TEntity> entities) => await Context.AddRangeAsync(entities);
 
     /// <summary>
     ///     Delete an entity
@@ -190,16 +196,16 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     public virtual void Delete(TEntity entityToDelete)
     {
         if (Context.Entry(entityToDelete).State == EntityState.Detached)
-            DbSet.Attach(entityToDelete);
+            Context.Attach(entityToDelete);
 
-        DbSet.Remove(entityToDelete);
+        Context.Remove(entityToDelete);
     }
 
     /// <summary>
     ///     Remove a list of entities
     /// </summary>
     /// <param name="toDelete">Entities</param>
-    public virtual void DeleteRange(IEnumerable<TEntity> toDelete) => DbSet.RemoveRange(toDelete);
+    public virtual void DeleteRange(IEnumerable<TEntity> toDelete) => Context.RemoveRange(toDelete);
 
     /// <summary>
     ///     Update an entity in the repository
@@ -208,7 +214,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     public virtual void Update(TEntity entityToUpdate)
     {
         Context.Entry(entityToUpdate).State = EntityState.Detached;
-        DbSet.Attach(entityToUpdate);
+        Context.Attach(entityToUpdate);
         Context.Entry(entityToUpdate).State = EntityState.Modified;
     }
 
@@ -222,39 +228,39 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     ///     Presence of records by condition
     /// </summary>
     /// <param name="predicate">Filter for selection condition</param>
-    public virtual bool Any(Expression<Func<TEntity, bool>> predicate) => DbSet.Any(predicate);
+    public virtual bool Any(Expression<Func<TEntity, bool>> predicate) => Queryable.Any(predicate);
 
     /// <summary>
     ///     Select operator
     /// </summary>
     /// <typeparam name="T">Field type</typeparam>
     /// <param name="selector">Filter for selection condition</param>
-    public virtual IEnumerable<T> Select<T>(Expression<Func<TEntity, T>> selector) => DbSet.Select(selector);
+    public virtual IEnumerable<T> Select<T>(Expression<Func<TEntity, T>> selector) => Queryable.Select(selector);
 
     /// <summary>
     ///     Sort ascending
     /// </summary>
     /// <typeparam name="T">Field type</typeparam>
     /// <param name="selector">Filter for selection condition</param>
-    public virtual IOrderedQueryable<TEntity> OrderBy<T>(Expression<Func<TEntity, T>> selector) => DbSet.OrderBy(selector);
+    public virtual IOrderedQueryable<TEntity> OrderBy<T>(Expression<Func<TEntity, T>> selector) => Queryable.OrderBy(selector);
 
     /// <summary>
     ///     Sort descending
     /// </summary>
     /// <typeparam name="T">Field type</typeparam>
     /// <param name="selector">Filter for selection condition</param>
-    public virtual IOrderedQueryable<TEntity> OrderByDescending<T>(Expression<Func<TEntity, T>> selector) => DbSet.OrderByDescending(selector);
+    public virtual IOrderedQueryable<TEntity> OrderByDescending<T>(Expression<Func<TEntity, T>> selector) => Queryable.OrderByDescending(selector);
 
     /// <summary>
     ///     Count of elements
     /// </summary>
-    public virtual int Count() => DbSet.Count();
+    public virtual int Count() => Queryable.Count();
 
     /// <summary>
     ///     Sum by condition
     /// </summary>
     /// <param name="selector">Filter for selection condition</param>
-    public virtual decimal Sum(Expression<Func<TEntity, decimal>> selector) => DbSet.Sum(selector);
+    public virtual decimal Sum(Expression<Func<TEntity, decimal>> selector) => Queryable.Sum(selector);
 
     /// <summary>
     ///     Filter entities
@@ -299,7 +305,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
     /// </summary>
     /// <param name="ids"></param>
     /// <returns></returns>
-    public virtual async Task<List<TEntity>> GetAllAsync() => await DbSet.ToListAsync();
+    public virtual async Task<List<TEntity>> GetAllAsync() => await Queryable.ToListAsync();
 
     public async Task<bool> ExistAsync(Guid id)
     {
@@ -313,7 +319,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public Task UpdateRangeAsync(IEnumerable<TEntity> entities)
     {
-        DbSet.UpdateRange(entities);
+        Context.UpdateRange(entities);
         return Task.CompletedTask;
     }
 
@@ -362,5 +368,11 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         if (type?.GetProperty(relation) == null)
             throw new MissingFieldException($"This entity does not have such field: {relation}");
         return true;
+    }
+    protected virtual IQueryable<TEntity> GetNoTrackingContextWithRelations(IEnumerable<string> relations)
+    {
+        var context = SetWithRelatedEntitiesAsNoTracking;
+        context = relations.Aggregate(context, (current, relation) => current.Include(relation));
+        return context;
     }
 }

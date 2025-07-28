@@ -50,7 +50,7 @@ public class ShiftsServiceTests
         // Act
         var shiftId = await _service.CreateShift(dto);
         // Assert
-        var shift = await _unitOfWorkSqlite.ShiftsRepository.GetByIdAsync(shiftId);
+        var shift = await _unitOfWorkSqlite.ShiftsRepository.GetByIdAsync(shiftId, ["Appointments"]);
         shift.Should().NotBeNull();
         shift.Appointments.Count().Should().Be(1);
     }
@@ -68,7 +68,7 @@ public class ShiftsServiceTests
         };
         await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift);
         await _unitOfWorkSqlite.SaveAsync();
-
+        _dbFactory.DetachForReload(shift);
         // Act
         await _service.DeleteShift(shift.Id);
 
@@ -147,7 +147,7 @@ public class ShiftsServiceTests
             EndTime = DateTime.Now.AddHours(3),
             AppointmentIds = new List<Guid>()
         };
-
+        _dbFactory.DetachForReload(shift);
         // Act
         var updated = await _service.UpdateShift(shift.Id, newDto);
 

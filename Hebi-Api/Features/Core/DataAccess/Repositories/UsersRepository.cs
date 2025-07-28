@@ -46,6 +46,10 @@ public class UsersRepository : GenericRepository<ApplicationUser>, IUsersReposit
     {
         return await _context.Users.Where(filter).ToListAsync();
     }
+    public override IQueryable<ApplicationUser> AsQueryable()
+    {
+        return _context.Users.AsQueryable();
+    }
 
     public async Task<ApplicationUser> GetUsersWithClinic(Guid userId)
     {
