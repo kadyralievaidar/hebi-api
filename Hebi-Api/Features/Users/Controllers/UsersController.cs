@@ -136,7 +136,7 @@ public class UsersController : ControllerBase
         var result = await _mediator.Send(new ChangeUserInfoRequest(dto));
         return result.AsAspNetCoreResult();
     }
-    [HttpPatch("change-password")]
+    [HttpPatch("change-role")]
     [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public async Task<IActionResult> ChangeRole([FromQuery]Guid? id, [FromBody] string roleName)
     {

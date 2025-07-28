@@ -7,6 +7,14 @@ namespace Hebi_Api.Features.OpenIdDict;
 /// </summary>
 public class ClaimsCheckMiddleware 
 {
+    private static List<PathString> pathStrings = new () 
+    {
+        new ("/Users/register"),
+        new ("/connect/token"),
+        new ("/Users/token"),
+        new ("/Users/change-role"),
+        new ("/Clinic/create-clinic")
+    };
     /// <summary>
     ///     Request delegate to move to next
     /// </summary>
@@ -29,11 +37,17 @@ public class ClaimsCheckMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Ensure the user is authenticated
+        var path = context.Request.Path;
+        if (pathStrings.Contains(path))
+        {
+            await _next(context);
+            return;
+        }
         if (context.User?.Identity?.IsAuthenticated == true)
         {
             var clinicIdClaim = context.User.FindFirst(Consts.ClinicIdClaim)?.Value;
 
-            if (string.IsNullOrEmpty(clinicIdClaim))
+            if (!string.IsNullOrEmpty(clinicIdClaim))
             {
                 await _next(context);
                 return;

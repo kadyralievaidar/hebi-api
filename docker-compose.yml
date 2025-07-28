@@ -10,7 +10,7 @@ services:
     networks:
       - hebi-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Staging
       - ConnectionStrings__DefaultConnection=Server=db;Database=hebiDb;User ID=postgres;Host=hebi-db;Password=postgres;
       - OpenIdDict__Issuer=http://hebi-api.gonget.net/
     depends_on:

@@ -6,6 +6,7 @@ using OpenIddict.Validation.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.ConfigureRepository();
+builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json");
 builder.Services.RegisterRequestHandlers();
 builder.Services.RegisterServices();
 builder.Services.AddControllers();
@@ -26,7 +27,7 @@ builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.Authen
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
