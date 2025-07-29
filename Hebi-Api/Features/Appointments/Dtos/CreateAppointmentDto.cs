@@ -54,4 +54,9 @@ public class CreateAppointmentDto
     ///     User card's Id
     /// </summary>
     public Guid? UserCardId { get; set; }
+
+    /// <summary>
+    ///     Disease's id
+    /// </summary>
+    public Guid? DiseaseId { get; set; }
 }

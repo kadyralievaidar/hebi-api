@@ -33,6 +33,7 @@ public class AppointmentsService : IAppointmentsService
             CreatedAt = DateTime.UtcNow,
             IsDeleted = false,
             Name = dto.Name,
+            DiseaseId = dto.DiseaseId,
             Description = dto.Description,
             CreatedBy = _contextAccessor.GetUserIdentifier(),
             UserCardId = dto.UserCardId

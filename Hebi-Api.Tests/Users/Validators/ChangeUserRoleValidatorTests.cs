@@ -44,7 +44,7 @@ public class ChangeUserRoleValidatorTests
     {
         var userId = Guid.NewGuid();
         _usersRepositoryMock
-            .Setup(x => x.GetByIdAsync(userId))
+            .Setup(x => x.GetByIdAsync(userId, null))
             .ReturnsAsync(new ApplicationUser { Id = userId });
 
         var model = new ChangeUserRoleRequest(userId, string.Empty);
@@ -59,7 +59,7 @@ public class ChangeUserRoleValidatorTests
     {
         var userId = Guid.NewGuid();
         _usersRepositoryMock
-            .Setup(x => x.GetByIdAsync(userId))
+            .Setup(x => x.GetByIdAsync(userId, null))
             .ReturnsAsync((ApplicationUser)null!);
 
         var model = new ChangeUserRoleRequest(userId, string.Empty);

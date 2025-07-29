@@ -1,7 +1,10 @@
-﻿using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using Hebi_Api.Features.Core.Common.RequestHandling;
+using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Diseases.Dtos;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace Hebi_Api.Features.Diseases.Services;
 
@@ -22,6 +25,8 @@ public class DiseasesService : IDiseaseService
         {
             Name = dto.Name,
             Description = dto.Description,
+            Discount = dto.Discount,
+            Price = dto.Price,
             CreatedAt = DateTime.Now
         };
         await _unitOfWork.DiseaseRepository.InsertAsync(disease);
@@ -45,13 +50,21 @@ public class DiseasesService : IDiseaseService
         return disease;
     }
 
-    public async Task<List<Disease>> GetListOfDiseasesAsync(GetPagedListOfDiseaseDto dto)
+    public async Task<PagedResult<Disease>> GetListOfDiseasesAsync(GetPagedListOfDiseaseDto dto)
     {
-        var diseases = await _unitOfWork.DiseaseRepository.SearchAsync(x => dto.SearchText == null
-        || (x.Description!.ToLower().Contains(dto.SearchText.ToLower()) || x.Name!.ToLower().Contains(dto.SearchText.ToLower())),
-            dto.SortBy, dto.SortDirection, dto.PageSize * dto.PageIndex, dto.PageSize);
+        var queryable = _unitOfWork.DiseaseRepository.AsQueryable().Where(x => dto.SearchText == null
+                        || (x.Description!.Contains(dto.SearchText, StringComparison.CurrentCultureIgnoreCase) 
+                        || x.Name!.Contains(dto.SearchText, StringComparison.CurrentCultureIgnoreCase)));
 
-        return diseases;
+        var count = await queryable.CountAsync();
+        var diseases = await queryable.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Ascending)
+                            .TrySkip(dto.PageSize * dto.PageIndex).TryTake(dto.PageSize).ToListAsync();
+
+        return new PagedResult<Disease>()
+        {
+            Results = diseases,
+            TotalCount = count
+        };
     }
 
     public async Task<Disease> UpdateDisease(Guid id, CreateDiseaseDto dto)

@@ -168,6 +168,6 @@ public class DiseasesServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().ContainSingle(x => x.Name == "Covid");
+        result.Results.Should().ContainSingle(x => x.Name == "Covid");
     }
 }
