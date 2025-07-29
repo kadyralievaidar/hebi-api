@@ -53,8 +53,8 @@ public class DiseasesService : IDiseaseService
     public async Task<PagedResult<Disease>> GetListOfDiseasesAsync(GetPagedListOfDiseaseDto dto)
     {
         var queryable = _unitOfWork.DiseaseRepository.AsQueryable().Where(x => dto.SearchText == null
-                        || (x.Description!.Contains(dto.SearchText, StringComparison.CurrentCultureIgnoreCase) 
-                        || x.Name!.Contains(dto.SearchText, StringComparison.CurrentCultureIgnoreCase)));
+                        || x.Description.ToLower().Contains(dto.SearchText.ToLower()) 
+                        || x.Name.ToLower().Contains(dto.SearchText.ToLower()));
 
         var count = await queryable.CountAsync();
         var diseases = await queryable.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Ascending)

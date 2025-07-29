@@ -89,7 +89,8 @@ public class UsersServiceTests
             LastName = "PatientLastName",
             Email = "test@test.com",
             ClinicId = TestHelper.ClinicId,
-            NormalizedUserName = "TESTPATIENT"
+            NormalizedUserName = "TESTPATIENT",
+            SecurityStamp = Guid.NewGuid().ToString()
         };
         _dbFactory.AddData(new List<ApplicationUser>
         {

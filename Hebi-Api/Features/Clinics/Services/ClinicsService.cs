@@ -136,11 +136,11 @@ public class ClinicsService : IClinicsService
 
     public async Task UpdateClinicAsync(Guid id, CreateClinicDto dto)
     {
-        var clinic = await _unitOfWork.ClinicRepository.GetByIdAsync(id);
-        clinic.Location = dto.Location;
-        clinic.Email = dto.Email;
-        clinic.PhoneNumber = dto.PhoneNumber;
-        clinic.Name = dto.Name;
+        var clinic = await _unitOfWork.ClinicRepository.GetClinicById(id);
+        clinic.Location = dto.Location ?? clinic.Location ?? "";
+        clinic.Email = dto.Email ?? clinic.Email ?? "";
+        clinic.PhoneNumber = dto.PhoneNumber ?? clinic.PhoneNumber ?? "";
+        clinic.Name = dto.Name ?? clinic.Name ?? "";
         clinic.LastModifiedAt = DateTime.UtcNow;
         clinic.LastModifiedBy = _contextAccessor.GetUserIdentifier();
 

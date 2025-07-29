@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - master
-      - test-yaml
-      
+            
 env:
   REGISTRY: ghcr.io
   SERVER_HOST: ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}

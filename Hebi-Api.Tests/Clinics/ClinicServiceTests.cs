@@ -76,7 +76,7 @@ public class ClinicServiceTests
         var result = await _clinicsService.CreateClinicAsync(dto);
 
         //Assert
-        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(result);
+        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetClinicById(result);
         clinic.Should().NotBeNull();
         clinic.Name.Should().Be(dto.Name);
         clinic.Email.Should().Be(dto.Email);
@@ -129,7 +129,7 @@ public class ClinicServiceTests
         var result = await _clinicsService.CreateClinicAsync(dto);
 
         //Assert
-        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(result);
+        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetClinicById(result);
         clinic.Should().NotBeNull();
         clinic.Name.Should().Be(dto.Name);
         clinic.Email.Should().Be(dto.Email);
@@ -257,7 +257,7 @@ public class ClinicServiceTests
         await _clinicsService.UpdateClinicAsync(clinicId, dto);
 
         //Assert
-        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetByIdAsync(clinicId);
+        var clinic = await _unitOfWorkSqlite.ClinicRepository.GetClinicById(clinicId);
         clinic.Should().NotBeNull();
         clinic.Name.Should().Be(dto.Name);
         clinic.Email.Should().Be(dto.Email);
