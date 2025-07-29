@@ -177,20 +177,20 @@ public class UserCardsServiceTests
         };
 
         _dbFactory.AddData(new List<ApplicationUser>() { patient });
-        var userCardId = Guid.NewGuid();
+        var userCard = new UserCard()
+        {
+            PatientId = patient.Id,
+            ClinicId = TestHelper.ClinicId,
+        };
         _dbFactory.AddData(new List<UserCard>()
         {
-            new()
-            {
-                Id = userCardId,
-                PatientId = patient.Id,
-                ClinicId= TestHelper.ClinicId,
-            }
+            userCard
         });
+        _dbFactory.DetachForReload(userCard);
         //Act
-        await _service.DeleteUserCard(userCardId);
+        await _service.DeleteUserCard(userCard.Id);
 
-        var result = await _unitOfWorkSqlite.UserCardsRepository.GetByIdAsync(userCardId);
+        var result = await _unitOfWorkSqlite.UserCardsRepository.GetByIdAsync(userCard.Id);
         result.Should().BeNull();
     }
 }

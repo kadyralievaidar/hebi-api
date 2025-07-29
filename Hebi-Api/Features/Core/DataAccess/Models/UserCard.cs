@@ -11,7 +11,7 @@ public class UserCard : IBaseModel
     public Guid? ClinicId { get; set; }
     public Guid? LastModifiedBy { get; set; }
     public Guid? CreatedBy { get; set; }
-    public IEnumerable<Appointment>? Appointments { get; set; } = new List<Appointment>();
+    public ICollection<Appointment>? Appointments { get; set; } = new List<Appointment>();
     public Guid PatientId { get; set; } 
     public ApplicationUser? Patient { get; set; } = null!;
     #endregion

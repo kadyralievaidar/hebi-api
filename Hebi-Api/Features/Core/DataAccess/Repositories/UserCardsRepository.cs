@@ -27,7 +27,7 @@ public class UserCardsRepository : GenericRepository<UserCard>, IUserCardsReposi
             {
                 UserInfo = new BasicInfoDto
                 {
-                    UserId = usercard.Id,
+                    UserId = usercard.PatientId,
                     FirstName = usercard.Patient.FirstName ?? "",
                     LastName = usercard.Patient.LastName,
                     PhoneNumber = usercard.Patient.PhoneNumber,
