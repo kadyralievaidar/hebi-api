@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using Hebi_Api.Features.Core.Common.RequestHandling;
+using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Diseases.Dtos;
 
 namespace Hebi_Api.Features.Diseases.Services;
@@ -32,7 +33,7 @@ public interface IDiseaseService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<List<Disease>> GetListOfDiseasesAsync(GetPagedListOfDiseaseDto dto);
+    Task<PagedResult<Disease>> GetListOfDiseasesAsync(GetPagedListOfDiseaseDto dto);
 
     /// <summary>
     ///     Get disease by Id

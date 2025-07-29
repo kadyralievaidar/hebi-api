@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.UserCards.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hebi_Api.Features.UserCards.Services;
 
@@ -21,12 +23,10 @@ public class UserCardsService : IUserCardsService
         await _unitOfWork.SaveAsync();
     }
 
-    public async Task<List<UserCard>> GetListOfUserCardsAsync(GetPagedListOfUserCardDto dto)
+    public async Task<PagedResult<UserCardResponseDto>> GetListOfUserCardsAsync(GetPagedListOfUserCardDto dto)
     {
-        var userCards = await _unitOfWork.UserCardsRepository.SearchAsync(x => true, dto.SortBy, dto.SortDirection,
-                                                                    dto.PageIndex * dto.PageSize,
-                                                                    dto.PageSize);
-        return userCards;
+        var result = await _unitOfWork.UserCardsRepository.GetUserCards(dto);
+        return result;
     }
 
     public async Task<UserCard> GetUserCardAsync(Guid id)

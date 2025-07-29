@@ -95,8 +95,8 @@ public class UserCardsServiceTests
         var result = await _service.GetListOfUserCardsAsync(dto);
 
         result.Should().NotBeNull();
-        result.Count.Should().Be(2);
-        var patientIds = result.Select(x => x.PatientId);
+        result.TotalCount.Should().Be(2);
+        var patientIds = result.Results.Select(x => x.UserInfo.UserId);
         patientIds.Should().Contain(patient.Id);
         patientIds.Should().Contain(patient2.Id);
     }

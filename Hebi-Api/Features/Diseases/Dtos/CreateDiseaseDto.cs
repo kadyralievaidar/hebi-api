@@ -14,4 +14,14 @@ public class CreateDiseaseDto
     ///     Disease's description
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    ///     Price
+    /// </summary>
+    public decimal Price { get; set; }
+
+    /// <summary>
+    ///     Discount
+    /// </summary>
+    public double Discount { get; set; }
 }
