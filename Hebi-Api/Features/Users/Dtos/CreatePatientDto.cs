@@ -23,6 +23,11 @@ public class CreatePatientDto
     public DateTime? BirthDate { get; set; }
 
     /// <summary>
+    ///     Customer's email
+    /// </summary>
+    public string? Email { get; set; }
+
+    /// <summary>
     ///     Patient's sex
     /// </summary>
     public Sex Sex { get; set; }

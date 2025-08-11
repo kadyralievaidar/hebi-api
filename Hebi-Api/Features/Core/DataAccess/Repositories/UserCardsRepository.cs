@@ -2,6 +2,7 @@
 using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Interfaces;
 using Hebi_Api.Features.Core.DataAccess.Models;
+using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.UserCards.Dtos;
 using Hebi_Api.Features.Users.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +12,11 @@ namespace Hebi_Api.Features.Core.DataAccess.Repositories;
 public class UserCardsRepository : GenericRepository<UserCard>, IUserCardsRepository
 {
     private readonly HebiDbContext _dbContext;
+    private readonly IHttpContextAccessor _contextAccessor;
     public UserCardsRepository(HebiDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
     {
         _dbContext = context;
+        _contextAccessor = contextAccessor;
     }
     public async Task<PagedResult<UserCardResponseDto>> GetUserCards(GetPagedListOfUserCardDto dto)
     {
@@ -23,15 +26,18 @@ public class UserCardsRepository : GenericRepository<UserCard>, IUserCardsReposi
             .Include(x => x.Appointments)!
                 .ThenInclude(a => a.Disease)
             .Where(x => !x.IsDeleted)
+            .Where(x => x.ClinicId.Equals(_contextAccessor.GetClinicId()))
             .Select(usercard => new UserCardResponseDto
             {
+                UserCardId = usercard.Id,
                 UserInfo = new BasicInfoDto
                 {
                     UserId = usercard.PatientId,
-                    FirstName = usercard.Patient.FirstName ?? "",
+                    FirstName = usercard.Patient!.FirstName ?? "",
                     LastName = usercard.Patient.LastName,
                     PhoneNumber = usercard.Patient.PhoneNumber,
-                    Email = usercard.Patient.Email
+                    Email = usercard.Patient.Email,
+                    Sex = usercard.Patient.Sex
                 },
                 Appointments = usercard.Appointments != null
                     ? usercard.Appointments.Select(appt => new AppointmentDto

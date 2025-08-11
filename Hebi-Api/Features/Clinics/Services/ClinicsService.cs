@@ -186,7 +186,7 @@ public class ClinicsService : IClinicsService
                     Email = d.Email,
                     FirstName = d.FirstName,
                     LastName = d.LastName,
-                    PhoneNumber = d.PhoneNumber,
+                    PhoneNumber = d.PhoneNumber
                 }).ToList(),
                 TotalCount = count
             }

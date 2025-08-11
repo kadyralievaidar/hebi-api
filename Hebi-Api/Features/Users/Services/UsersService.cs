@@ -153,9 +153,7 @@ public class UsersService : IUsersService
             var result = await _contextAccessor.HttpContext!.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             if (!result.Succeeded)
-            {
                 throw new InvalidOperationException("The refresh token is no longer valid.");
-            }
 
             var principal = result.Principal;
 
@@ -170,7 +168,7 @@ public class UsersService : IUsersService
     }
     private async Task<ClaimsIdentity?> ConfigIdentity(OpenIddictRequest request, object? application)
     {
-        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username.ToUpperInvariant());
+        var user = await _unitOfWork.UsersRepository.FirstOrDefaultAsync(x => x.NormalizedUserName == request.Username!.ToUpperInvariant());
         var roles = await _userManager.GetRolesAsync(user!);
         var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
 
