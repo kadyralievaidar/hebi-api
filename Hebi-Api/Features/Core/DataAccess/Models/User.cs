@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hebi_Api.Features.Core.Common.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hebi_Api.Features.Core.DataAccess.Models;
 
@@ -11,6 +12,7 @@ public class ApplicationUser : IdentityUser<Guid>, IBaseModel
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastModifiedAt { get; set; }
     public bool IsDeleted { get; set; } = false;
+    public Sex Sex { get; set; }
 
     /// <summary>
     ///     To control subscription

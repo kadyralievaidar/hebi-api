@@ -1,4 +1,6 @@
-﻿namespace Hebi_Api.Features.Users.Dtos;
+﻿using Hebi_Api.Features.Core.Common.Enums;
+
+namespace Hebi_Api.Features.Users.Dtos;
 
 /// <summary>
 ///     Basic user's info
@@ -28,4 +30,9 @@ public class BasicInfoDto
     ///     User's last name
     /// </summary>
     public string? PhoneNumber { get; set; }
+
+    /// <summary>
+    ///     User's sex
+    /// </summary>
+    public Sex Sex { get; set; }
 }
