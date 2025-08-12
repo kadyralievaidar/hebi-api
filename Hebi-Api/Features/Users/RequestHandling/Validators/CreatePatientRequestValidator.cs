@@ -7,7 +7,7 @@ namespace Hebi_Api.Features.Users.RequestHandling.Validators;
 
 public class CreatePatientRequestValidator : AbstractValidator<CreatePatientRequest>
 {
-    public CreatePatientRequestValidator(IUnitOfWork unitOfWork, IStringLocalizer stringLocalizer)
+    public CreatePatientRequestValidator(IUnitOfWork unitOfWork)
     {
         RuleFor(r => r.Dto.PhoneNumber).NotEmpty();
         RuleFor(r => r.Dto.PhoneNumber)
