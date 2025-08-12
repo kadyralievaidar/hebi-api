@@ -33,7 +33,7 @@ public class CreatePatientRequestValidatorTests
             .Setup(l => l["UserWithThisPhoneAlreadyExists"])
             .Returns(new LocalizedString("UserWithThisPhoneAlreadyExists", "Пользователь с таким номером телефона уже существует."));
 
-        _validator = new CreatePatientRequestValidator(_unitOfWorkMock.Object, _stringLocalizerMock.Object);
+        _validator = new CreatePatientRequestValidator(_unitOfWorkMock.Object);
     }
 
     [Test]
