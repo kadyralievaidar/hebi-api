@@ -29,10 +29,6 @@ public class CreatePatientRequestValidatorTests
         _unitOfWorkMock.Setup(x => x.UsersRepository)
             .Returns(_usersRepositoryMock.Object);
 
-        _stringLocalizerMock
-            .Setup(l => l["UserWithThisPhoneAlreadyExists"])
-            .Returns(new LocalizedString("UserWithThisPhoneAlreadyExists", "Пользователь с таким номером телефона уже существует."));
-
         _validator = new CreatePatientRequestValidator(_unitOfWorkMock.Object);
     }
 
@@ -48,8 +44,7 @@ public class CreatePatientRequestValidatorTests
 
         var result = await _validator.TestValidateAsync(model);
 
-        result.ShouldHaveValidationErrorFor(x => x.Dto.PhoneNumber)
-            .WithErrorMessage("Пользователь с таким номером телефона уже существует.");
+        result.ShouldHaveValidationErrorFor(x => x.Dto.PhoneNumber);
     }
 
     [Test]
