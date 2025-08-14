@@ -25,23 +25,23 @@ public class DiseaseController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update([FromQuery] Guid appointmentId, [FromBody] CreateDiseaseDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid diseaseId, [FromBody] CreateDiseaseDto dto, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new UpdateDiseaseRequest(appointmentId, dto), cancellationToken);
+        var result = await _mediator.Send(new UpdateDiseaseRequest(diseaseId, dto), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
-    [HttpDelete("id")]
-    public async Task<IActionResult> Delete([FromRoute] Guid appointmentId, CancellationToken cancellationToken)
+    [HttpDelete]
+    public async Task<IActionResult> Delete(Guid diseaseId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new DeleteDiseaseRequest(appointmentId), cancellationToken);
+        var result = await _mediator.Send(new DeleteDiseaseRequest(diseaseId), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
     [HttpGet("id")]
-    public async Task<IActionResult> GetById([FromRoute] Guid appointmentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid diseaseId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new GetDiseaseByIdRequest(appointmentId), cancellationToken);
+        var result = await _mediator.Send(new GetDiseaseByIdRequest(diseaseId), cancellationToken);
         return result.AsAspNetCoreResult();
     }
 
