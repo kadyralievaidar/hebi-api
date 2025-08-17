@@ -24,6 +24,7 @@ public class HebiDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Gui
     public DbSet<Disease> Diseases { get; set; }
     public DbSet<Shift> Shifts { get; set; }
     public DbSet<UserCard> PatientCard { get; set; }
+    public DbSet<ShiftTemplate> ShiftTemplates { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HebiDbContext).Assembly);

@@ -7,7 +7,6 @@ namespace Hebi_Api.Features.Core.DataAccess.UOW;
 
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IDbTransaction _dbTransaction;
     private readonly Lazy<IUsersRepository> _usersRepository;
     private readonly Lazy<IDiseasesRepository> _diseaseRepository;
@@ -15,6 +14,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private readonly Lazy<IUserCardsRepository> _userCardsRepository;
     private readonly Lazy<IClinicsRepository> _clinicRepository;
     private readonly Lazy<IShiftsRepository> _shiftsRepository;
+    private readonly Lazy<IShiftTemplateRepository> _shiftTemplateRepository;
 
 
     /// <summary>
@@ -25,7 +25,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     /// <inheritdoc />
     public UnitOfWork(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider;
         _dbTransaction = serviceProvider.GetRequiredService<IDbTransaction>();
         _context = serviceProvider.GetRequiredService<HebiDbContext>();
         _usersRepository = new Lazy<IUsersRepository>(serviceProvider.GetRequiredService<IUsersRepository>());
@@ -34,6 +33,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         _userCardsRepository = new Lazy<IUserCardsRepository>(serviceProvider.GetRequiredService<IUserCardsRepository>());
         _clinicRepository = new Lazy<IClinicsRepository>(serviceProvider.GetRequiredService<IClinicsRepository>());
         _shiftsRepository = new Lazy<IShiftsRepository>(serviceProvider.GetRequiredService<IShiftsRepository>());
+        _shiftTemplateRepository = new Lazy<IShiftTemplateRepository>(serviceProvider.GetRequiredService<IShiftTemplateRepository>());
     }
 
     ~UnitOfWork()
@@ -90,6 +90,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IUserCardsRepository UserCardsRepository => _userCardsRepository.Value;
     public IClinicsRepository ClinicRepository => _clinicRepository.Value;
     public IShiftsRepository ShiftsRepository => _shiftsRepository.Value;
+    public IShiftTemplateRepository ShiftTemplateRepository => _shiftTemplateRepository.Value;
 
     public void DetachForReload(IBaseModel entity)
     {

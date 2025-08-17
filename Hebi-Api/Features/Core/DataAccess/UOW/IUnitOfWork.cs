@@ -47,6 +47,11 @@ public interface IUnitOfWork
     IShiftsRepository ShiftsRepository { get; }
 
     /// <summary>
+    ///     Shift template repository
+    /// </summary>
+    IShiftTemplateRepository ShiftTemplateRepository { get; }
+
+    /// <summary>
     ///     Save changes
     /// </summary>
     void Save();

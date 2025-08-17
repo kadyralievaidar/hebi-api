@@ -67,6 +67,7 @@ public static class RepositoryConfiguration
         services.AddScoped<IClinicsRepository, ClinicsRepository>();
         services.AddScoped<IShiftsRepository, ShiftsRepository>();
         services.AddScoped<IUserCardsRepository, UserCardsRepository>();
+        services.AddScoped<IShiftTemplateRepository, ShiftTemplateRepository>();
     }
 
     /// <summary>

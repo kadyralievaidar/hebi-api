@@ -53,7 +53,6 @@ public class ShiftsService : IShiftsService
             throw;
         }
     }
-
     public async Task DeleteShift(Guid id)
     {
         var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id)
@@ -110,4 +109,81 @@ public class ShiftsService : IShiftsService
             throw;
         }
     }
+    public async Task CreateShiftsWithShiftTemplate(CreateShiftsWithTemplateDto dto)
+    {
+        var template = await _unitOfWork.ShiftTemplateRepository.GetByIdAsync(dto.ShiftTemplateId) 
+            ?? throw new ArgumentException("Shift template not found");
+
+        var transaction = _unitOfWork.BeginTransaction();
+        try
+        {
+            var currentDate = dto.StartDate;
+            while (currentDate <= dto.EndDate)
+            {
+                if (!dto.DayOfWeeks.Contains(currentDate.DayOfWeek))
+                {
+                    currentDate = currentDate.AddDays(1);
+                    continue;
+                }
+
+                var startDateTime = currentDate.ToDateTime(template.StartTime);
+                var endDateTime = template.EndTime < template.StartTime
+                    ? currentDate.AddDays(1).ToDateTime(template.EndTime)
+                    : currentDate.ToDateTime(template.EndTime);
+
+                var existingShift = await _unitOfWork.ShiftsRepository
+                    .SearchAsync(s => s.DoctorId == dto.DoctorId &&
+                        s.StartTime < endDateTime && s.EndTime > startDateTime);
+
+                if (existingShift.Count == 0)
+                {
+                    var shiftDto = new CreateShiftDto
+                    {
+                        StartTime = startDateTime,
+                        EndTime = endDateTime,
+                        DoctorId = dto.DoctorId,
+                        ShiftTemplateId = template.Id
+                    };
+
+                    await CreateShiftInternal(shiftDto);
+                }
+
+                currentDate = currentDate.AddDays(1);
+            }
+
+            await transaction.CommitAsync();
+            await _unitOfWork.SaveAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+    private async Task<Guid> CreateShiftInternal(CreateShiftDto dto)
+    {
+        var shift = new Shift()
+        {
+            StartTime = dto.StartTime,
+            EndTime = dto.EndTime,
+            DoctorId = dto.DoctorId,
+            ShiftTemplateId = dto.ShiftTemplateId
+        };
+
+        await _unitOfWork.ShiftsRepository.InsertAsync(shift);
+        await _unitOfWork.SaveAsync();
+
+        if (dto.AppointmentIds.Any())
+        {
+            var appointments = await _unitOfWork.AppointmentRepository.SearchAsync(x => dto.AppointmentIds.Contains(x.Id));
+            foreach (var appointment in appointments)
+                appointment.ShiftId = shift.Id;
+
+            await _unitOfWork.AppointmentRepository.UpdateRangeAsync(appointments);
+            await _unitOfWork.SaveAsync();
+        }
+
+        return shift.Id;
+    }
+
 }

@@ -156,4 +156,132 @@ public class ShiftsServiceTests
         updated.StartTime.Should().Be(newDto.StartTime);
         updated.EndTime.Should().Be(newDto.EndTime);
     }
+
+    [Test]
+    public async Task Should_Create_Shifts_For_Specified_Days()
+    {
+        // Arrange
+        var template = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            StartTime = new TimeOnly(9, 0),
+            EndTime = new TimeOnly(17, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<ShiftTemplate> { template });
+
+        var dto = new CreateShiftsWithTemplateDto(
+            template.Id,
+            new DateOnly(2025, 8, 18), // Monday
+            new DateOnly(2025, 8, 20), // Wednesday
+            TestHelper.UserId,
+            new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Wednesday }
+        );
+
+        // Act
+        await _service.CreateShiftsWithShiftTemplate(dto);
+
+        // Assert
+        var shifts = await _unitOfWorkSqlite.ShiftsRepository.SearchAsync(s => s.ShiftTemplateId == template.Id);
+        shifts.Count().Should().Be(2); // Monday and Wednesday
+    }
+
+    [Test]
+    public async Task Should_Skip_Existing_Shifts()
+    {
+        // Arrange
+        var template = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            StartTime = new TimeOnly(9, 0),
+            EndTime = new TimeOnly(17, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<ShiftTemplate> { template });
+        var existingShift = new Shift
+        {
+            Id = Guid.NewGuid(),
+            ShiftTemplateId = template.Id,
+            StartTime = new DateTime(2025, 8, 18, 9, 0, 0),
+            EndTime = new DateTime(2025, 8, 18, 17, 0, 0),
+            DoctorId = TestHelper.UserId,
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<Shift> { existingShift });
+
+        var dto = new CreateShiftsWithTemplateDto(
+            template.Id,
+            new DateOnly(2025, 8, 18),
+            new DateOnly(2025, 8, 19),
+            TestHelper.UserId,
+            new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Tuesday }
+        );
+
+        // Act
+        await _service.CreateShiftsWithShiftTemplate(dto);
+
+        // Assert
+        var shifts = await _unitOfWorkSqlite.ShiftsRepository.SearchAsync(s => s.ShiftTemplateId == template.Id);
+        shifts.Count().Should().Be(2);
+    }
+
+    [Test]
+    public async Task Should_Create_Overnight_Shifts_Correctly()
+    {
+        // Arrange
+        var template = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            StartTime = new TimeOnly(22, 0),
+            EndTime = new TimeOnly(6, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<ShiftTemplate> { template });
+
+        var dto = new CreateShiftsWithTemplateDto(
+            template.Id,
+            new DateOnly(2025, 8, 18),
+            new DateOnly(2025, 8, 18),
+            TestHelper.UserId,
+            new List<DayOfWeek> { DayOfWeek.Monday }
+        );
+
+        // Act
+        await _service.CreateShiftsWithShiftTemplate(dto);
+
+        // Assert
+        var shift = (await _unitOfWorkSqlite.ShiftsRepository.SearchAsync(s => s.ShiftTemplateId == template.Id)).First();
+        shift.StartTime.Hour.Should().Be(22);
+        shift.EndTime.Day.Should().Be(19); // next day
+        shift.EndTime.Hour.Should().Be(6);
+    }
+
+    [Test]
+    public async Task Should_Create_Shifts_Without_Doctor_When_DoctorId_Null()
+    {
+        // Arrange
+        var template = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            StartTime = new TimeOnly(9, 0),
+            EndTime = new TimeOnly(17, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<ShiftTemplate> { template });
+
+        var dto = new CreateShiftsWithTemplateDto(
+            template.Id,
+            new DateOnly(2025, 8, 18),
+            new DateOnly(2025, 8, 18),
+            null,
+            new List<DayOfWeek> { DayOfWeek.Monday }
+        );
+
+        // Act
+        await _service.CreateShiftsWithShiftTemplate(dto);
+
+        // Assert
+        var shift = (await _unitOfWorkSqlite.ShiftsRepository.SearchAsync(s => s.ShiftTemplateId == template.Id)).First();
+        shift.DoctorId.Should().BeNull();
+    }
 }
