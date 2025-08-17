@@ -35,6 +35,16 @@ internal class UnitOfWorkFactory : IDisposable
         ClearData();
         var clinic = new Clinic() { Id = TestHelper.ClinicId };
         AddData(new List<Clinic>() { clinic });
+        var admin = new ApplicationUser()
+        {
+            UserName = "Test",
+            Id = TestHelper.UserId,
+            FirstName = "Test",
+            LastName = "Test",
+            Email = "test@test.com",
+            NormalizedUserName = "Test"
+        };
+        AddData(new List<ApplicationUser>() { admin });
         DetachForReload(clinic);
     }
 
@@ -125,6 +135,7 @@ internal class UnitOfWorkFactory : IDisposable
         mockServiceProvider.Setup(x => x.GetService(typeof(IShiftsRepository))).Returns(new ShiftsRepository(_context, _contextAccessor.Object));
         mockServiceProvider.Setup(x => x.GetService(typeof(IUserCardsRepository))).Returns(new UserCardsRepository(_context, _contextAccessor.Object));
         mockServiceProvider.Setup(x => x.GetService(typeof(IUsersRepository))).Returns(new UsersRepository(_context, _contextAccessor.Object));
+        mockServiceProvider.Setup(x => x.GetService(typeof(IShiftTemplateRepository))).Returns(new ShiftTemplateRepository(_context, _contextAccessor.Object));
         mockServiceProvider.Setup(x => x.GetService(typeof(HebiDbContext))).Returns(_context);
         return new UnitOfWork(mockServiceProvider.Object);
     }

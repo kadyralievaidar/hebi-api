@@ -5,8 +5,8 @@ using OpenIddict.Validation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.ConfigureRepository();
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json");
+builder.ConfigureRepository();
 builder.Services.RegisterRequestHandlers();
 builder.Services.RegisterServices();
 builder.Services.AddControllers();
