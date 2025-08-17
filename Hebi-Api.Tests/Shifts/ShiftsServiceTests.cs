@@ -174,7 +174,7 @@ public class ShiftsServiceTests
             template.Id,
             new DateOnly(2025, 8, 18), // Monday
             new DateOnly(2025, 8, 20), // Wednesday
-            TestHelper.UserId,
+            TestHelper.DoctorId,
             new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Wednesday }
         );
 
@@ -204,7 +204,7 @@ public class ShiftsServiceTests
             ShiftTemplateId = template.Id,
             StartTime = new DateTime(2025, 8, 18, 9, 0, 0),
             EndTime = new DateTime(2025, 8, 18, 17, 0, 0),
-            DoctorId = TestHelper.UserId,
+            DoctorId = TestHelper.DoctorId,
             ClinicId = TestHelper.ClinicId
         };
         _dbFactory.AddData(new List<Shift> { existingShift });
@@ -213,7 +213,7 @@ public class ShiftsServiceTests
             template.Id,
             new DateOnly(2025, 8, 18),
             new DateOnly(2025, 8, 19),
-            TestHelper.UserId,
+            TestHelper.DoctorId,
             new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Tuesday }
         );
 
@@ -242,7 +242,7 @@ public class ShiftsServiceTests
             template.Id,
             new DateOnly(2025, 8, 18),
             new DateOnly(2025, 8, 18),
-            TestHelper.UserId,
+            TestHelper.DoctorId,
             new List<DayOfWeek> { DayOfWeek.Monday }
         );
 

@@ -38,7 +38,7 @@ internal class UnitOfWorkFactory : IDisposable
         var admin = new ApplicationUser()
         {
             UserName = "Test",
-            Id = TestHelper.UserId,
+            Id = TestHelper.DoctorId,
             FirstName = "Test",
             LastName = "Test",
             Email = "test@test.com",
