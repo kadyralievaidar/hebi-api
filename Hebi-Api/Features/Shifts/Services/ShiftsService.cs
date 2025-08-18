@@ -126,10 +126,10 @@ public class ShiftsService : IShiftsService
                     continue;
                 }
 
-                var startDateTime = currentDate.ToDateTime(template.StartTime);
+                var startDateTime = currentDate.ToDateTime(template.StartTime, DateTimeKind.Utc);
                 var endDateTime = template.EndTime < template.StartTime
-                    ? currentDate.AddDays(1).ToDateTime(template.EndTime)
-                    : currentDate.ToDateTime(template.EndTime);
+                    ? currentDate.AddDays(1).ToDateTime(template.EndTime, DateTimeKind.Utc)
+                    : currentDate.ToDateTime(template.EndTime, DateTimeKind.Utc);
 
                 var existingShift = await _unitOfWork.ShiftsRepository
                     .SearchAsync(s => s.DoctorId == dto.DoctorId &&

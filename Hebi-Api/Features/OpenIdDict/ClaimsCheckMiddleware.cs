@@ -13,7 +13,7 @@ public class ClaimsCheckMiddleware
         new ("/connect/token"),
         new ("/Users/token"),
         new ("/Users/change-role"),
-        new ("/Clinic/create-clinic")
+        new ("/api/Clinic/create-clinic")
     };
     /// <summary>
     ///     Request delegate to move to next
