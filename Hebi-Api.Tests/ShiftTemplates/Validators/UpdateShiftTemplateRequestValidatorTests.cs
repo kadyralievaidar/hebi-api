@@ -73,9 +73,18 @@ public class UpdateShiftTemplateRequestValidatorTests
             ClinicId = TestHelper.ClinicId
         };
 
-        _dbFactory.AddData(new List<ShiftTemplate> { existingTemplate });
+        var existingTemplate2 = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            Name = "Night Shift 2",
+            StartTime = new TimeOnly(22, 0),
+            EndTime = new TimeOnly(6, 0),
+            ClinicId = TestHelper.ClinicId
+        };
 
-        var request = new UpdateShiftTemplateRequest(existingTemplate.Id,new CreateShiftTemplateDto
+        _dbFactory.AddData(new List<ShiftTemplate> { existingTemplate, existingTemplate2 });
+
+        var request = new UpdateShiftTemplateRequest(existingTemplate2.Id,new CreateShiftTemplateDto
         {
             Name = "Night Shift",
             StartTime = new TimeOnly(22, 0),
