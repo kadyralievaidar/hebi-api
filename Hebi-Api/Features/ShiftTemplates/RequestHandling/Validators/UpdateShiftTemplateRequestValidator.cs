@@ -13,7 +13,9 @@ public class UpdateShiftTemplateRequestValidator :AbstractValidator<UpdateShiftT
             .WithMessage("Shift template with provided Id doesn't exist");
 
         RuleFor(r => r.Dto.Name)
-            .MustAsync(async (name, cancellationToken) => !await unitOfWork.ShiftTemplateRepository.AnyAsync(x => x.Name == name))
+            .MustAsync(async (request, name, cancellationToken) =>
+                !await unitOfWork.ShiftTemplateRepository.AnyAsync(x => x.Id != request.ShiftTemplateId 
+                                    && x.Name == name))
             .WithMessage("Shift template with this name already exist");
     }
 }
