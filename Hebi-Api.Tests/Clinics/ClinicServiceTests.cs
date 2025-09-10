@@ -49,7 +49,7 @@ public class ClinicServiceTests
         _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
         _dbFactory.AddData(new List<ApplicationUser>() {  new ()
         {
-            Id = TestHelper.UserId,
+            Id = TestHelper.EmployeeId,
             UserName = "TestPatient",
             FirstName = "Patient",
             LastName = "PatientLastName",

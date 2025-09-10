@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Clinics.Services;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Hebi_Api.Features.Clinics.Services;
 using Hebi_Api.Features.Core.Common;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
@@ -228,5 +229,30 @@ public class UsersService : IUsersService
             user.ClinicId = clinicId;
             await _userManager.UpdateAsync(user);
         }
+    }
+
+    public async Task ChangePassword(ChangePasswordDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(_contextAccessor.GetUserIdentifier().ToString()!);
+        if (user == null) throw new Exception("Can't find user");
+
+        var result = await _userManager.ChangePasswordAsync(user, dto.OldPassword, dto.Password);
+        if (!result.Succeeded)
+            throw new Exception("Something went wrong");
+
+        await _userManager.UpdateSecurityStampAsync(user);
+    }
+    public async Task ResetPassword(ResetPasswordDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+        if (user == null) throw new Exception("User not found");
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, dto.Password);
+
+        if (!result.Succeeded)
+            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+        await _userManager.UpdateSecurityStampAsync(user); 
     }
 }

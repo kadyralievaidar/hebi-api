@@ -52,5 +52,20 @@ public interface IUsersService
     /// <param name="roleName"></param>
     /// <returns></returns>
     Task ChangeUserRole(Guid? userId, string roleName);
+
+    /// <summary>
+    ///     Change user's password
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task ChangePassword(ChangePasswordDto dto);
+
+
+    /// <summary>
+    ///     Admin reset user's password
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task ResetPassword(ResetPasswordDto dto);
 }
 

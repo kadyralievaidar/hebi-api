@@ -42,7 +42,8 @@ internal class UnitOfWorkFactory : IDisposable
             FirstName = "Test",
             LastName = "Test",
             Email = "test@test.com",
-            NormalizedUserName = "Test"
+            NormalizedUserName = "Test",
+            SecurityStamp = Guid.NewGuid().ToString()
         };
         var user = new ApplicationUser()
         {
@@ -51,10 +52,13 @@ internal class UnitOfWorkFactory : IDisposable
             FirstName = "Test2",
             LastName = "Test2",
             Email = "test2@test.com",
-            NormalizedUserName = "Test2"
+            NormalizedUserName = "Test2",
+            SecurityStamp = Guid.NewGuid().ToString()
         };
         AddData(new List<ApplicationUser>() { admin, user });
         DetachForReload(clinic);
+        DetachForReload(admin);
+        DetachForReload(user);
     }
 
     /// <inheritdoc />
