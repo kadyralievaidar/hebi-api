@@ -136,11 +136,19 @@ public class UsersController : ControllerBase
         var result = await _mediator.Send(new ChangeUserInfoRequest(dto));
         return result.AsAspNetCoreResult();
     }
-    [HttpPatch("change-role")]
+    [HttpPatch("change-password")]
     [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> ChangeRole([FromQuery]Guid? id, [FromBody] string roleName)
+    public async Task<IActionResult> ChangePaswword([FromBody] ChangePasswordDto dto)
     {
-        var result = await _mediator.Send(new ChangeUserRoleRequest(id, roleName));
+        var result = await _mediator.Send(new ChangePasswordRequest(dto));
+        return result.AsAspNetCoreResult();
+    }
+
+    [HttpPatch("reset-password")]
+    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> ChangeRole([FromBody] ResetPasswordDto dto)
+    {
+        var result = await _mediator.Send(new ResetPasswordRequest(dto));
         return result.AsAspNetCoreResult();
     }
 }
