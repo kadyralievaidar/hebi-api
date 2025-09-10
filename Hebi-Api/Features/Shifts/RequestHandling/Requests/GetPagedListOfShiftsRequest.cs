@@ -5,9 +5,9 @@ namespace Hebi_Api.Features.Shifts.RequestHandling.Requests;
 
 public class GetPagedListOfShiftsRequest : Request<Response>
 {
-    public GetPagedListOfShiftsDto Dto { get; set; }
+    public GetListOfShiftsDto Dto { get; set; }
 
-    public GetPagedListOfShiftsRequest(GetPagedListOfShiftsDto dto)
+    public GetPagedListOfShiftsRequest(GetListOfShiftsDto dto)
     {
         Dto = dto;
     }

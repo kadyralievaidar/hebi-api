@@ -31,7 +31,7 @@ public interface IShiftsService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<List<Shift>> GetListOfShiftsAsync(GetPagedListOfShiftsDto dto);
+    Task<List<Shift>> GetListOfShiftsAsync(GetListOfShiftsDto dto);
 
     /// <summary>
     ///     Get shift by id
@@ -46,4 +46,12 @@ public interface IShiftsService
     /// <param name="dto"></param>
     /// <returns></returns>
     Task CreateShiftsWithShiftTemplate(CreateShiftsWithTemplateDto dto);
+
+    /// <summary>
+    ///     Assign user to shift
+    /// </summary>
+    /// <param name="doctorId"></param>
+    /// <param name="shiftId"></param>
+    /// <returns></returns>
+    Task AssignShift(Guid? doctorId, Guid shiftId);
 }

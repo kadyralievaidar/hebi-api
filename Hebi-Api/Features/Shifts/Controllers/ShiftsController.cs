@@ -77,7 +77,7 @@ public class ShiftsController : ControllerBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> GetShifts([FromQuery] GetPagedListOfShiftsDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetShifts([FromQuery] GetListOfShiftsDto dto, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetPagedListOfShiftsRequest(dto), cancellationToken);
         return result.AsAspNetCoreResult();
@@ -92,6 +92,19 @@ public class ShiftsController : ControllerBase
     public async Task<IActionResult> GenerateShifts([FromBody] CreateShiftsWithTemplateDto dto)
     {
         var result = await _mediator.Send(new CreateShiftsWithShiftTemplateRequest(dto));
+        return result.AsAspNetCoreResult();
+    }
+    /// <summary>
+    ///     Assign doctor to shift(if there is not provided doctor's id)
+    ///     it will assign to current logged in user
+    /// </summary>
+    /// <param name="doctorId"></param>
+    /// <param name="shiftId"></param>
+    /// <returns></returns>
+    [HttpPost("assign-shift")]
+    public async Task<IActionResult> AssignShift([FromQuery]Guid? doctorId, [FromQuery] Guid shiftId)
+    {
+        var result = await _mediator.Send(new AssignShiftRequest(doctorId, shiftId));
         return result.AsAspNetCoreResult();
     }
 }
