@@ -111,12 +111,10 @@ public class ShiftsServiceTests
         await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift2);
         await _unitOfWorkSqlite.SaveAsync();
 
-        var dto = new GetPagedListOfShiftsDto
+        var dto = new GetListOfShiftsDto
         {
             StartTime = now,
             EndTime = now.AddDays(2),
-            PageIndex = 0,
-            PageSize = 10,
             SortBy = nameof(Shift.StartTime),
             SortDirection = System.ComponentModel.ListSortDirection.Ascending
         };
@@ -283,5 +281,65 @@ public class ShiftsServiceTests
         // Assert
         var shift = (await _unitOfWorkSqlite.ShiftsRepository.SearchAsync(s => s.ShiftTemplateId == template.Id)).First();
         shift.DoctorId.Should().BeNull();
+    }
+
+    [Test]
+    public async Task AssignShift_ShouldWorks_Correctly()
+    {
+        var doctor = new ApplicationUser { Id = Guid.NewGuid(), ClinicId = TestHelper.ClinicId };
+
+        _dbFactory.AddData(new List<ApplicationUser>() { doctor });
+
+        var template = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            StartTime = new TimeOnly(9, 0),
+            EndTime = new TimeOnly(17, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<ShiftTemplate> { template });
+        var existingShift = new Shift
+        {
+            Id = Guid.NewGuid(),
+            ShiftTemplateId = template.Id,
+            StartTime = new DateTime(2025, 8, 18, 9, 0, 0),
+            EndTime = new DateTime(2025, 8, 18, 17, 0, 0),
+            DoctorId = TestHelper.DoctorId,
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<Shift> { existingShift });
+
+        await _service.AssignShift(doctor.Id, existingShift.Id);
+
+        var shiftAfter = await _unitOfWorkSqlite.ShiftsRepository.GetByIdAsync(existingShift.Id);
+        shiftAfter.Should().NotBeNull();
+        shiftAfter.DoctorId.Should().Be(doctor.Id);
+    }
+    [Test]
+    public async Task AssignShift_ShouldWorks_Correctly_WithoutProvidedUser()
+    {
+        var template = new ShiftTemplate
+        {
+            Id = Guid.NewGuid(),
+            StartTime = new TimeOnly(9, 0),
+            EndTime = new TimeOnly(17, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<ShiftTemplate> { template });
+        var existingShift = new Shift
+        {
+            Id = Guid.NewGuid(),
+            ShiftTemplateId = template.Id,
+            StartTime = new DateTime(2025, 8, 18, 9, 0, 0),
+            EndTime = new DateTime(2025, 8, 18, 17, 0, 0),
+            ClinicId = TestHelper.ClinicId
+        };
+        _dbFactory.AddData(new List<Shift> { existingShift });
+
+        await _service.AssignShift(null, existingShift.Id);
+
+        var shiftAfter = await _unitOfWorkSqlite.ShiftsRepository.GetByIdAsync(existingShift.Id);
+        shiftAfter.Should().NotBeNull();
+        shiftAfter.DoctorId.Should().Be(TestHelper.UserId);
     }
 }

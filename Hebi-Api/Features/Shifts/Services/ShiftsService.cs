@@ -61,11 +61,13 @@ public class ShiftsService : IShiftsService
         await _unitOfWork.SaveAsync();
     }
 
-    public async Task<List<Shift>> GetListOfShiftsAsync(GetPagedListOfShiftsDto dto)
+    public async Task<List<Shift>> GetListOfShiftsAsync(GetListOfShiftsDto dto)
     {
         var shifts = await _unitOfWork.ShiftsRepository.SearchAsync(x => x.StartTime >= dto.StartTime 
-                                && x.EndTime <= dto.EndTime, dto.SortBy, 
-                                dto.SortDirection, dto.PageSize * dto.PageIndex, dto.PageSize);
+                                && x.EndTime <= dto.EndTime && 
+                                (!dto.DoctorId.HasValue || x.DoctorId == dto.DoctorId), 
+                                dto.SortBy, 
+                                dto.SortDirection);
         return shifts;
     }
 
@@ -185,5 +187,12 @@ public class ShiftsService : IShiftsService
 
         return shift.Id;
     }
-
+    public async Task AssignShift(Guid? doctorId, Guid shiftId)
+    {
+        var userId = doctorId ?? _contextAccessor.GetUserIdentifier();
+        var shift = await _unitOfWork.ShiftsRepository.FirstOrDefaultAsync(x => x.Id == shiftId);
+        shift!.DoctorId = userId;
+        _unitOfWork.ShiftsRepository.Update(shift);
+        await _unitOfWork.SaveAsync();
+    }
 }

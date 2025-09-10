@@ -44,7 +44,16 @@ internal class UnitOfWorkFactory : IDisposable
             Email = "test@test.com",
             NormalizedUserName = "Test"
         };
-        AddData(new List<ApplicationUser>() { admin });
+        var user = new ApplicationUser()
+        {
+            UserName = "Test2",
+            Id = TestHelper.UserId,
+            FirstName = "Test2",
+            LastName = "Test2",
+            Email = "test2@test.com",
+            NormalizedUserName = "Test2"
+        };
+        AddData(new List<ApplicationUser>() { admin, user });
         DetachForReload(clinic);
     }
 

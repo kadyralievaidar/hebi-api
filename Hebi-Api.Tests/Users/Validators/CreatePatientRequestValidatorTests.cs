@@ -5,6 +5,7 @@ using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Users.Dtos;
 using Hebi_Api.Features.Users.RequestHandling.Requests;
 using Hebi_Api.Features.Users.RequestHandling.Validators;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ public class CreatePatientRequestValidatorTests
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private Mock<IStringLocalizer> _stringLocalizerMock;
     private CreatePatientRequestValidator _validator;
+    private Mock<IHttpContextAccessor> _contextAccessorMock;
 
     [SetUp]
     public void Setup()
