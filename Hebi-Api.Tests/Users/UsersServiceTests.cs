@@ -83,7 +83,7 @@ public class UsersServiceTests
         // Seed a test user
         var testUser = new ApplicationUser()
         {
-            Id = TestHelper.UserId,
+            Id = TestHelper.EmployeeId,
             UserName = "TestPatient",
             FirstName = "Patient",
             LastName = "PatientLastName",
@@ -108,7 +108,7 @@ public class UsersServiceTests
         // Arrange
         var dto = new BasicInfoDto
         {
-            UserId = TestHelper.UserId,
+            UserId = TestHelper.EmployeeId,
             FirstName = "UpdatedFirst",
             LastName = "UpdatedLast",
             Email = "updated@email.com",
@@ -119,7 +119,7 @@ public class UsersServiceTests
         await _usersService.ChangeBasicInfo(dto);
 
         // Assert
-        var updatedUser = await _unitOfWorkSqlite.UsersRepository.GetByIdAsync(TestHelper.UserId);
+        var updatedUser = await _unitOfWorkSqlite.UsersRepository.GetByIdAsync(TestHelper.EmployeeId);
         updatedUser.Should().NotBeNull();
         updatedUser.FirstName.Should().Be(dto.FirstName);
         updatedUser.LastName.Should().Be(dto.LastName);
@@ -155,42 +155,58 @@ public class UsersServiceTests
     }
 
     [Test]
-    public async Task ChangeUserRole_WhenIdIsNull()
+    public async Task ChangeUserRole_WhenUserIdIsValid_ChangesRole()
     {
+        // Arrange
         await _roleManager.CreateAsync(new IdentityRole<Guid>("OldTest"));
         await _roleManager.CreateAsync(new IdentityRole<Guid>("Test"));
-        await _usersService.ChangeUserRole(null, "Test");
-        var user = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.UserId);
 
+        var user = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.EmployeeId);
         await _userManager.AddToRoleAsync(user, "OldTest");
 
-        var userDb = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.UserId);
-        var role = await _userManager.IsInRoleAsync(userDb, "Test");
+        // Act
+        await _usersService.ChangeUserRole(user.Id, "Test");
 
-        role.Should().BeTrue();
+        // Assert
+        var userDb = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.EmployeeId);
+        var isInOldRole = await _userManager.IsInRoleAsync(userDb, "OldTest");
+        var isInNewRole = await _userManager.IsInRoleAsync(userDb, "Test");
+
+        isInOldRole.Should().BeFalse();
+        isInNewRole.Should().BeTrue();
     }
 
     [Test]
-    public async Task ChangeUserRole_WhenUserIsInvidiviudal()
+    public async Task ChangeUserRole_WhenUserIsIndividual_AssignsDefaultClinic()
     {
+        // Arrange
         var defaultClinic = new Clinic
         {
             Id = DefaultClinicId,
             Name = "DEFAULT"
         };
         _dbFactory.AddData(new List<Clinic> { defaultClinic });
+
         await _roleManager.CreateAsync(new IdentityRole<Guid>("OldTest"));
         await _roleManager.CreateAsync(new IdentityRole<Guid>(Consts.Individual));
-        var user = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.UserId);
 
+        var user = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.EmployeeId);
         await _userManager.AddToRoleAsync(user, "OldTest");
 
-        await _usersService.ChangeUserRole(null, Consts.Individual);
-        var userDb = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.UserId);
-        var role = await _userManager.IsInRoleAsync(userDb, Consts.Individual);
+        // Act
+        await _usersService.ChangeUserRole(user.Id, Consts.Individual);
+
+        // Assert
+        var userDb = await _unitOfWorkSqlite.UsersRepository.FirstOrDefaultAsync(x => x.Id == TestHelper.EmployeeId);
+
+        var isOldRole = await _userManager.IsInRoleAsync(userDb, "OldTest");
+        var isIndividual = await _userManager.IsInRoleAsync(userDb, Consts.Individual);
 
         var defaultClinicDb = await _unitOfWorkSqlite.ClinicRepository.GetClinicById(userDb.ClinicId.Value);
-        role.Should().BeTrue();
-        defaultClinic.Name.Should().Be("DEFAULT");
+
+        isOldRole.Should().BeFalse();
+        isIndividual.Should().BeTrue();
+        defaultClinicDb.Should().NotBeNull();
+        defaultClinicDb.Name.Should().Be("DEFAULT");
     }
 }

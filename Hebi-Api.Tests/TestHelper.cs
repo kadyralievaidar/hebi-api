@@ -9,6 +9,7 @@ public static class TestHelper
     public static Guid ClinicId = Guid.NewGuid();
     public static Guid UserId = Guid.NewGuid();
     public static Guid DoctorId = Guid.NewGuid();
+    public static Guid EmployeeId = Guid.NewGuid();
     public static Mock<IHttpContextAccessor> CreateHttpContext(Guid? adminId = null)
     {
         var claims = new List<Claim>
