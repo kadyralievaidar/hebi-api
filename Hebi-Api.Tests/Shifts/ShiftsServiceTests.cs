@@ -113,8 +113,8 @@ public class ShiftsServiceTests
 
         var dto = new GetListOfShiftsDto
         {
-            StartTime = now,
-            EndTime = now.AddDays(2),
+            StartDate = DateOnly.FromDateTime(now),
+            EndDate = DateOnly.FromDateTime(now.AddDays(2)),
             SortBy = nameof(Shift.StartTime),
             SortDirection = System.ComponentModel.ListSortDirection.Ascending
         };

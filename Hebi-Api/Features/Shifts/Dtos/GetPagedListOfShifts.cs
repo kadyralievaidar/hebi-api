@@ -10,12 +10,12 @@ public class GetListOfShiftsDto
     /// <summary>
     ///     Start date time
     /// </summary>
-    public DateTime StartTime { get; set; } = DateTime.MinValue;
+    public DateOnly StartDate { get; set; } = DateOnly.MinValue;
 
     /// <summary>
     ///     End date time
     /// </summary>
-    public DateTime EndTime { get; set; } = DateTime.MaxValue;
+    public DateOnly EndDate { get; set; } = DateOnly.MaxValue;
 
     /// <summary>
     ///     Doctor's id

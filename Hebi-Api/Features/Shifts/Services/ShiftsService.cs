@@ -63,8 +63,8 @@ public class ShiftsService : IShiftsService
 
     public async Task<List<Shift>> GetListOfShiftsAsync(GetListOfShiftsDto dto)
     {
-        var shifts = await _unitOfWork.ShiftsRepository.SearchAsync(x => x.StartTime >= dto.StartTime 
-                                && x.EndTime <= dto.EndTime && 
+        var shifts = await _unitOfWork.ShiftsRepository.SearchAsync(x => x.StartTime <= dto.EndDate.ToDateTime(TimeOnly.MaxValue) &&
+                                x.EndTime >= dto.StartDate.ToDateTime(TimeOnly.MinValue) && 
                                 (!dto.DoctorId.HasValue || x.DoctorId == dto.DoctorId), 
                                 dto.SortBy, 
                                 dto.SortDirection);
