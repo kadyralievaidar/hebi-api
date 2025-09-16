@@ -106,6 +106,49 @@ public class ShiftTemplateServiceTests
         result.TotalCount.Should().Be(2);
         result.Results.Select(x => x.Name).Should().Contain(new[] { "Morning", "Evening" });
     }
+
+    [Test]
+    public async Task GetShiftTemplates_WithSearchText_Should_Return_Paged_List()
+    {
+        // Arrange
+        var templates = new List<ShiftTemplate>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(), Name = "Morning",
+                StartTime = new TimeOnly(6,0),
+                EndTime = new TimeOnly(14,0) ,
+                ClinicId = TestHelper.ClinicId
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Evening",
+                StartTime = new TimeOnly(14,0),
+                EndTime = new TimeOnly(22,0),
+                ClinicId = TestHelper.ClinicId
+            }
+        };
+        _dbFactory.AddData(templates);
+
+        var dto = new GetPagedListOfShiftsTemplatesDto
+        {
+            PageIndex = 0,
+            PageSize = 10,
+            SortBy = "Name",
+            SearchText = "Evening",
+            SortDirection = ListSortDirection.Ascending,
+        };
+
+        // Act
+        var result = await _service.GetShiftTemplates(dto);
+
+        // Assert
+        result.Results.Should().HaveCount(1);
+        result.TotalCount.Should().Be(2);
+        result.Results.FirstOrDefault().Should().NotBeNull();
+        result.Results.FirstOrDefault().Name.Should().Be("Evening");
+    }
     [Test]
     public async Task UpdateShiftTemplate_Should_Update_Existing_Template()
     {

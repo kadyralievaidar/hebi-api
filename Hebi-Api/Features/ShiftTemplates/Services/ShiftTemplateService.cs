@@ -49,7 +49,9 @@ public class ShiftTemplateService : IShiftTemplateService
 
     public async Task<PagedResult<ShiftTemplateDto>> GetShiftTemplates(GetPagedListOfShiftsTemplatesDto dto)
     {
-        var templates = await _unitOfWork.ShiftTemplateRepository.SearchAsync(x => true, dto.SortBy,
+        var templates = await _unitOfWork.ShiftTemplateRepository
+                                .SearchAsync(x => string.IsNullOrEmpty(dto.SearchText) || x.Name.Contains(dto.SearchText), 
+                                dto.SortBy,
                                 dto.SortDirection, dto.PageSize * dto.PageIndex, dto.PageSize);
 
         var results = templates.Select(x => new ShiftTemplateDto()

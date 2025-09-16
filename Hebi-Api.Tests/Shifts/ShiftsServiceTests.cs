@@ -126,7 +126,109 @@ public class ShiftsServiceTests
         result.Should().NotBeNull();
         result.Count.Should().Be(2);
     }
+    [Test]
+    public async Task GetListOfShiftsAsync_Should_ReturnEmpty_WhenNoShiftsExist()
+    {
+        // Arrange
+        var dto = new GetListOfShiftsDto
+        {
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
 
+        // Act
+        var result = await _service.GetListOfShiftsAsync(dto);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task GetListOfShiftsAsync_Should_Filter_ByDateRange()
+    {
+        // Arrange
+        var now = DateTime.Now;
+        var shift1 = new Shift { StartTime = now, EndTime = now.AddHours(2), ClinicId = TestHelper.ClinicId };
+        var shift2 = new Shift { StartTime = now.AddDays(5), EndTime = now.AddDays(5).AddHours(2), ClinicId = TestHelper.ClinicId };
+
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift1);
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift2);
+        await _unitOfWorkSqlite.SaveAsync();
+
+        var dto = new GetListOfShiftsDto
+        {
+            StartDate = DateOnly.FromDateTime(now),
+            EndDate = DateOnly.FromDateTime(now.AddDays(1))
+        };
+
+        // Act
+        var result = await _service.GetListOfShiftsAsync(dto);
+
+        // Assert
+        result.Should().ContainSingle(s => s.Id == shift1.Id);
+    }
+
+    [Test]
+    public async Task GetListOfShiftsAsync_Should_IncludeShift_ThatStartsExactlyOnStartDate()
+    {
+        var start = DateTime.Today;
+        var shift = new Shift { StartTime = start, EndTime = start.AddHours(2), ClinicId = TestHelper.ClinicId };
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift);
+        await _unitOfWorkSqlite.SaveAsync();
+
+        var dto = new GetListOfShiftsDto
+        {
+            StartDate = DateOnly.FromDateTime(start),
+            EndDate = DateOnly.FromDateTime(start.AddDays(1))
+        };
+
+        var result = await _service.GetListOfShiftsAsync(dto);
+
+        result.Should().ContainSingle(s => s.Id == shift.Id);
+    }
+
+    [Test]
+    public async Task GetListOfShiftsAsync_Should_IncludeShift_ThatEndsExactlyOnEndDate()
+    {
+        var start = DateTime.Today;
+        var end = start.AddDays(1);
+        var shift = new Shift { StartTime = start, EndTime = end, ClinicId = TestHelper.ClinicId };
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift);
+        await _unitOfWorkSqlite.SaveAsync();
+
+        var dto = new GetListOfShiftsDto
+        {
+            StartDate = DateOnly.FromDateTime(start),
+            EndDate = DateOnly.FromDateTime(end)
+        };
+
+        var result = await _service.GetListOfShiftsAsync(dto);
+
+        result.Should().ContainSingle(s => s.Id == shift.Id);
+    }
+
+    [Test]
+    public async Task GetListOfShiftsAsync_Should_FilterByClinicId_WhenMultipleClinicsExist()
+    {
+        var now = DateTime.Now;
+        var shift1 = new Shift { StartTime = now, EndTime = now.AddHours(2), ClinicId = TestHelper.ClinicId };
+        var shift2 = new Shift { StartTime = now, EndTime = now.AddHours(2), ClinicId = Guid.NewGuid() };
+
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift1);
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift2);
+        await _unitOfWorkSqlite.SaveAsync();
+
+        var dto = new GetListOfShiftsDto
+        {
+            StartDate = DateOnly.FromDateTime(now),
+            EndDate = DateOnly.FromDateTime(now.AddDays(1))
+        };
+
+        var result = await _service.GetListOfShiftsAsync(dto);
+
+        result.Should().ContainSingle(s => s.Id == shift1.Id);
+    }
     [Test]
     public async Task UpdateShift_Should_Update_Shift()
     {
