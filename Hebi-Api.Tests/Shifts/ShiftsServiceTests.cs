@@ -96,7 +96,32 @@ public class ShiftsServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(shift.Id);
+        result.ShiftId.Should().Be(shift.Id);
+    }
+
+    [Test]
+    public async Task GetShiftAsync_WithDoctor_Should_Return_Shift()
+    {
+        // Arrange
+        var shift = new Shift
+        {
+            Id = Guid.NewGuid(),
+            StartTime = DateTime.Now,
+            EndTime = DateTime.Now.AddHours(2),
+            ClinicId = TestHelper.ClinicId,
+            DoctorId = TestHelper.DoctorId
+        };
+        await _unitOfWorkSqlite.ShiftsRepository.InsertAsync(shift);
+        await _unitOfWorkSqlite.SaveAsync();
+
+        // Act
+        var result = await _service.GetShiftAsync(shift.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ShiftId.Should().Be(shift.Id);
+        result.DoctorInfo.Should().NotBeNull();
+        result.DoctorInfo.UserId.Should().Be(TestHelper.DoctorId);
     }
 
     [Test]
@@ -166,7 +191,7 @@ public class ShiftsServiceTests
         var result = await _service.GetListOfShiftsAsync(dto);
 
         // Assert
-        result.Should().ContainSingle(s => s.Id == shift1.Id);
+        result.Should().ContainSingle(s => s.ShiftId == shift1.Id);
     }
 
     [Test]
@@ -185,7 +210,7 @@ public class ShiftsServiceTests
 
         var result = await _service.GetListOfShiftsAsync(dto);
 
-        result.Should().ContainSingle(s => s.Id == shift.Id);
+        result.Should().ContainSingle(s => s.ShiftId == shift.Id);
     }
 
     [Test]
@@ -205,7 +230,7 @@ public class ShiftsServiceTests
 
         var result = await _service.GetListOfShiftsAsync(dto);
 
-        result.Should().ContainSingle(s => s.Id == shift.Id);
+        result.Should().ContainSingle(s => s.ShiftId == shift.Id);
     }
 
     [Test]
@@ -227,7 +252,7 @@ public class ShiftsServiceTests
 
         var result = await _service.GetListOfShiftsAsync(dto);
 
-        result.Should().ContainSingle(s => s.Id == shift1.Id);
+        result.Should().ContainSingle(s => s.ShiftId == shift1.Id);
     }
     [Test]
     public async Task UpdateShift_Should_Update_Shift()

@@ -200,4 +200,8 @@ public interface IGenericRepository<TEntity> where TEntity : class, IBaseModel
     /// <param name="entities"></param>
     /// <returns></returns>
     Task UpdateRangeAsync(IEnumerable<TEntity> entities);
+
+    IQueryable<TEntity> SearchQuery(Expression<Func<TEntity, bool>> predicate, string? sortBy = null,
+        ListSortDirection? sortDirection = null,
+        int? skip = null, int? take = null, List<string>? relations = null);
 }

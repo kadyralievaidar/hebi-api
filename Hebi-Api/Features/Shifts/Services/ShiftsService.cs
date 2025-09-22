@@ -2,6 +2,8 @@
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Shifts.Dtos;
+using Hebi_Api.Features.Users.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hebi_Api.Features.Shifts.Services;
 
@@ -61,21 +63,30 @@ public class ShiftsService : IShiftsService
         await _unitOfWork.SaveAsync();
     }
 
-    public async Task<List<Shift>> GetListOfShiftsAsync(GetListOfShiftsDto dto)
+    public async Task<List<ShiftDto>> GetListOfShiftsAsync(GetListOfShiftsDto dto)
     {
-        var shifts = await _unitOfWork.ShiftsRepository.SearchAsync(x => x.StartTime <= dto.EndDate.ToDateTime(TimeOnly.MaxValue) &&
+        var shifts = await _unitOfWork.ShiftsRepository.SearchQuery(x => x.StartTime <= dto.EndDate.ToDateTime(TimeOnly.MaxValue) &&
                                 x.EndTime >= dto.StartDate.ToDateTime(TimeOnly.MinValue) && 
                                 (!dto.DoctorId.HasValue || x.DoctorId == dto.DoctorId), 
                                 dto.SortBy, 
-                                dto.SortDirection);
+                                dto.SortDirection,
+                                relations : [nameof(Shift.Doctor)]).Select(x => new ShiftDto(x)).ToListAsync();
         return shifts;
     }
 
-    public async Task<Shift> GetShiftAsync(Guid id)
+    public async Task<ShiftDto> GetShiftAsync(Guid id)
     {
-        var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id)
-                            ?? throw new NullReferenceException(nameof(Shift));
-        return shift;
+        var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id, relations: [nameof(Shift.Doctor)]);
+
+        var shiftDto = new ShiftDto()
+        {
+            ShiftId = shift.Id,
+            DoctorInfo = new BasicInfoDto(shift.Doctor),
+            StartTime = shift.StartTime, 
+            EndTime = shift.EndTime,
+            Appointments = shift.Appointments
+        };
+        return shiftDto;
     }
 
     public async Task<Shift> UpdateShift(Guid id, CreateShiftDto dto)
