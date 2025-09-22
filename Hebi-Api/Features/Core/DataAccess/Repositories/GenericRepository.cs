@@ -4,6 +4,7 @@ using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
@@ -374,5 +375,33 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         var context = SetWithRelatedEntitiesAsNoTracking;
         context = relations.Aggregate(context, (current, relation) => current.Include(relation));
         return context;
+    }
+
+    public virtual IQueryable<TEntity> SearchQuery(Expression<Func<TEntity, bool>> predicate, string? sortBy = null,
+       ListSortDirection? sortDirection = null,
+       int? skip = null, int? take = null, List<string>? relations = null)
+    {
+        var context = relations != null && RelationsAreValid(relations)
+            ? GetNoTrackingContextWithRelations(relations)
+            : SetWithRelatedEntitiesAsNoTracking;
+
+        if (string.IsNullOrEmpty(sortBy))
+            return context.Where(predicate).TrySkip(skip ?? 0)
+                .TryTake(take ?? int.MaxValue);
+
+        //Checks if type has the sorting property ignoring case
+        var propertyInfo = typeof(TEntity).GetProperties().SingleOrDefault(p => p.Name.ToLower() == sortBy.ToLower());
+
+        if (propertyInfo == null)
+            throw new ArgumentException(
+                $"Entity {typeof(TEntity).FullName} doesn't have the property {sortBy} for sorting");
+
+        //Ensure correct casing for property sorting
+        sortBy = propertyInfo.Name;
+
+        return context.Where(predicate)
+            .OrderByDynamic(sortBy, (sortDirection ?? ListSortDirection.Ascending) == ListSortDirection.Descending)
+            .TrySkip(skip)
+            .TryTake(take);
     }
 }

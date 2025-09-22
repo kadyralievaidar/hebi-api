@@ -31,14 +31,14 @@ public interface IShiftsService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<List<Shift>> GetListOfShiftsAsync(GetListOfShiftsDto dto);
+    Task<List<ShiftDto>> GetListOfShiftsAsync(GetListOfShiftsDto dto);
 
     /// <summary>
     ///     Get shift by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    Task<Shift> GetShiftAsync(Guid id);
+    Task<ShiftDto> GetShiftAsync(Guid id);
 
     /// <summary>
     ///     Generates shifts based on shift template

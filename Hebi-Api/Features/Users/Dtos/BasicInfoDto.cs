@@ -1,4 +1,5 @@
 ﻿using Hebi_Api.Features.Core.Common.Enums;
+using Hebi_Api.Features.Core.DataAccess.Models;
 
 namespace Hebi_Api.Features.Users.Dtos;
 
@@ -35,4 +36,18 @@ public class BasicInfoDto
     ///     User's sex
     /// </summary>
     public Sex Sex { get; set; }
+
+    public BasicInfoDto() { }
+    public BasicInfoDto(ApplicationUser? user)
+    {
+        if(user != null)
+        {
+            UserId = user.Id;
+            Email = user.Email;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            PhoneNumber = user.PhoneNumber;
+            Sex = user.Sex;
+        }
+    }
 }
