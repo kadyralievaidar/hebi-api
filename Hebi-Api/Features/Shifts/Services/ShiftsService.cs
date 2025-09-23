@@ -101,7 +101,7 @@ public class ShiftsService : IShiftsService
 
             shift.StartTime = dto.StartTime;
             shift.EndTime = dto.EndTime;
-            shift.DoctorId = dto.DoctorId;
+            shift.DoctorId = dto.DoctorId.HasValue ? dto.DoctorId : shift.DoctorId;
 
             if (appointments != null && appointments.Any())
             {
