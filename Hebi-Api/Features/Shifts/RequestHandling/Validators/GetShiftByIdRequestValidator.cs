@@ -13,7 +13,6 @@ public class GetShiftByIdRequestValidator : AbstractValidator<GetShiftByIdReques
         _unitOfWork = unitOfWork;
         RuleFor(c => c.ShiftId).MustAsync(async (shiftId, cancellationToken) => 
         {
-            var test = await _unitOfWork.ShiftsRepository.FirstOrDefaultAsync(x => x.Id == shiftId);
             return await _unitOfWork.ShiftsRepository.ExistAsync(shiftId);
         }).
             WithMessage("The shift with this doesn't exist");

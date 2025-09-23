@@ -23,6 +23,11 @@ public class ShiftDto
     public DateTime EndTime { get; set; }
 
     /// <summary>
+    ///     Shift template's id
+    /// </summary>
+    public Guid? ShiftTemplateId { get; set; }
+
+    /// <summary>
     ///     Appointments collection
     /// </summary>
     public IEnumerable<Appointment> Appointments { get; set; } = new List<Appointment>();
@@ -41,6 +46,7 @@ public class ShiftDto
             StartTime = shift.StartTime;
             EndTime = shift.EndTime;
             Appointments = shift.Appointments;
+            ShiftTemplateId = shift.ShiftTemplateId;
             DoctorInfo = new BasicInfoDto(shift.Doctor);
         }
     }
