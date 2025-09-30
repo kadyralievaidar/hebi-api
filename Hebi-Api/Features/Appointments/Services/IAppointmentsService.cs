@@ -20,4 +20,6 @@ public interface IAppointmentsService
     Task<PagedResult<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto);
 
     Task<Appointment> GetAppointmentAsync(Guid appointmentId);
+
+    Task GenerateAppointments(GenerateAppointmentsDto dto);
 }

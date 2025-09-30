@@ -6,6 +6,7 @@ using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Tests.UOW;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -53,6 +54,7 @@ public class AppointmentServiceTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var shiftId = Guid.NewGuid();
+        var userCardId = Guid.NewGuid();
 
         var patient = new ApplicationUser()
         {
@@ -77,6 +79,7 @@ public class AppointmentServiceTests
 
         await _userManager.CreateAsync(doctor);
         await _userManager.CreateAsync(patient);
+        _dbFactory.AddData(new List<UserCard>() { new() { Id = userCardId, ClinicId = TestHelper.ClinicId, PatientId = patientId } });
 
         _dbFactory.AddData(new List<Shift>() 
         { 
@@ -95,8 +98,8 @@ public class AppointmentServiceTests
             DoctorId = doctorId,
             EndDateTime = DateTime.Now.AddMinutes(30),
             StartDateTime = DateTime.Now,
-            PatientId = patientId,
             ShiftId = shiftId,
+            UserCardId = userCardId,
             Name = "TestName",
             Description = "TestDescription"
         };
@@ -777,5 +780,132 @@ public class AppointmentServiceTests
         resultAppointment.StartDate.Should().Be(appointment.StartDate);
         resultAppointment.PatientId.Should().Be(appointment.PatientId);
         resultAppointment.ShiftId.Should().Be(appointment.ShiftId);
+    }
+
+    [Test]
+    public async Task GenerateAppointments_ShouldCreateAppointment_WhenNoConflict()
+    {
+        // Arrange
+        var userCardId = Guid.NewGuid();
+        var shiftId = Guid.NewGuid();
+        var diseaseId = Guid.NewGuid();
+        _dbFactory.AddData(new List<UserCard>
+        {
+            new() { Id = userCardId, PatientId = TestHelper.UserId, ClinicId = TestHelper.ClinicId }
+        });
+
+        _dbFactory.AddData(new List<Shift>
+        {
+            new() { Id = shiftId, StartTime = DateTime.UtcNow, EndTime = DateTime.UtcNow.AddHours(2),ClinicId = TestHelper.ClinicId }
+        });
+        _dbFactory.AddData(new List<Disease>()
+        {
+            new(){ Id = diseaseId, ClinicId = TestHelper.ClinicId}
+        });
+        var dto = new GenerateAppointmentsDto
+        {
+            UserCardId = userCardId,
+            ShiftIds = new List<Guid> { shiftId },
+            StartTime = new TimeOnly(0, 0, 0),
+            EndTime = new TimeOnly(0, 30, 0),
+            DiseaseId = diseaseId
+        };
+
+        // Act
+        await _appointmentService.GenerateAppointments(dto);
+
+        // Assert
+        var fetchDto = new GetPagedListOfAppointmentDto();
+        var result = await _appointmentService.GetListOfAppointmentsAsync(fetchDto);
+        var appointment = result.Results.FirstOrDefault();
+        appointment.Should().NotBeNull();
+        appointment.PatientId.Should().Be(TestHelper.UserId);
+        appointment.StartDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        appointment.EndDate.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(30), TimeSpan.FromSeconds(1));
+    }
+
+    [Test]
+    public async Task GenerateAppointments_ShouldNotCreateAppointment_WhenConflictExists()
+    {
+        // Arrange
+        var userCardId = Guid.NewGuid();
+        var shiftId = Guid.NewGuid();
+        var diseaseId = Guid.NewGuid();
+
+        _dbFactory.AddData(new List<UserCard>
+        {
+            new() { Id = userCardId, PatientId = TestHelper.DoctorId, ClinicId = TestHelper.ClinicId }
+        });
+
+        var shiftStart = DateTime.UtcNow;
+
+        _dbFactory.AddData(new List<Shift>
+        {
+            new() { Id = shiftId, StartTime = shiftStart, EndTime = shiftStart.AddHours(2), ClinicId = TestHelper.ClinicId }
+        });
+        _dbFactory.AddData(new List<Disease>()
+        {
+            new(){ Id = diseaseId, ClinicId = TestHelper.ClinicId}
+        });
+        // Существующая запись в промежутке
+        _dbFactory.AddData(new List<Appointment>
+        {
+            new() { ShiftId = shiftId, StartDate = shiftStart, EndDate = shiftStart.AddMinutes(30),
+                PatientId = TestHelper.UserId , ClinicId = TestHelper.ClinicId}
+        });
+
+        var dto = new GenerateAppointmentsDto
+        {
+            UserCardId = userCardId,
+            ShiftIds = new List<Guid> { shiftId },
+            StartTime = new TimeOnly(0, 15, 0),
+            EndTime = new TimeOnly(0, 45, 0),
+            DiseaseId = diseaseId
+        };
+
+        // Act
+        await _appointmentService.GenerateAppointments(dto);
+
+        // Assert
+        var appointments = await _appointmentService.GetListOfAppointmentsAsync(new GetPagedListOfAppointmentDto());
+        appointments.Results.Count.Should().Be(1); // Новая запись не добавилась
+    }
+
+    [Test]
+    public async Task GenerateAppointments_ShouldCreateMultipleAppointments_ForMultipleShifts()
+    {
+        // Arrange
+        var userCardId = Guid.NewGuid();
+        var shift1 = Guid.NewGuid();
+        var shift2 = Guid.NewGuid();
+        var diseaseId = Guid.NewGuid();
+
+        _dbFactory.AddData(new List<Disease>()
+        {
+            new(){ Id = diseaseId, ClinicId = TestHelper.ClinicId}
+        });
+        _dbFactory.AddData(new List<UserCard> { new() { Id = userCardId, PatientId = TestHelper.UserId, ClinicId = TestHelper.ClinicId } });
+        _dbFactory.AddData(new List<Shift>
+        {
+            new() { Id = shift1, StartTime = DateTime.UtcNow, EndTime = DateTime.UtcNow.AddHours(2) , ClinicId = TestHelper.ClinicId},
+            new() { Id = shift2, StartTime = DateTime.UtcNow.AddHours(3), EndTime = DateTime.UtcNow.AddHours(5), ClinicId = TestHelper.ClinicId }
+        });
+
+        var dto = new GenerateAppointmentsDto
+        {
+            UserCardId = userCardId,
+            ShiftIds = new List<Guid> { shift1, shift2 },
+            StartTime = new TimeOnly(0, 0, 0),
+            EndTime = new TimeOnly(0, 30, 0),
+            DiseaseId = diseaseId
+        };
+
+        // Act
+        await _appointmentService.GenerateAppointments(dto);
+
+        // Assert
+        var appointments = await _appointmentService.GetListOfAppointmentsAsync(new GetPagedListOfAppointmentDto());
+        appointments.Results.Count.Should().Be(2);
+        appointments.Results.Select(a => a.ShiftId.Value).Should().Contain(new[] { shift1, shift2 });
     }
 }

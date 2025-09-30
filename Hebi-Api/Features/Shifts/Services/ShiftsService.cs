@@ -70,13 +70,14 @@ public class ShiftsService : IShiftsService
                                 (!dto.DoctorId.HasValue || x.DoctorId == dto.DoctorId), 
                                 dto.SortBy, 
                                 dto.SortDirection,
-                                relations : [nameof(Shift.Doctor)]).Select(x => new ShiftDto(x)).ToListAsync();
+                                relations : [nameof(Shift.Doctor), nameof(Shift.Appointments)])
+                                .Select(x => new ShiftDto(x)).ToListAsync();
         return shifts;
     }
 
     public async Task<ShiftDto> GetShiftAsync(Guid id)
     {
-        var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id, relations: [nameof(Shift.Doctor)]);
+        var shift = await _unitOfWork.ShiftsRepository.GetByIdAsync(id, relations: [nameof(Shift.Doctor), nameof(Shift.Appointments)]);
 
         var shiftDto = new ShiftDto()
         {

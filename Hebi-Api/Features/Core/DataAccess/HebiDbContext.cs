@@ -32,26 +32,21 @@ public class HebiDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Gui
         {
             if (typeof(IBaseModel).IsAssignableFrom(entityType.ClrType))
             {
+                var clrType = entityType.ClrType;
+
                 var parameter = Expression.Parameter(entityType.ClrType, "e");
                 var isDeletedProperty = Expression.Property(parameter, nameof(IBaseModel.IsDeleted));
                 var isNotDeleted = Expression.Equal(isDeletedProperty, Expression.Constant(false));
                 var lambda = Expression.Lambda(isNotDeleted, parameter);
 
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+                var clinicProperty = clrType.GetProperty("ClinicId");
+                if (clinicProperty != null)
+                {
+                    modelBuilder.Entity(clrType).HasIndex("ClinicId");
+                }
             }
         }
-
-        modelBuilder.Entity<ApplicationUser>()
-            .HasIndex(x => x.ClinicId);
-        modelBuilder.Entity<UserCard>()
-            .HasIndex(x => x.ClinicId);
-        modelBuilder.Entity<Appointment>()
-            .HasIndex(x => x.ClinicId);
-        modelBuilder.Entity<Shift>()
-            .HasIndex(x => x.ClinicId);
-
-        modelBuilder.Entity<Disease>()
-            .HasIndex(x => x.ClinicId);
 
         base.OnModelCreating(modelBuilder);
     }
