@@ -11,12 +11,11 @@ namespace Hebi_Api.Features.Appointments.Controllers;
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("api/[controller]")]
-public class AppointmentController : ControllerBase
+public class AppointmentController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-    public AppointmentController(IMediator mediator) => _mediator = mediator;
+    private readonly IMediator _mediator = mediator;
 
-    [HttpPost("create-appoitment")]
+    [HttpPost("create-appointment")]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new CreateAppointmentRequest(dto), cancellationToken);
@@ -44,11 +43,17 @@ public class AppointmentController : ControllerBase
         return result.AsAspNetCoreResult();
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAppointments([FromQuery]GetPagedListOfAppointmentDto dto, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetPagedListOfAppointmentRequest(dto), cancellationToken);
+        return result.AsAspNetCoreResult();
+    }
+
+    [HttpPost("generate-appointments")]
+    public async Task<IActionResult> GenerateAppointments([FromBody]GenerateAppointmentsDto dto)
+    {
+        var result = await _mediator.Send(new GenerateAppointmentsRequest(dto));
         return result.AsAspNetCoreResult();
     }
 }

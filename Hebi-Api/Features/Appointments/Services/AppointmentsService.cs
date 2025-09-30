@@ -20,13 +20,14 @@ public class AppointmentsService : IAppointmentsService
     }
     public async Task<Guid> CreateAppointmentAsync(CreateAppointmentDto dto)
     {
+        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(dto.UserCardId!.Value);
         var appointment = new Appointment()
         {
             Id = Guid.NewGuid(),
             StartDate = dto.StartDateTime,
             EndDate = dto.EndDateTime,
             DoctorId = dto.DoctorId ?? _contextAccessor.GetUserIdentifier(),
-            PatientId = dto.PatientId,
+            PatientId = userCard?.PatientId ?? null,
             PatientShortName = dto.ShortName,
             FilePath = dto.FilePath,
             ShiftId = dto.ShiftId,
@@ -72,13 +73,18 @@ public class AppointmentsService : IAppointmentsService
 
     public async Task<Appointment> GetAppointmentAsync(Guid appointmentId) 
     {
-        var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointmentId);
+        var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointmentId, 
+                [nameof(Appointment.UserCard), nameof(Appointment.Disease), nameof(Appointment.Patient)]);
         return appointment!;
     }
 
     public async Task<PagedResult<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
     {
-        var query = _unitOfWork.AppointmentRepository.AsQueryable().AsNoTracking();
+        var query = _unitOfWork.AppointmentRepository.AsQueryable()
+                                                    .Include(x => x.Disease)
+                                                    .Include(x => x.UserCard)
+                                                    .Include(x => x.Patient)
+                                                    .AsNoTracking();
 
         if (dto.ShiftId != null)
         {
@@ -106,5 +112,44 @@ public class AppointmentsService : IAppointmentsService
             Results = appointments,
             TotalCount = totalCount
         };
+    }
+
+    public async Task GenerateAppointments(GenerateAppointmentsDto dto)
+    {
+        var userCard = await _unitOfWork.UserCardsRepository.GetByIdAsync(dto.UserCardId.Value);
+
+        foreach (var shiftId in dto.ShiftIds)
+        {
+            var shift = await _unitOfWork.ShiftsRepository.FirstOrDefaultAsync(s => s.Id == shiftId);
+            if (shift == null) continue;
+
+            var newStart = shift.StartTime.AddTicks(dto.StartTime.Ticks);
+            var newEnd = shift.StartTime.AddTicks(dto.EndTime.Ticks);
+
+            var hasConflict = await _unitOfWork.AppointmentRepository
+                .AnyAsync(a => a.ShiftId == shiftId &&
+                              ((newStart >= a.StartDate && newStart < a.EndDate) ||
+                               (newEnd > a.StartDate && newEnd <= a.EndDate) ||
+                               (newStart <= a.StartDate && newEnd >= a.EndDate)));
+
+            if (hasConflict)
+            {
+                continue;
+            }
+
+            var appointment = new Appointment
+            {
+                StartDate = newStart,
+                EndDate = newEnd,
+                UserCardId = dto.UserCardId,
+                PatientId = userCard.PatientId,
+                DiseaseId = dto.DiseaseId,
+                ShiftId = shift.Id
+            };
+
+            await _unitOfWork.AppointmentRepository.InsertAsync(appointment);
+        }
+
+        await _unitOfWork.SaveAsync();
     }
 }

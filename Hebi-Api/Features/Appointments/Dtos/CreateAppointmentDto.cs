@@ -31,11 +31,6 @@ public class CreateAppointmentDto
     public Guid? DoctorId { get; set; }
 
     /// <summary>
-    ///     Patient's id
-    /// </summary>
-    public Guid? PatientId { get; set; }
-
-    /// <summary>
     ///     If there isn't patient
     /// </summary>
     public string? ShortName { get; set; }
