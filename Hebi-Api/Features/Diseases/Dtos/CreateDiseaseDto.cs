@@ -24,4 +24,9 @@ public class CreateDiseaseDto
     ///     Discount
     /// </summary>
     public double Discount { get; set; }
+
+    /// <summary>
+    ///     Service's color
+    /// </summary>
+    public string? Color { get; set; }
 }

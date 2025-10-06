@@ -17,9 +17,9 @@ public interface IAppointmentsService
 
     Task<Appointment> UpdateAppointmentAsync(Guid id, UpdateAppointmentDto dto);
 
-    Task<PagedResult<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto);
+    Task<PagedResult<AppointmentDto?>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto);
 
-    Task<Appointment> GetAppointmentAsync(Guid appointmentId);
+    Task<AppointmentDto?> GetAppointmentAsync(Guid appointmentId);
 
     Task GenerateAppointments(GenerateAppointmentsDto dto);
 }
