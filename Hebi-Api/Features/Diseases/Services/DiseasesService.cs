@@ -26,6 +26,7 @@ public class DiseasesService : IDiseaseService
             Name = dto.Name,
             Description = dto.Description,
             Discount = dto.Discount,
+            Color = dto.Color,
             Price = dto.Price,
             CreatedAt = DateTime.Now
         };
@@ -74,6 +75,7 @@ public class DiseasesService : IDiseaseService
 
         disease.Name = dto.Name;
         disease.Description = dto.Description;
+        disease.Color = dto.Color;
         disease.LastModifiedAt = DateTime.UtcNow;
         disease.LastModifiedBy = _contextAccessor.GetUserIdentifier();
         _unitOfWork.DiseaseRepository.Update(disease);

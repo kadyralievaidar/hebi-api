@@ -71,18 +71,30 @@ public class AppointmentsService : IAppointmentsService
         return appointment;
     }
 
-    public async Task<Appointment> GetAppointmentAsync(Guid appointmentId) 
+    public async Task<AppointmentDto?> GetAppointmentAsync(Guid appointmentId) 
     {
-        var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(appointmentId, 
-                [nameof(Appointment.UserCard), nameof(Appointment.Disease), nameof(Appointment.Patient)]);
-        return appointment!;
+        var appointment = await _unitOfWork.AppointmentRepository
+            .SearchQuery(
+                a => a.Id == appointmentId,
+                relations: new List<string>
+                {
+                nameof(Appointment.UserCard),
+                nameof(Appointment.Disease),
+                nameof(Appointment.Patient),
+                nameof(Appointment.Doctor)
+                })
+            .Select(appointment => new AppointmentDto(appointment))
+            .FirstOrDefaultAsync();
+
+        return appointment;
     }
 
-    public async Task<PagedResult<Appointment>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
+    public async Task<PagedResult<AppointmentDto?>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
     {
         var query = _unitOfWork.AppointmentRepository.AsQueryable()
                                                     .Include(x => x.Disease)
                                                     .Include(x => x.UserCard)
+                                                    .Include(x => x.Doctor)
                                                     .Include(x => x.Patient)
                                                     .AsNoTracking();
 
@@ -105,9 +117,9 @@ public class AppointmentsService : IAppointmentsService
         query = query.Skip(dto.PageIndex * dto.PageSize).Take(dto.PageSize);
 
         // Execute
-        var appointments = await query.ToListAsync();
+        var appointments = await query.Select(appointment => new AppointmentDto(appointment)).ToListAsync();
 
-        return new PagedResult<Appointment>()
+        return new PagedResult<AppointmentDto?>()
         {
             Results = appointments,
             TotalCount = totalCount

@@ -11,9 +11,13 @@ namespace Hebi_Api.Features.Appointments.Controllers;
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("api/[controller]")]
-public class AppointmentController(IMediator mediator) : ControllerBase
+public class AppointmentController : ControllerBase
 {
-    private readonly IMediator _mediator = mediator;
+    private readonly IMediator _mediator;
+    public AppointmentController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
 
     [HttpPost("create-appointment")]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto, CancellationToken cancellationToken)
@@ -29,14 +33,14 @@ public class AppointmentController(IMediator mediator) : ControllerBase
         return result.AsAspNetCoreResult();
     }
 
-    [HttpDelete("id")]
+    [HttpDelete("{appointmentId:guid}")]
     public async Task<IActionResult> Delete(Guid appointmentId, CancellationToken cancellationToken)
     {
         var request = new DeleteAppointmentRequest(appointmentId);
         return Ok(await _mediator.Send(request, cancellationToken));
     }
 
-    [HttpGet("id")]
+    [HttpGet("{appointmentId:guid}")]
     public async Task<IActionResult> GetById(Guid appointmentId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetAppoitmentByIdRequest(appointmentId), cancellationToken);
