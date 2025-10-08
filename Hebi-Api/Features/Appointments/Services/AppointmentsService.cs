@@ -112,7 +112,17 @@ public class AppointmentsService : IAppointmentsService
         {
             query = query.Where(x => x.StartDate >= dto.StartDate.Value.EnsureUtc() && x.EndDate <= dto.EndDate.Value.EnsureUtc());
         }
-        query = query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Ascending);
+        if (!string.IsNullOrWhiteSpace(dto.SearchText))
+        {
+            var search = dto.SearchText.ToLower();
+            query = query.Where(x => x.Name.ToLower().Contains(search)
+                                || x.Doctor.FirstName.ToLower().Contains(search)
+                                || x.Doctor.LastName.ToLower().Contains(search)
+                                || x.Patient.FirstName.ToLower().Contains(search)
+                                || x.Patient.LastName.ToLower().Contains(search)
+                                || x.Disease.Name.ToLower().Contains(search));
+        }
+        query = query.OrderByDynamic(dto?.SortBy, dto.SortDirection == ListSortDirection.Ascending);
 
         var appointments = await query.Select(appointment => new AppointmentDto(appointment)).ToListAsync();
 
