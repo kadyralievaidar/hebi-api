@@ -5,18 +5,18 @@ using MediatR;
 
 namespace Hebi_Api.Features.Appointments.RequestHandling.Handlers;
 
-public class GetPagedListOfAppointmentRequestHandler : IRequestHandler<GetPagedListOfAppointmentRequest, Response>
+public class GetListOfAppointmentRequestHandler : IRequestHandler<GetListOfAppointmentRequest, Response>
 {
     private readonly IAppointmentsService _appoitmentsService;
     private readonly ILogger<CreateAppointmentRequestHandler> _logger;
 
-    public GetPagedListOfAppointmentRequestHandler(IAppointmentsService appoitmentsService, ILogger<CreateAppointmentRequestHandler> logger)
+    public GetListOfAppointmentRequestHandler(IAppointmentsService appoitmentsService, ILogger<CreateAppointmentRequestHandler> logger)
     {
         _appoitmentsService = appoitmentsService;
         _logger = logger;
     }
 
-    public async Task<Response> Handle(GetPagedListOfAppointmentRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(GetListOfAppointmentRequest request, CancellationToken cancellationToken)
     {
         try
         {

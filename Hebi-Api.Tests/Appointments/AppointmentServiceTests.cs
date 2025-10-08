@@ -456,14 +456,14 @@ public class AppointmentServiceTests
         };
         _dbFactory.AddData([appointment, appointment2]);
 
-        var dto = new GetPagedListOfAppointmentDto() { };
+        var dto = new GetListOfAppointmentDto() { };
         //Act
         var result = await _appointmentService.GetListOfAppointmentsAsync(dto);
 
         //Assert 
         result.Should().NotBeNull();
-        result.Results.Count.Should().Be(2);
-        var firstAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId);
+        result.Count.Should().Be(2);
+        var firstAppointment = result.FirstOrDefault(x => x.Id == appointmentId);
         firstAppointment.Should().NotBeNull();
         firstAppointment.ShiftId.Should().Be(appointment.ShiftId);
         firstAppointment.StartDate.Should().Be(appointment.StartDate);
@@ -471,7 +471,7 @@ public class AppointmentServiceTests
         firstAppointment.DoctorId.Should().Be(appointment.DoctorId);
         firstAppointment.PatientId.Should().Be(appointment.PatientId);
 
-        var secondAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId2);
+        var secondAppointment = result.FirstOrDefault(x => x.Id == appointmentId2);
         secondAppointment.Should().NotBeNull();
         secondAppointment.ShiftId.Should().Be(appointment2.ShiftId);
         secondAppointment.StartDate.Should().Be(appointment2.StartDate);
@@ -555,7 +555,7 @@ public class AppointmentServiceTests
         };
         _dbFactory.AddData([appointment, appointment2]);
 
-        var dto = new GetPagedListOfAppointmentDto()
+        var dto = new GetListOfAppointmentDto()
         {
             StartDate = DateTime.Now.AddHours(-1),
             EndDate = DateTime.Now.AddHours(1),
@@ -565,9 +565,9 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Results.Count.Should().Be(1);
+        result.Count.Should().Be(1);
 
-        var resultAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId2);
+        var resultAppointment = result.FirstOrDefault(x => x.Id == appointmentId2);
         resultAppointment.Should().NotBeNull();
         resultAppointment.ShiftId.Should().Be(appointment2.ShiftId);
         resultAppointment.StartDate.Should().Be(appointment2.StartDate);
@@ -662,7 +662,7 @@ public class AppointmentServiceTests
         };
         _dbFactory.AddData([appointment, appointment2]);
 
-        var dto = new GetPagedListOfAppointmentDto()
+        var dto = new GetListOfAppointmentDto()
         {
             StartDate = DateTime.Now.AddHours(-1),
             EndDate = DateTime.Now.AddHours(1),
@@ -673,7 +673,7 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Results.Count.Should().Be(0);
+        result.Count.Should().Be(0);
     }
 
     [Test]
@@ -763,7 +763,7 @@ public class AppointmentServiceTests
         };
         _dbFactory.AddData([appointment, appointment2]);
 
-        var dto = new GetPagedListOfAppointmentDto()
+        var dto = new GetListOfAppointmentDto()
         {
             PatientId = patientId,
         };
@@ -772,9 +772,9 @@ public class AppointmentServiceTests
 
         //Assert 
         result.Should().NotBeNull();
-        result.Results.Count.Should().Be(1);
+        result.Count.Should().Be(1);
 
-        var resultAppointment = result.Results.FirstOrDefault(x => x.Id == appointmentId);
+        var resultAppointment = result.FirstOrDefault(x => x.Id == appointmentId);
         resultAppointment.Should().NotBeNull();
         resultAppointment.EndDate.Should().Be(appointment.EndDate);
         resultAppointment.StartDate.Should().Be(appointment.StartDate);
@@ -815,9 +815,9 @@ public class AppointmentServiceTests
         await _appointmentService.GenerateAppointments(dto);
 
         // Assert
-        var fetchDto = new GetPagedListOfAppointmentDto();
+        var fetchDto = new GetListOfAppointmentDto();
         var result = await _appointmentService.GetListOfAppointmentsAsync(fetchDto);
-        var appointment = result.Results.FirstOrDefault();
+        var appointment = result.FirstOrDefault();
         appointment.Should().NotBeNull();
         appointment.PatientId.Should().Be(TestHelper.UserId);
         appointment.StartDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
@@ -867,8 +867,8 @@ public class AppointmentServiceTests
         await _appointmentService.GenerateAppointments(dto);
 
         // Assert
-        var appointments = await _appointmentService.GetListOfAppointmentsAsync(new GetPagedListOfAppointmentDto());
-        appointments.Results.Count.Should().Be(1); // Новая запись не добавилась
+        var appointments = await _appointmentService.GetListOfAppointmentsAsync(new GetListOfAppointmentDto());
+        appointments.Count.Should().Be(1); // Новая запись не добавилась
     }
 
     [Test]
@@ -904,8 +904,8 @@ public class AppointmentServiceTests
         await _appointmentService.GenerateAppointments(dto);
 
         // Assert
-        var appointments = await _appointmentService.GetListOfAppointmentsAsync(new GetPagedListOfAppointmentDto());
-        appointments.Results.Count.Should().Be(2);
-        appointments.Results.Select(a => a.ShiftId.Value).Should().Contain(new[] { shift1, shift2 });
+        var appointments = await _appointmentService.GetListOfAppointmentsAsync(new GetListOfAppointmentDto());
+        appointments.Count.Should().Be(2);
+        appointments.Select(a => a.ShiftId.Value).Should().Contain(new[] { shift1, shift2 });
     }
 }

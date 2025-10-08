@@ -3,7 +3,6 @@ using Hebi_Api.Features.Core.Common.RequestHandling;
 using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.UserCards.Dtos;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hebi_Api.Features.UserCards.Services;
 

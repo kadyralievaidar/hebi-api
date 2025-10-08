@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using Hebi_Api.Features.Appointments.Dtos;
+using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Users.Dtos;
 
 namespace Hebi_Api.Features.Shifts.Dtos;
@@ -30,7 +31,7 @@ public class ShiftDto
     /// <summary>
     ///     Appointments collection
     /// </summary>
-    public IEnumerable<Appointment> Appointments { get; set; } = new List<Appointment>();
+    public IEnumerable<AppointmentDto> Appointments { get; set; } = new List<AppointmentDto>();
 
     /// <summary>
     ///     Basic info doctor
@@ -45,7 +46,7 @@ public class ShiftDto
             ShiftId = shift.Id;
             StartTime = shift.StartTime;
             EndTime = shift.EndTime;
-            Appointments = shift.Appointments;
+            Appointments = shift.Appointments.Select(x => new AppointmentDto(x));
             ShiftTemplateId = shift.ShiftTemplateId;
             DoctorInfo = new BasicInfoDto(shift.Doctor);
         }
