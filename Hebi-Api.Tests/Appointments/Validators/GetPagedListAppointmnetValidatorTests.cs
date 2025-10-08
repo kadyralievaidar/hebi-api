@@ -21,7 +21,7 @@ public class GetPagedListOfAppointmentRequestValidatorTests
     public async Task Should_Have_Error_When_StartDate_Greater_Than_EndDate()
     {
         // Arrange
-        var request = new GetPagedListOfAppointmentRequest(new GetPagedListOfAppointmentDto
+        var request = new GetListOfAppointmentRequest(new GetListOfAppointmentDto
             {
                 StartDate = new DateTime(2025, 5, 5, 12, 0, 0),
                 EndDate = new DateTime(2025, 5, 5, 10, 0, 0)
@@ -40,7 +40,7 @@ public class GetPagedListOfAppointmentRequestValidatorTests
     public async Task Should_Not_Have_Error_When_StartDate_Less_Than_Or_Equal_To_EndDate()
     {
         // Arrange
-        var request = new GetPagedListOfAppointmentRequest(new GetPagedListOfAppointmentDto
+        var request = new GetListOfAppointmentRequest(new GetListOfAppointmentDto
             {
                 StartDate = new DateTime(2025, 5, 5, 9, 0, 0),
                 EndDate = new DateTime(2025, 5, 5, 10, 0, 0)

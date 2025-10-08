@@ -1,4 +1,5 @@
-﻿using Hebi_Api.Features.Core.DataAccess.Models;
+﻿using Hebi_Api.Features.Appointments.Dtos;
+using Hebi_Api.Features.Core.DataAccess.Models;
 using Hebi_Api.Features.Core.DataAccess.UOW;
 using Hebi_Api.Features.Core.Extensions;
 using Hebi_Api.Features.Shifts.Dtos;
@@ -65,8 +66,9 @@ public class ShiftsService : IShiftsService
 
     public async Task<List<ShiftDto>> GetListOfShiftsAsync(GetListOfShiftsDto dto)
     {
-        var shifts = await _unitOfWork.ShiftsRepository.SearchQuery(x => x.StartTime <= dto.EndDate.ToDateTime(TimeOnly.MaxValue) &&
-                                x.EndTime >= dto.StartDate.ToDateTime(TimeOnly.MinValue) && 
+        var shifts = await _unitOfWork.ShiftsRepository.SearchQuery(x => 
+                                x.StartTime <= dto.EndDate.ToDateTime(TimeOnly.MaxValue).EnsureUtc() &&
+                                x.EndTime >= dto.StartDate.ToDateTime(TimeOnly.MinValue).EnsureUtc() && 
                                 (!dto.DoctorId.HasValue || x.DoctorId == dto.DoctorId), 
                                 dto.SortBy, 
                                 dto.SortDirection,
@@ -85,7 +87,7 @@ public class ShiftsService : IShiftsService
             DoctorInfo = new BasicInfoDto(shift.Doctor),
             StartTime = shift.StartTime, 
             EndTime = shift.EndTime,
-            Appointments = shift.Appointments
+            Appointments = shift.Appointments.Select(appointment => new AppointmentDto(appointment))
         };
         return shiftDto;
     }

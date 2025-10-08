@@ -89,7 +89,7 @@ public class AppointmentsService : IAppointmentsService
         return appointment;
     }
 
-    public async Task<PagedResult<AppointmentDto?>> GetListOfAppointmentsAsync(GetPagedListOfAppointmentDto dto)
+    public async Task<List<AppointmentDto?>> GetListOfAppointmentsAsync(GetListOfAppointmentDto dto)
     {
         var query = _unitOfWork.AppointmentRepository.AsQueryable()
                                                     .Include(x => x.Disease)
@@ -110,20 +110,13 @@ public class AppointmentsService : IAppointmentsService
 
         if (dto.StartDate.HasValue && dto.EndDate.HasValue)
         {
-            query = query.Where(x => x.StartDate >= dto.StartDate.Value && x.EndDate <= dto.EndDate.Value);
+            query = query.Where(x => x.StartDate >= dto.StartDate.Value.EnsureUtc() && x.EndDate <= dto.EndDate.Value.EnsureUtc());
         }
         query = query.OrderByDynamic(dto.SortBy, dto.SortDirection == ListSortDirection.Ascending);
-        var totalCount = await query.CountAsync();
-        query = query.Skip(dto.PageIndex * dto.PageSize).Take(dto.PageSize);
 
-        // Execute
         var appointments = await query.Select(appointment => new AppointmentDto(appointment)).ToListAsync();
 
-        return new PagedResult<AppointmentDto?>()
-        {
-            Results = appointments,
-            TotalCount = totalCount
-        };
+        return appointments;
     }
 
     public async Task GenerateAppointments(GenerateAppointmentsDto dto)

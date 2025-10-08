@@ -3,7 +3,7 @@ using Hebi_Api.Features.Appointments.RequestHandling.Requests;
 
 namespace Hebi_Api.Features.Appointments.RequestHandling.Validators;
 
-public class GetPagedListOfAppointmentRequestValidator : AbstractValidator<GetPagedListOfAppointmentRequest>
+public class GetPagedListOfAppointmentRequestValidator : AbstractValidator<GetListOfAppointmentRequest>
 {
     public GetPagedListOfAppointmentRequestValidator()
     {

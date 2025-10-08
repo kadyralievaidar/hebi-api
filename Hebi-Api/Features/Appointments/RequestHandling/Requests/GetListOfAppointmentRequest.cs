@@ -6,14 +6,14 @@ namespace Hebi_Api.Features.Appointments.RequestHandling.Requests;
 /// <summary>
 ///     Get list of appointment 
 /// </summary>
-public class GetPagedListOfAppointmentRequest : Request<Response>
+public class GetListOfAppointmentRequest : Request<Response>
 {
     /// <summary>
-    ///     GetPagedListOfAppointmentDto
+    ///     Get ListOfAppointmentDto
     /// </summary>
-    public GetPagedListOfAppointmentDto Dto { get; set; }
+    public GetListOfAppointmentDto Dto { get; set; }
 
-    public GetPagedListOfAppointmentRequest(GetPagedListOfAppointmentDto dto)
+    public GetListOfAppointmentRequest(GetListOfAppointmentDto dto)
     {
         Dto = dto;
     }
