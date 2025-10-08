@@ -11,12 +11,12 @@ public class GetListOfAppointmentDto
     /// <summary>
     ///     Start date time
     /// </summary>
-    public DateTime? StartDate { get; set; }
+    public DateTime? StartDate { get; set; } =  DateTime.MinValue;
 
     /// <summary>
     ///     End date time
     /// </summary>
-    public DateTime? EndDate { get; set; }
+    public DateTime? EndDate { get; set; } =  DateTime.MaxValue;
 
     /// <summary>
     ///     Patient's id
@@ -36,8 +36,7 @@ public class GetListOfAppointmentDto
     /// <summary>
     ///     Sort by 
     /// </summary>
-    [DefaultValue(nameof(Appointment.CreatedAt))]
-    public string? SortBy { get; set; }
+    public string? SortBy { get; set; } = nameof(Appointment.CreatedAt);
 
     /// <summary>
     ///     Sort direction
